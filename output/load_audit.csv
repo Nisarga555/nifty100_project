@@ -1,0 +1,13 @@
+table_name,source_rows,orphan_rows_rejected,duplicate_rows_removed,loaded_rows,status
+companies,92,0,0,92,OK
+profitandloss,1276,99,16,1161,CLEANED
+balancesheet,1312,85,87,1140,CLEANED
+cashflow,1187,89,35,1063,CLEANED
+analysis,20,4,0,16,CLEANED
+documents,1585,128,1,1456,CLEANED
+prosandcons,16,2,0,14,CLEANED
+sectors,92,0,0,92,OK
+stock_prices,5520,0,0,5520,OK
+financial_ratios,1184,24,119,1041,CLEANED
+peer_groups,56,0,0,56,OK
+market_cap,552,0,0,552,OK
