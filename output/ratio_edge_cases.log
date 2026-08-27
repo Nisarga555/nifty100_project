@@ -1,0 +1,741 @@
+================================================================================
+NIFTY 100 - RATIO ENGINE EDGE CASE LOG
+================================================================================
+Generated: 2026-08-27 20:35:21
+Total financial_ratios rows: 1155
+Latest annual company rows audited: 91
+
+IMPORTANT COMPARISON RULE:
+companies.xlsx contains one company-level ROE/ROCE source value without a year column.
+Therefore the source values are compared ONLY against the latest available annual company-year ratio-engine value.
+Historical company-year rows are NOT treated as anomalies.
+
+Anomaly threshold: > 5 percentage points
+
+================================================================================
+ROCE CROSS-CHECK
+================================================================================
+
+--------------------------------------------------------------------------------
+Company ID       : ADANIGREEN
+Company Name     : Adani Green Energy Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Energy
+Ratio            : ROCE
+Computed Value   : 11.487173994537567
+Source Value     : 96.5
+Absolute Diff.   : 85.01282600546243
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : AMBUJACEM
+Company Name     : Ambuja Cements Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROCE
+Computed Value   : 18.505515359981022
+Source Value     : 12.8
+Absolute Diff.   : 5.705515359981021
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : BAJAJFINSV
+Company Name     : Bajaj Finserv Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 11.705286304511525
+Source Value     : 21.14
+Absolute Diff.   : 9.434713695488476
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : BAJFINANCE
+Company Name     : Bajaj Finance Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 4.360315856037963
+Source Value     : 11.9
+Absolute Diff.   : 7.539684143962037
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : BEL
+Company Name     : Bharat Electronics Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROCE
+Computed Value   : 4504.72440944882
+Source Value     : 34.6
+Absolute Diff.   : 4470.124409448819
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : BHARTIARTL
+Company Name     : Bharti Airtel Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Communication Services
+Ratio            : ROCE
+Computed Value   : 25.104372407456466
+Source Value     : 13.1
+Absolute Diff.   : 12.004372407456467
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : BOSCHLTD
+Company Name     : Bosch Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 30.2486986697513
+Source Value     : 20.6
+Absolute Diff.   : 9.648698669751298
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : BRITANNIA
+Company Name     : Britannia Industries Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROCE
+Computed Value   : 56.24375624375625
+Source Value     : 48.9
+Absolute Diff.   : 7.343756243756253
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : CHOLAFIN
+Company Name     : Cholamandalam Investment & Finance Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 3.5107874445050236
+Source Value     : 10.4
+Absolute Diff.   : 6.889212555494977
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : CIPLA
+Company Name     : Cipla Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Healthcare
+Ratio            : ROCE
+Computed Value   : 71.54593801577114
+Source Value     : 22.8
+Absolute Diff.   : 48.745938015771145
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : COALINDIA
+Company Name     : Coal India Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROCE
+Computed Value   : 105.75106719101879
+Source Value     : 63.6
+Absolute Diff.   : 42.15106719101879
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : GODREJCP
+Company Name     : Godrej Consumer Products Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROCE
+Computed Value   : 4.7281921618204805
+Source Value     : 26.49
+Absolute Diff.   : 21.761807838179518
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HAL
+Company Name     : Hindustan Aeronautics Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROCE
+Computed Value   : 3617.391304347826
+Source Value     : 38.9
+Absolute Diff.   : 3578.491304347826
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HCLTECH
+Company Name     : HCL Technologies Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Information Technology
+Ratio            : ROCE
+Computed Value   : 34.71042001594142
+Source Value     : 29.6
+Absolute Diff.   : 5.110420015941422
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : HDFCLIFE
+Company Name     : HDFC Life Insurance Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 646.4651639344262
+Source Value     : 6.61
+Absolute Diff.   : 639.8551639344262
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HEROMOTOCO
+Company Name     : Hero MotoCorp Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 177.91860147500682
+Source Value     : 29.1
+Absolute Diff.   : 148.81860147500683
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HINDALCO
+Company Name     : Hindalco Industries Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROCE
+Computed Value   : 118.21454505175322
+Source Value     : 11.3
+Absolute Diff.   : 106.91454505175322
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HINDUNILVR
+Company Name     : Hindustan Unilever Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROCE
+Computed Value   : 89.67591362756632
+Source Value     : 27.2
+Absolute Diff.   : 62.475913627566314
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : ICICIGI
+Company Name     : ICICI Lombard General Insurance Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 146.4297385620915
+Source Value     : 22.5
+Absolute Diff.   : 123.9297385620915
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : ICICIPRULI
+Company Name     : ICICI Prudential Life Insurance Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 754.8873412535846
+Source Value     : 8.75
+Absolute Diff.   : 746.1373412535846
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : INDIGO
+Company Name     : Interglobe Aviation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 5643.454935622318
+Source Value     : 24.5
+Absolute Diff.   : 5618.954935622318
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : IRCTC
+Company Name     : Indian Railway Catering & Tourism Corporation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 47.78115501519757
+Source Value     : 53.8
+Absolute Diff.   : 6.018844984802428
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : LICI
+Company Name     : Life Insurance Corporation of India
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 57.534412123702374
+Source Value     : 63.79
+Absolute Diff.   : 6.255587876297625
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : LT
+Company Name     : Larsen & Toubro Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROCE
+Computed Value   : 152.61895060890035
+Source Value     : 17.18
+Absolute Diff.   : 135.43895060890034
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : M&M
+Company Name     : Mahindra & Mahindra Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 16.123589400412953
+Source Value     : 26.98
+Absolute Diff.   : 10.856410599587047
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : MOTHERSON
+Company Name     : Samvardhana Motherson International Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 20.535191093170127
+Source Value     : 13.7
+Absolute Diff.   : 6.835191093170128
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : NESTLEIND
+Company Name     : Nestle India Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROCE
+Computed Value   : 162.06241519674356
+Source Value     : 185.43
+Absolute Diff.   : 23.36758480325645
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : PFC
+Company Name     : Power Finance Corporation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 3.493066198183381
+Source Value     : 9.96
+Absolute Diff.   : 6.466933801816619
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : POWERGRID
+Company Name     : Power Grid Corporation of India Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Energy
+Ratio            : ROCE
+Computed Value   : 19.16909551793869
+Source Value     : 13.2
+Absolute Diff.   : 5.96909551793869
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : SHREECEM
+Company Name     : Shree Cement Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROCE
+Computed Value   : 22.876693948745473
+Source Value     : 14.8
+Absolute Diff.   : 8.076693948745472
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : SHRIRAMFIN
+Company Name     : Shriram Finance Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROCE
+Computed Value   : 4.315116407506045
+Source Value     : 11.3
+Absolute Diff.   : 6.984883592493956
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : TATAMOTORS
+Company Name     : Tata Motors Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 33.93225101467374
+Source Value     : 20.1
+Absolute Diff.   : 13.832251014673737
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TATAPOWER
+Company Name     : Tata Power Company Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Energy
+Ratio            : ROCE
+Computed Value   : 16.44604567377535
+Source Value     : 11.1
+Absolute Diff.   : 5.346045673775352
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : TECHM
+Company Name     : Tech Mahindra Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Information Technology
+Ratio            : ROCE
+Computed Value   : 18.60234198452373
+Source Value     : 11.9
+Absolute Diff.   : 6.702341984523729
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : TORNTPHARM
+Company Name     : Torrent Pharmaceuticals Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Healthcare
+Ratio            : ROCE
+Computed Value   : 32.3037323037323
+Source Value     : 23.2
+Absolute Diff.   : 9.103732303732304
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : TRENT
+Company Name     : Trent Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 50.85036935234496
+Source Value     : 23.8
+Absolute Diff.   : 27.050369352344962
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TVSMOTOR
+Company Name     : TVS Motor Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROCE
+Computed Value   : 17.0966758157975
+Source Value     : None
+Absolute Diff.   : None
+Category         : DATA_SOURCE_ISSUE
+Explanation      : Source value is missing or invalid, or the computed value cannot be reconciled with available data.
+
+ROCE anomalies found: 37
+
+================================================================================
+ROE CROSS-CHECK
+================================================================================
+
+--------------------------------------------------------------------------------
+Company ID       : ADANIENT
+Company Name     : Adani Enterprises Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROE
+Computed Value   : 8.534650424813185
+Source Value     : 13.64
+Absolute Diff.   : 5.105349575186816
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : ADANIPOWER
+Company Name     : Adani Power Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Energy
+Ratio            : ROE
+Computed Value   : 48.27674122146251
+Source Value     : 57.1
+Absolute Diff.   : 8.823258778537493
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : BAJAJFINSV
+Company Name     : Bajaj Finserv Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROE
+Computed Value   : 25.850351412279537
+Source Value     : 11.72
+Absolute Diff.   : 14.130351412279536
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : BEL
+Company Name     : Bharat Electronics Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROE
+Computed Value   : 4744.047619047619
+Source Value     : 26.3
+Absolute Diff.   : 4717.747619047619
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : BPCL
+Company Name     : Bharat Petroleum Corporation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Energy
+Ratio            : ROE
+Computed Value   : 35.511337343822305
+Source Value     : 41.9
+Absolute Diff.   : 6.388662656177694
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : COALINDIA
+Company Name     : Coal India Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROE
+Computed Value   : 45.16982956605826
+Source Value     : 52.0
+Absolute Diff.   : 6.830170433941738
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : GODREJCP
+Company Name     : Godrej Consumer Products Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROE
+Computed Value   : -4.45308779171297
+Source Value     : 6.77
+Absolute Diff.   : 11.22308779171297
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : HAL
+Company Name     : Hindustan Aeronautics Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROE
+Computed Value   : 3816.5829145728644
+Source Value     : 28.9
+Absolute Diff.   : 3787.6829145728643
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : INDIGO
+Company Name     : Interglobe Aviation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROE
+Computed Value   : 892.568306010929
+Source Value     : None
+Absolute Diff.   : None
+Category         : DATA_SOURCE_ISSUE
+Explanation      : Source value is missing or invalid, or the computed value cannot be reconciled with available data.
+
+--------------------------------------------------------------------------------
+Company ID       : IRCTC
+Company Name     : Indian Railway Catering & Tourism Corporation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROE
+Computed Value   : 34.39628482972136
+Source Value     : 40.4
+Absolute Diff.   : 6.003715170278639
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : LICI
+Company Name     : Life Insurance Corporation of India
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROE
+Computed Value   : 49.44710986501021
+Source Value     : 63.61
+Absolute Diff.   : 14.162890134989787
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : LT
+Company Name     : Larsen & Toubro Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Industrials
+Ratio            : ROE
+Computed Value   : 77.66510140873214
+Source Value     : 10.49
+Absolute Diff.   : 67.17510140873215
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : NESTLEIND
+Company Name     : Nestle India Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Staples
+Ratio            : ROE
+Computed Value   : 117.75449101796407
+Source Value     : 135.61
+Absolute Diff.   : 17.855508982035943
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : PFC
+Company Name     : Power Finance Corporation Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROE
+Computed Value   : 26.1609340860332
+Source Value     : 19.49
+Absolute Diff.   : 6.670934086033203
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : PNB
+Company Name     : Punjab National Bank
+Comparison Year  : 2024-03
+Broad Sector     : Financials
+Ratio            : ROE
+Computed Value   : 61.320565191187306
+Source Value     : 8.7
+Absolute Diff.   : 52.62056519118731
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TATAMOTORS
+Company Name     : Tata Motors Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROE
+Computed Value   : 37.45613415294755
+Source Value     : 49.4
+Absolute Diff.   : 11.94386584705245
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TATASTEEL
+Company Name     : Tata Steel Ltd
+
+Comparison Year  : 2024-03
+Broad Sector     : Materials
+Ratio            : ROE
+Computed Value   : -5.334926929972293
+Source Value     : 6.55
+Absolute Diff.   : 11.884926929972293
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TCS
+Company Name     : Tata Consultancy Services Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Information Technology
+Ratio            : ROE
+Computed Value   : 50.944313673485176
+Source Value     : 0.52
+Absolute Diff.   : 50.42431367348517
+Category         : FORMULA_DISCREPANCY
+Explanation      : The difference is material and may indicate a formula-definition or underlying-input difference. The ratio-engine value is retained for analytics.
+
+--------------------------------------------------------------------------------
+Company ID       : TRENT
+Company Name     : Trent Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROE
+Computed Value   : 36.30776794493609
+Source Value     : 27.2
+Absolute Diff.   : 9.10776794493609
+Category         : VERSION_DIFFERENCE
+Explanation      : The difference is relatively small and may be explained by source-version, rounding, timing, or period differences.
+
+--------------------------------------------------------------------------------
+Company ID       : TVSMOTOR
+Company Name     : TVS Motor Company Ltd
+Comparison Year  : 2024-03
+Broad Sector     : Consumer Discretionary
+Ratio            : ROE
+Computed Value   : 26.223466981132077
+Source Value     : None
+Absolute Diff.   : None
+Category         : DATA_SOURCE_ISSUE
+Explanation      : Source value is missing or invalid, or the computed value cannot be reconciled with available data.
+
+ROE anomalies found: 20
+
+================================================================================
+FINANCIALS SECTOR D/E CARVE-OUT
+================================================================================
+Financials companies checked: 22
+Standard D/E warning: SUPPRESSED
+Reason: high leverage is structurally normal for banks, NBFCs and insurance companies.
+Companies: AXISBANK, BAJAJFINSV, BAJAJHLDNG, BAJFINANCE, BANKBARODA, CANBK, CHOLAFIN, HDFCBANK, HDFCLIFE, ICICIBANK, ICICIGI, ICICIPRULI, INDUSINDBK, IRFC, JIOFIN, KOTAKBANK, LICI, PFC, PNB, RECLTD, SBILIFE, SHRIRAMFIN
+
+================================================================================
+FINAL SUMMARY
+================================================================================
+Ratio rows audited          : 1155
+Companies audited           : 91
+ROCE anomalies              : 37
+ROE anomalies               : 20
+Total anomalies             : 57
+Financials rows checked     : 22
+
+Categories:
+DATA_SOURCE_ISSUE
+VERSION_DIFFERENCE
+FORMULA_DISCREPANCY
+
+Day-13 ratio edge-case audit completed.
