@@ -519,6 +519,18 @@ def prepare_history(
     current_year,
     profit_lookup,
 ):
+    """
+    Return only historical P&L observations up to the current
+    company-year.
+
+    This is important for trailing CAGR calculations:
+    - 3-year CAGR must end at current_year
+    - 5-year CAGR must end at current_year
+    - 10-year CAGR must end at current_year
+
+    Future years must never be included.
+    """
+
     history = []
 
     company_history = profit_lookup.get(
@@ -526,9 +538,33 @@ def prepare_history(
         {}
     )
 
+    def year_number(value):
+        import re
+
+        if value is None:
+            return None
+
+        match = re.search(r"(\\d{4})", str(value))
+
+        if match:
+            return int(match.group(1))
+
+        return None
+
+    current_year_number = year_number(current_year)
+
     for year, row in company_history.items():
 
         if year == current_year:
+            continue
+
+        row_year_number = year_number(year)
+
+        if (
+            current_year_number is not None
+            and row_year_number is not None
+            and row_year_number > current_year_number
+        ):
             continue
 
         history.append(
@@ -546,43 +582,59 @@ def prepare_history(
             }
         )
 
+    history.sort(
+        key=lambda item: (
+            year_number(item.get("year"))
+            if year_number(item.get("year")) is not None
+            else 9999
+        )
+    )
+
     return history
 
 
 def calculate_growth_safely(
-    history
+    history,
+    end_year=None,
 ):
+    """
+    Safely calculate Revenue, PAT and EPS CAGR.
+
+    The CAGR endpoint is explicitly tied to the current
+    company-year row so every year's CAGR is calculated
+    using that year's data as the endpoint.
+    """
+
     if not history:
-        return {}
+        return {
+            "revenue_cagr_3yr": None,
+            "revenue_cagr_5yr": None,
+            "revenue_cagr_10yr": None,
+            "pat_cagr_3yr": None,
+            "pat_cagr_5yr": None,
+            "pat_cagr_10yr": None,
+            "eps_cagr_3yr": None,
+            "eps_cagr_5yr": None,
+            "eps_cagr_10yr": None,
+        }
 
     try:
-        result = calculate_growth_metrics(
-            history
+        return calculate_growth_metrics(
+            history,
+            end_year=end_year,
         )
-
-        if result is None:
-            return {}
-
-        return result
-
-    except TypeError:
-
-        try:
-            result = calculate_growth_metrics(
-                pd.DataFrame(history)
-            )
-
-            if result is None:
-                return {}
-
-            return result
-
-        except Exception:
-            return {}
-
     except Exception:
-        return {}
-
+        return {
+            "revenue_cagr_3yr": None,
+            "revenue_cagr_5yr": None,
+            "revenue_cagr_10yr": None,
+            "pat_cagr_3yr": None,
+            "pat_cagr_5yr": None,
+            "pat_cagr_10yr": None,
+            "eps_cagr_3yr": None,
+            "eps_cagr_5yr": None,
+            "eps_cagr_10yr": None,
+        }
 
 def normalize_growth_columns(
     row
@@ -881,7 +933,8 @@ def calculate_one_company_year(
         )
 
     growth_result = calculate_growth_safely(
-        growth_history
+        growth_history,
+        end_year=year,
     )
 
     if growth_result:
