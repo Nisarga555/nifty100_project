@@ -1,163 +1,415 @@
-from pathlib import Path
-import re
-import pandas as pd
+# NIFTY 100 Financial Intelligence Platform
 
+A comprehensive financial intelligence and analytics platform for analyzing NIFTY 100 companies using financial statements, financial ratios, cash-flow quality, peer comparison, screening, valuation, NLP-based analysis, clustering, and interactive dashboards.
 
-INPUT_FILE = Path("data/raw/analysis.xlsx")
-PARSED_OUTPUT = Path("output/analysis_parsed.csv")
-FAILURE_OUTPUT = Path("output/parse_failures.csv")
+---
 
+## Project Overview
 
-TARGET_FIELDS = [
-    "compounded_sales_growth",
-    "compounded_profit_growth",
-    "stock_price_cagr",
-    "roe",
-]
+The NIFTY 100 Financial Intelligence Platform converts raw financial and market data into structured analytics and decision-support outputs.
 
+The platform combines:
 
-# Matches:
-# 10 Years: 21%
-# 5 Years: 24%
-# 3 Years: -1%
-#
-# Allows arbitrary spaces around "Years", colon and value.
-YEAR_PATTERN = re.compile(
-    r"(\d+)\s*Years?:?\s*([-+]?\d+(?:\.\d+)?)%"
-)
+- Data ingestion and ETL
+- Data quality validation
+- Financial ratio calculation
+- CAGR analysis
+- Cash-flow intelligence
+- Stock screening
+- Composite financial scoring
+- Peer comparison
+- Sector analysis
+- Relative valuation
+- NLP-based financial analysis
+- KMeans company clustering
+- Portfolio-level statistics
+- Automated company tearsheets
+- FastAPI REST API
+- Streamlit interactive dashboard
+- Automated testing
 
+The system processes data for **92 companies available in the supplied source dataset**.
 
-def parse_year_percentage(value):
-    """
-    Parse values such as:
-        '10 Years: 21%' -> (10, 21.0)
-        '5 Years: -3%'  -> (5, -3.0)
+---
 
-    Returns:
-        (period_years, value_pct)
-        or (None, None) if the value cannot be parsed.
-    """
+## Key Capabilities
 
-    if pd.isna(value):
-        return None, None
+### 1. Data Engineering
 
-    text = str(value).strip()
+Raw Excel datasets are processed and loaded into a SQLite analytical database.
 
-    match = YEAR_PATTERN.search(text)
+The ETL pipeline performs:
 
-    if not match:
-        return None, None
+- Schema validation
+- Column normalization
+- Company-ID validation
+- Duplicate detection
+- Orphan-record detection
+- Data-quality reporting
+- Source reconciliation
 
-    period_years = int(match.group(1))
-    value_pct = float(match.group(2))
+Generated audit files include:
 
-    return period_years, value_pct
+- `load_audit.csv`
+- `rejected_orphans.csv`
+- `deduplicated_rows.csv`
+- `validation_failures.csv`
 
+---
 
-def parse_analysis():
-    """
-    Read analysis.xlsx, parse the four target fields,
-    and generate analysis_parsed.csv and parse_failures.csv.
-    """
+### 2. Financial Ratio Engine
 
-    if not INPUT_FILE.exists():
-        raise FileNotFoundError(
-            f"Input file not found: {INPUT_FILE}"
-        )
+The platform calculates and validates major financial ratios including:
 
-    # Row 0 is the title row, so actual headers are row 1.
-    df = pd.read_excel(INPUT_FILE, header=1)
+- Net Profit Margin
+- Operating Profit Margin
+- Return on Equity
+- Return on Capital Employed
+- Return on Assets
+- Debt-to-Equity
+- Interest Coverage Ratio
+- Asset Turnover
+- CFO/PAT Ratio
+- Free Cash Flow
 
-    required_columns = ["company_id"] + TARGET_FIELDS
+The engine also handles financial edge cases such as:
 
-    missing_columns = [
-        column for column in required_columns
-        if column not in df.columns
-    ]
+- Zero sales
+- Zero interest
+- Debt-free companies
+- Negative equity
+- Negative earnings
+- Sector-specific leverage interpretation
 
-    if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {missing_columns}"
-        )
+---
 
-    parsed_rows = []
-    failures = []
+### 3. CAGR Analysis
 
-    for _, row in df.iterrows():
+Historical growth is calculated for:
 
-        company_id = str(row["company_id"]).strip()
+- Revenue CAGR
+- PAT CAGR
+- EPS CAGR
 
-        for metric_type in TARGET_FIELDS:
+Supported periods include:
 
-            raw_value = row[metric_type]
+- 3 years
+- 5 years
+- 10 years
 
-            period_years, value_pct = parse_year_percentage(raw_value)
+The CAGR engine also identifies conditions such as:
 
-            if period_years is not None:
-                parsed_rows.append(
-                    {
-                        "company_id": company_id,
-                        "metric_type": metric_type,
-                        "period_years": period_years,
-                        "value_pct": value_pct,
-                    }
-                )
-            else:
-                failures.append(
-                    {
-                        "company_id": company_id,
-                        "metric_type": metric_type,
-                        "raw_value": raw_value,
-                    }
-                )
+- Growth decline
+- Turnarounds
+- Loss-to-profit transitions
+- Both-negative periods
+- Zero-base cases
+- Insufficient historical data
 
-    parsed_df = pd.DataFrame(
-        parsed_rows,
-        columns=[
-            "company_id",
-            "metric_type",
-            "period_years",
-            "value_pct",
-        ],
-    )
+Historical values are not fabricated when required periods are unavailable.
 
-    failures_df = pd.DataFrame(
-        failures,
-        columns=[
-            "company_id",
-            "metric_type",
-            "raw_value",
-        ],
-    )
+---
 
-    PARSED_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+## Stock Screener
 
-    parsed_df.to_csv(PARSED_OUTPUT, index=False)
-    failures_df.to_csv(FAILURE_OUTPUT, index=False)
+The platform provides multiple predefined screening strategies.
 
-    print("=" * 60)
-    print("ANALYSIS PARSER COMPLETE")
-    print("=" * 60)
-    print(f"Input rows       : {len(df)}")
-    print(f"Parsed rows      : {len(parsed_df)}")
-    print(f"Parse failures   : {len(failures_df)}")
-    print(f"Parsed output    : {PARSED_OUTPUT}")
-    print(f"Failure output   : {FAILURE_OUTPUT}")
-    print()
+### Quality Compounder
 
-    if not parsed_df.empty:
-        print("Parsed by metric:")
-        print(parsed_df["metric_type"].value_counts().to_string())
-        print()
+Criteria include:
 
-        print("Parsed by period:")
-        print(parsed_df["period_years"].value_counts().sort_index().to_string())
+- ROE >= 12%
+- Debt-to-Equity <= 1
+- Positive FCF
+- Revenue CAGR >= 10%
 
-    if not failures_df.empty:
-        print()
-        print("Failure examples:")
-        print(failures_df.head(10).to_string(index=False))
+### Value Pick
 
+Criteria include:
 
-if __name__ == "__main__":
-    parse_analysis()
+- P/E <= 30
+- P/B <= 5
+- Debt-to-Equity <= 2
+- Dividend Yield >= 1.5%
+
+### Growth Accelerator
+
+Criteria include:
+
+- PAT CAGR >= 20%
+- Revenue CAGR >= 15%
+- Debt-to-Equity <= 2
+
+### Dividend Champion
+
+Criteria include:
+
+- Dividend Yield >= 1.5%
+- Dividend payout <= 80%
+- Positive FCF
+
+### Debt-Free Blue Chip
+
+Criteria include:
+
+- Debt-to-Equity = 0
+- ROE >= 12%
+- Sales >= 5000 crore
+
+### Turnaround Watch
+
+Criteria include:
+
+- Revenue CAGR 3Y >= 10%
+- Positive latest FCF
+- Declining Debt-to-Equity
+
+---
+
+## Composite Scoring
+
+Companies are scored using a weighted financial-quality model.
+
+### Profitability — 35%
+
+- ROE — 15%
+- ROCE — 10%
+- Net Profit Margin — 10%
+
+### Cash Quality — 30%
+
+- FCF growth — 15%
+- CFO/PAT — 10%
+- Positive FCF — 5%
+
+### Growth — 20%
+
+- Revenue CAGR — 10%
+- PAT CAGR — 10%
+
+### Leverage — 15%
+
+- Debt-to-Equity — 10%
+- Interest Coverage — 5%
+
+The scoring system uses sector-relative normalization and percentile-based winsorization.
+
+---
+
+## Peer Analysis
+
+Companies are grouped into peer categories including:
+
+- Automobiles
+- FMCG
+- Power & Utilities
+- Private Banks
+- IT Services
+- Pharmaceuticals
+- Oil & Gas
+- Public Sector Banks
+- Life Insurance
+- Steel
+- Consumer Finance
+
+Peer analytics include percentile rankings for financial metrics.
+
+Debt-to-equity is treated as an inverse metric because lower leverage is generally preferable.
+
+Outputs include:
+
+- Peer percentile data
+- Peer comparison workbook
+- Radar charts
+- Peer-group comparisons
+
+---
+
+## Valuation Engine
+
+The valuation module provides relative valuation intelligence using:
+
+- Free Cash Flow Yield
+- Historical 5-year median P/E
+- Sector median P/E
+
+Companies are classified as:
+
+- `Discount`
+- `Fair`
+- `Caution`
+
+Relative P/E thresholds:
+
+- P/E < 70% of sector median → Discount
+- P/E between 70% and 150% → Fair
+- P/E > 150% → Caution
+
+---
+
+## Cash-Flow Intelligence
+
+The cash-flow module analyzes:
+
+- Operating cash flow
+- Investing cash flow
+- Financing cash flow
+- Free cash flow
+- CFO/PAT quality
+- CapEx intensity
+- Capital allocation
+
+Capital allocation patterns include:
+
+- Shareholder Returns
+- Mixed
+- Reinvestor
+- Growth Funded by Debt
+- Liquidating Assets
+- Distress Signal
+- Pre-Revenue
+
+The system also produces distress and deleveraging alerts.
+
+---
+
+## NLP Financial Analysis
+
+The platform parses textual financial-analysis fields from the source dataset.
+
+Parsed metrics include:
+
+- Compounded Sales Growth
+- Compounded Profit Growth
+- Stock Price CAGR
+- ROE
+
+The parser extracts:
+
+- Period in years
+- Percentage value
+
+Example:
+
+`5 Years: 24%`
+
+becomes:
+
+- Period: 5 years
+- Value: 24%
+
+Parsing failures are separately logged rather than silently discarded.
+
+The NLP layer also generates structured Pros and Cons for companies based on available financial information.
+
+---
+
+## Company Clustering
+
+The platform applies **KMeans clustering** to group companies according to financial characteristics.
+
+The clustering pipeline uses:
+
+- StandardScaler
+- KMeans
+- 5 clusters
+- `random_state=42`
+- `n_init=20`
+
+The resulting five financial archetypes are:
+
+1. Balanced Compounder
+2. Growth Accelerator
+3. High-ROE Leader
+4. Value & Cash Flow
+5. Debt-Free Compounder
+
+All 92 companies receive a cluster assignment.
+
+Outputs include:
+
+- Cluster labels
+- Cluster profiles
+- Distance from centroid
+- Outlier analysis
+- Portfolio statistics
+- Correlation heatmap
+- Elbow plot
+
+---
+
+## Portfolio Analytics
+
+Portfolio-level statistics are generated for major financial KPIs.
+
+The analysis includes:
+
+- P10
+- P25
+- Median
+- P75
+- P90
+- Mean
+- Standard deviation
+- Company count
+
+This allows individual companies to be evaluated relative to the broader dataset.
+
+---
+
+## Automated Company Tearsheets
+
+The reporting engine generates individual PDF tearsheets for companies.
+
+The tearsheets contain financial intelligence and supporting analysis.
+
+Generated:
+
+- 92 company tearsheets
+- Sector-level reports
+- NIFTY 100 Overall report
+- Portfolio summary report
+
+The portfolio report contains **93 pages**, including the cover and company-level pages.
+
+---
+
+# Interactive Dashboard
+
+The project includes a Streamlit dashboard with 8 screens.
+
+The dashboard provides access to:
+
+- Company overview
+- Financial statements
+- Financial ratios
+- Screening
+- Peer analysis
+- Sector analysis
+- Valuation
+- Reports
+
+The dashboard uses cached database queries to improve responsiveness.
+
+---
+
+# REST API
+
+A FastAPI backend exposes the analytics through REST endpoints.
+
+Base API:
+
+`/api/v1`
+
+## Available Endpoints
+
+### Companies
+
+```text
+GET /api/v1/companies
+GET /api/v1/companies/{ticker}
+GET /api/v1/companies/{ticker}/pl
+GET /api/v1/companies/{ticker}/bs
+GET /api/v1/companies/{ticker}/cashflow
+GET /api/v1/companies/{ticker}/ratios
+GET /api/v1/companies/{ticker}/tearsheet
