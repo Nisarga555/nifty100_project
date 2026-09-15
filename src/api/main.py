@@ -1,14 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
 from pathlib import Path
 import sqlite3
 import time
 import logging
 
 from src.api.routers.companies import router as companies_router
-
-
+from src.api.routers.screener import router as screener_router
+from src.api.routers.sectors import router as sectors_router
+from src.api.routers.peers import router as peers_router
+from src.api.routers.valuation import router as valuation_router
+from src.api.routers.portfolio import router as portfolio_router
+from src.api.routers.documents import router as documents_router
 # ============================================================
 # CONFIGURATION
 # ============================================================
@@ -16,13 +19,23 @@ from src.api.routers.companies import router as companies_router
 APP_VERSION = "1.0.0"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = PROJECT_ROOT / "db" / "nifty100.sqlite3"
+
+DB_PATH = (
+    PROJECT_ROOT
+    / "db"
+    / "nifty100.sqlite3"
+)
 
 START_TIME = time.time()
 
+
+# ============================================================
+# LOGGING
+# ============================================================
+
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
+    format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
 logger = logging.getLogger(__name__)
@@ -34,7 +47,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="NIFTY 100 Analytics API",
-    description="Financial intelligence and analytics API for NIFTY 100 companies.",
+    description=(
+        "Financial intelligence and analytics API "
+        "for NIFTY 100 companies."
+    ),
     version=APP_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -60,6 +76,7 @@ app.add_middleware(
 
 @app.middleware("http")
 async def request_logging_middleware(request, call_next):
+
     start = time.time()
 
     response = await call_next(request)
@@ -78,29 +95,26 @@ async def request_logging_middleware(request, call_next):
 
 
 # ============================================================
-# DATABASE HELPERS
+# DATABASE
 # ============================================================
 
 def get_db_connection():
-    """
-    Create a SQLite connection.
-    """
+
     connection = sqlite3.connect(DB_PATH)
+
     connection.row_factory = sqlite3.Row
+
     return connection
 
 
 def get_table_counts():
-    """
-    Return row counts for all tables currently present
-    in the SQLite database.
-    """
 
     counts = {}
 
     connection = get_db_connection()
 
     try:
+
         cursor = connection.cursor()
 
         cursor.execute(
@@ -113,20 +127,29 @@ def get_table_counts():
             """
         )
 
-        tables = [row["name"] for row in cursor.fetchall()]
+        tables = [
+            row["name"]
+            for row in cursor.fetchall()
+        ]
 
         for table in tables:
+
             try:
+
                 cursor.execute(
                     f'SELECT COUNT(*) AS count FROM "{table}"'
                 )
 
-                counts[table] = cursor.fetchone()["count"]
+                counts[table] = (
+                    cursor.fetchone()["count"]
+                )
 
             except sqlite3.Error:
+
                 counts[table] = None
 
     finally:
+
         connection.close()
 
     return counts
@@ -138,9 +161,6 @@ def get_table_counts():
 
 @app.get("/")
 def root():
-    """
-    API welcome endpoint.
-    """
 
     return {
         "name": "NIFTY 100 Analytics API",
@@ -155,11 +175,11 @@ def root():
 # API V1 ROOT
 # ============================================================
 
-@app.get("/api/v1", tags=["Health"])
+@app.get(
+    "/api/v1",
+    tags=["Health"],
+)
 def api_v1_root():
-    """
-    API v1 information.
-    """
 
     return {
         "api": "NIFTY 100 Analytics API",
@@ -172,60 +192,97 @@ def api_v1_root():
 # HEALTH CHECK
 # ============================================================
 
-@app.get("/api/v1/health", tags=["Health"])
+@app.get(
+    "/api/v1/health",
+    tags=["Health"],
+)
 def health():
-    """
-    API health check.
-
-    Returns:
-    - API status
-    - database status
-    - database table row counts
-    - uptime
-    - API version
-    """
 
     database_status = "ok"
 
     try:
+
         connection = get_db_connection()
 
         cursor = connection.cursor()
+
         cursor.execute("SELECT 1")
+
         cursor.fetchone()
 
         connection.close()
 
     except Exception as exc:
+
         database_status = f"error: {exc}"
 
     return {
         "status": "ok",
         "database": database_status,
         "tables": get_table_counts(),
-        "uptime_seconds": round(time.time() - START_TIME, 2),
+        "uptime_seconds": round(
+            time.time() - START_TIME,
+            2,
+        ),
         "version": APP_VERSION,
     }
 
 
 # ============================================================
-# ROUTERS
+# API ROUTERS
 # ============================================================
 
+# Companies
 app.include_router(
     companies_router,
     prefix="/api/v1",
 )
 
 
+# Screener
+app.include_router(
+    screener_router,
+    prefix="/api/v1",
+)
+
+
+# Sectors
+app.include_router(
+    sectors_router,
+    prefix="/api/v1",
+)
+app.include_router(
+    peers_router,
+    prefix="/api/v1",
+)
+app.include_router(
+    valuation_router,
+    prefix="/api/v1",
+)
+
+app.include_router(portfolio_router, prefix="/api/v1")
+app.include_router(documents_router, prefix="/api/v1")
 # ============================================================
 # STARTUP
 # ============================================================
 
 @app.on_event("startup")
 async def startup_event():
+
     logger.info("=" * 60)
-    logger.info("NIFTY 100 Analytics API starting")
-    logger.info("Database: %s", DB_PATH)
-    logger.info("Version: %s", APP_VERSION)
+
+    logger.info(
+        "NIFTY 100 Analytics API starting"
+    )
+
+    logger.info(
+        "Database: %s",
+        DB_PATH,
+    )
+
+    logger.info(
+        "Version: %s",
+        APP_VERSION,
+    )
+
     logger.info("=" * 60)

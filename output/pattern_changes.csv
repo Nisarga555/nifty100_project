@@ -1,0 +1,425 @@
+company_id,from_year,to_year,previous_pattern,current_pattern,change_type
+ABB,2014.0,2015,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+ABB,2015.0,2016,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+ABB,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+ABB,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+ABB,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+ABB,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENSOL,2014.0,2015,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+ADANIENSOL,2015.0,2016,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+ADANIENSOL,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIENSOL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENSOL,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIENSOL,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENT,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENT,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIENT,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENT,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIENT,2018.0,2019,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+ADANIENT,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ADANIENT,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIENT,2022.0,2023,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIENT,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIGREEN,2022.0,2023,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIGREEN,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIPORTS,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIPORTS,2015.0,2016,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIPORTS,2016.0,2017,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIPORTS,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIPORTS,2019.0,2020,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIPORTS,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+ADANIPORTS,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIPOWER,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+ADANIPOWER,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+APOLLOHOSP,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+APOLLOHOSP,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+APOLLOHOSP,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+ATGL,2018.0,2019,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+ATGL,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ATGL,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+ATGL,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+AXISBANK,2014.0,2015,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+AXISBANK,2015.0,2016,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+AXISBANK,2016.0,2017,Distress Signal,Reinvestor,Distress Signal -> Reinvestor
+AXISBANK,2017.0,2018,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+AXISBANK,2018.0,2019,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+AXISBANK,2023.0,2024,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+BAJAJ-AUTO,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BAJAJ-AUTO,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BAJAJ-AUTO,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BAJAJ-AUTO,2023.0,2024,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BAJAJFINSV,2015.0,2016,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+BAJAJFINSV,2016.0,2017,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+BAJAJFINSV,2017.0,2018,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+BAJAJFINSV,2020.0,2021,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+BAJAJFINSV,2021.0,2022,Mixed,Distress Signal,Mixed -> Distress Signal
+BAJAJFINSV,2022.0,2023,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+BAJAJHLDNG,2015.0,2016,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BAJAJHLDNG,2016.0,2017,Liquidating Assets,Pre-Revenue,Liquidating Assets -> Pre-Revenue
+BAJAJHLDNG,2017.0,2018,Pre-Revenue,Reinvestor,Pre-Revenue -> Reinvestor
+BAJFINANCE,2017.0,2018,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+BAJFINANCE,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+BAJFINANCE,2021.0,2022,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+BAJFINANCE,2022.0,2023,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+BANKBARODA,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+BANKBARODA,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+BANKBARODA,2015.0,2016,Reinvestor,Pre-Revenue,Reinvestor -> Pre-Revenue
+BANKBARODA,2016.0,2017,Pre-Revenue,Reinvestor,Pre-Revenue -> Reinvestor
+BANKBARODA,2017.0,2018,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+BANKBARODA,2019.0,2020,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+BANKBARODA,2020.0,2021,Mixed,Pre-Revenue,Mixed -> Pre-Revenue
+BANKBARODA,2021.0,2022,Pre-Revenue,Reinvestor,Pre-Revenue -> Reinvestor
+BANKBARODA,2022.0,2023,Reinvestor,Pre-Revenue,Reinvestor -> Pre-Revenue
+BANKBARODA,2023.0,2024,Pre-Revenue,Growth Funded by Debt,Pre-Revenue -> Growth Funded by Debt
+BEL,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+BEL,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+BEL,2017.0,2018,Mixed,Pre-Revenue,Mixed -> Pre-Revenue
+BEL,2018.0,2019,Pre-Revenue,Reinvestor,Pre-Revenue -> Reinvestor
+BEL,2022.0,2023,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BEL,2023.0,2024,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BHARTIARTL,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+BHARTIARTL,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+BHARTIARTL,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+BHARTIARTL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+BHEL,2014.0,2015,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+BHEL,2016.0,2017,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BHEL,2017.0,2018,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BHEL,2018.0,2019,Liquidating Assets,Mixed,Liquidating Assets -> Mixed
+BHEL,2019.0,2020,Mixed,Distress Signal,Mixed -> Distress Signal
+BHEL,2020.0,2021,Distress Signal,Reinvestor,Distress Signal -> Reinvestor
+BHEL,2022.0,2023,Reinvestor,Distress Signal,Reinvestor -> Distress Signal
+BOSCHLTD,2016.0,2017,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BOSCHLTD,2017.0,2018,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BOSCHLTD,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BOSCHLTD,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BOSCHLTD,2022.0,2023,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+BPCL,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+BPCL,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+BPCL,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+BPCL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+BRITANNIA,2013.0,2014,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BRITANNIA,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+BRITANNIA,2020.0,2021,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+BRITANNIA,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+BRITANNIA,2023.0,2024,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+CANBK,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+CANBK,2017.0,2018,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+CANBK,2018.0,2019,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+CANBK,2019.0,2020,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+CANBK,2020.0,2021,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+CANBK,2022.0,2023,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+CANBK,2023.0,2024,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+CHOLAFIN,2013.0,2014,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+CHOLAFIN,2021.0,2022,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+CHOLAFIN,2022.0,2023,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+CIPLA,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+CIPLA,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+CIPLA,2016.0,2017,Mixed,Reinvestor,Mixed -> Reinvestor
+CIPLA,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+CIPLA,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+COALINDIA,2013.0,2014,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+COALINDIA,2017.0,2018,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+COALINDIA,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+COALINDIA,2021.0,2022,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+DABUR,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+DABUR,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+DIVISLAB,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+DIVISLAB,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+DIVISLAB,2020.0,2021,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+DIVISLAB,2021.0,2022,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+DLF,2015.0,2016,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+DLF,2016.0,2017,Reinvestor,Distress Signal,Reinvestor -> Distress Signal
+DLF,2017.0,2018,Distress Signal,Reinvestor,Distress Signal -> Reinvestor
+DLF,2018.0,2019,Reinvestor,Cash Accumulator,Reinvestor -> Cash Accumulator
+DLF,2019.0,2020,Cash Accumulator,Liquidating Assets,Cash Accumulator -> Liquidating Assets
+DLF,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+DLF,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+DMART,2017.0,2018,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+DMART,2018.0,2019,Liquidating Assets,Mixed,Liquidating Assets -> Mixed
+DMART,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+EICHERMOT,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+EICHERMOT,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+GAIL,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+GAIL,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+GAIL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+GAIL,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+GAIL,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+GODREJCP,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+GODREJCP,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+GODREJCP,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+GODREJCP,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+GODREJCP,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+GODREJCP,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+GRASIM,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+GRASIM,2017.0,2018,Reinvestor,Distress Signal,Reinvestor -> Distress Signal
+GRASIM,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+GRASIM,2019.0,2020,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+GRASIM,2022.0,2023,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+HAL,2018.0,2019,Mixed,Distress Signal,Mixed -> Distress Signal
+HAL,2019.0,2020,Distress Signal,Mixed,Distress Signal -> Mixed
+HAL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+HAVELLS,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HAVELLS,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HAVELLS,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+HAVELLS,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+HAVELLS,2022.0,2023,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HAVELLS,2023.0,2024,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HCLTECH,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HCLTECH,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HDFCBANK,2013.0,2014,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+HDFCBANK,2014.0,2015,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+HDFCBANK,2016.0,2017,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+HDFCBANK,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+HDFCBANK,2018.0,2019,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+HDFCBANK,2020.0,2021,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+HDFCBANK,2021.0,2022,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+HDFCBANK,2022.0,2023,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+HDFCBANK,2023.0,2024,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+HDFCLIFE,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+HDFCLIFE,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+HDFCLIFE,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+HDFCLIFE,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+HDFCLIFE,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+HEROMOTOCO,2014.0,2015,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HEROMOTOCO,2015.0,2016,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HEROMOTOCO,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HEROMOTOCO,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HINDALCO,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+HINDALCO,2017.0,2018,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HINDALCO,2018.0,2019,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HINDALCO,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+HINDALCO,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+HINDUNILVR,2013.0,2014,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HINDUNILVR,2014.0,2015,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HINDUNILVR,2015.0,2016,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+HINDUNILVR,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+HINDUNILVR,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ICICIBANK,2014.0,2015,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+ICICIBANK,2015.0,2016,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+ICICIBANK,2016.0,2017,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIBANK,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+ICICIBANK,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIBANK,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+ICICIBANK,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIBANK,2021.0,2022,Reinvestor,Mixed,Reinvestor -> Mixed
+ICICIBANK,2022.0,2023,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+ICICIBANK,2023.0,2024,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+ICICIGI,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIGI,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+ICICIGI,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIGI,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+ICICIGI,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ICICIPRULI,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIPRULI,2015.0,2016,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+ICICIPRULI,2016.0,2017,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ICICIPRULI,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+ICICIPRULI,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+ICICIPRULI,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+INDIGO,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+INDIGO,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+INDIGO,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+INDIGO,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+INDIGO,2021.0,2022,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+INDIGO,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+INDUSINDBK,2016.0,2017,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+INDUSINDBK,2017.0,2018,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+INDUSINDBK,2019.0,2020,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+INDUSINDBK,2020.0,2021,Distress Signal,Reinvestor,Distress Signal -> Reinvestor
+INDUSINDBK,2022.0,2023,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+INDUSINDBK,2023.0,2024,Growth Funded by Debt,Pre-Revenue,Growth Funded by Debt -> Pre-Revenue
+INFY,2014.0,2015,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+INFY,2015.0,2016,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+INFY,2017.0,2018,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+INFY,2018.0,2019,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+IOC,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+IOC,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+IOC,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+IRCTC,2015.0,2016,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+IRCTC,2018.0,2019,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+IRCTC,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+IRCTC,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+IRFC,2015.0,2016,Mixed,Distress Signal,Mixed -> Distress Signal
+IRFC,2020.0,2021,Distress Signal,Mixed,Distress Signal -> Mixed
+IRFC,2021.0,2022,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+IRFC,2022.0,2023,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+IRFC,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+ITC,2020.0,2021,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+ITC,2021.0,2022,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+ITC,2023.0,2024,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+JINDALSTEL,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+JINDALSTEL,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+JIOFIN,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+JSWENERGY,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+JSWENERGY,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+JSWENERGY,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+JSWSTEEL,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+JSWSTEEL,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+JSWSTEEL,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+JSWSTEEL,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+KOTAKBANK,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+KOTAKBANK,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+KOTAKBANK,2017.0,2018,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+KOTAKBANK,2018.0,2019,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+KOTAKBANK,2019.0,2020,Mixed,Reinvestor,Mixed -> Reinvestor
+KOTAKBANK,2021.0,2022,Reinvestor,Mixed,Reinvestor -> Mixed
+KOTAKBANK,2022.0,2023,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+KOTAKBANK,2023.0,2024,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+LICI,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+LICI,2020.0,2021,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+LICI,2021.0,2022,Liquidating Assets,Mixed,Liquidating Assets -> Mixed
+LICI,2022.0,2023,Mixed,Reinvestor,Mixed -> Reinvestor
+LODHA,2016.0,2017,Mixed,Reinvestor,Mixed -> Reinvestor
+LODHA,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+LODHA,2018.0,2019,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+LODHA,2019.0,2020,Growth Funded by Debt,Liquidating Assets,Growth Funded by Debt -> Liquidating Assets
+LODHA,2023.0,2024,Liquidating Assets,Mixed,Liquidating Assets -> Mixed
+LT,2016.0,2017,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+LT,2017.0,2018,Mixed,Distress Signal,Mixed -> Distress Signal
+LT,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+LT,2019.0,2020,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+LT,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+LT,2023.0,2024,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+LTIM,2013.0,2014,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+LTIM,2014.0,2015,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+M&M,2014.0,2015,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+M&M,2018.0,2019,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+M&M,2020.0,2021,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+M&M,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+M&M,2022.0,2023,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+MOTHERSON,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+MOTHERSON,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+MOTHERSON,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+MOTHERSON,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+MOTHERSON,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+NAUKRI,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+NAUKRI,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+NAUKRI,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+NAUKRI,2020.0,2021,Liquidating Assets,Mixed,Liquidating Assets -> Mixed
+NESTLEIND,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+NESTLEIND,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+NHPC,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+NHPC,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+NTPC,2013.0,2014,Mixed,Reinvestor,Mixed -> Reinvestor
+NTPC,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+NTPC,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+ONGC,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+ONGC,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+ONGC,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+ONGC,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+PFC,2014.0,2015,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+PFC,2016.0,2017,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+PFC,2017.0,2018,Mixed,Distress Signal,Mixed -> Distress Signal
+PFC,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+PFC,2020.0,2021,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+PFC,2021.0,2022,Distress Signal,Reinvestor,Distress Signal -> Reinvestor
+PFC,2022.0,2023,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+PIDILITIND,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+PIDILITIND,2017.0,2018,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+PIDILITIND,2018.0,2019,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+PIDILITIND,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+PIDILITIND,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+PNB,2013.0,2014,Pre-Revenue,Mixed,Pre-Revenue -> Mixed
+PNB,2016.0,2017,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+PNB,2017.0,2018,Liquidating Assets,Distress Signal,Liquidating Assets -> Distress Signal
+PNB,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+PNB,2020.0,2021,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+PNB,2023.0,2024,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+POWERGRID,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+POWERGRID,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+POWERGRID,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+RECLTD,2015.0,2016,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+RECLTD,2016.0,2017,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+RECLTD,2017.0,2018,Reinvestor,Distress Signal,Reinvestor -> Distress Signal
+RECLTD,2021.0,2022,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+RELIANCE,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+RELIANCE,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+RELIANCE,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+RELIANCE,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+RELIANCE,2019.0,2020,Mixed,Reinvestor,Mixed -> Reinvestor
+RELIANCE,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+RELIANCE,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+SBILIFE,2020.0,2021,Reinvestor,Mixed,Reinvestor -> Mixed
+SBILIFE,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+SBIN,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+SBIN,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+SBIN,2015.0,2016,Reinvestor,Mixed,Reinvestor -> Mixed
+SBIN,2016.0,2017,Mixed,Reinvestor,Mixed -> Reinvestor
+SBIN,2017.0,2018,Reinvestor,Distress Signal,Reinvestor -> Distress Signal
+SBIN,2018.0,2019,Distress Signal,Cash Accumulator,Distress Signal -> Cash Accumulator
+SBIN,2019.0,2020,Cash Accumulator,Mixed,Cash Accumulator -> Mixed
+SBIN,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+SBIN,2022.0,2023,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+SBIN,2023.0,2024,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+SHREECEM,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+SHREECEM,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+SHREECEM,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+SHREECEM,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+SHRIRAMFIN,2017.0,2018,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+SHRIRAMFIN,2018.0,2019,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+SHRIRAMFIN,2022.0,2023,Growth Funded by Debt,Distress Signal,Growth Funded by Debt -> Distress Signal
+SHRIRAMFIN,2023.0,2024,Distress Signal,Growth Funded by Debt,Distress Signal -> Growth Funded by Debt
+SIEMENS,2017.0,2018,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+SIEMENS,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+SIEMENS,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+SUNPHARMA,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+SUNPHARMA,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+SUNPHARMA,2020.0,2021,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+SUNPHARMA,2021.0,2022,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+SUNPHARMA,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+SUNPHARMA,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+TATACONSUM,2013.0,2014,Cash Accumulator,Reinvestor,Cash Accumulator -> Reinvestor
+TATACONSUM,2015.0,2016,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TATACONSUM,2017.0,2018,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TATACONSUM,2018.0,2019,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TATACONSUM,2019.0,2020,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TATACONSUM,2023.0,2024,Reinvestor,Mixed,Reinvestor -> Mixed
+TATAMOTORS,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+TATAMOTORS,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+TATAMOTORS,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+TATAMOTORS,2021.0,2022,Mixed,Reinvestor,Mixed -> Reinvestor
+TATAPOWER,2016.0,2017,Reinvestor,Mixed,Reinvestor -> Mixed
+TATAPOWER,2017.0,2018,Mixed,Reinvestor,Mixed -> Reinvestor
+TATAPOWER,2020.0,2021,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TATAPOWER,2021.0,2022,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TATAPOWER,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+TATAPOWER,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+TATASTEEL,2013.0,2014,Reinvestor,Mixed,Reinvestor -> Mixed
+TATASTEEL,2014.0,2015,Mixed,Reinvestor,Mixed -> Reinvestor
+TATASTEEL,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+TATASTEEL,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+TCS,2017.0,2018,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TCS,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TCS,2022.0,2023,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TECHM,2013.0,2014,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+TECHM,2014.0,2015,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TECHM,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TECHM,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TECHM,2021.0,2022,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TECHM,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TITAN,2013.0,2014,Reinvestor,Growth Funded by Debt,Reinvestor -> Growth Funded by Debt
+TITAN,2014.0,2015,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+TITAN,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+TITAN,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+TITAN,2019.0,2020,Reinvestor,Mixed,Reinvestor -> Mixed
+TITAN,2020.0,2021,Mixed,Reinvestor,Mixed -> Reinvestor
+TITAN,2021.0,2022,Reinvestor,Mixed,Reinvestor -> Mixed
+TITAN,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+TORNTPHARM,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+TORNTPHARM,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+TORNTPHARM,2018.0,2019,Mixed,Reinvestor,Mixed -> Reinvestor
+TORNTPHARM,2019.0,2020,Reinvestor,Liquidating Assets,Reinvestor -> Liquidating Assets
+TORNTPHARM,2020.0,2021,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TORNTPHARM,2022.0,2023,Reinvestor,Mixed,Reinvestor -> Mixed
+TORNTPHARM,2023.0,2024,Mixed,Reinvestor,Mixed -> Reinvestor
+TRENT,2013.0,2014,Mixed,Pre-Revenue,Mixed -> Pre-Revenue
+TRENT,2014.0,2015,Pre-Revenue,Growth Funded by Debt,Pre-Revenue -> Growth Funded by Debt
+TRENT,2015.0,2016,Growth Funded by Debt,Reinvestor,Growth Funded by Debt -> Reinvestor
+TRENT,2018.0,2019,Reinvestor,Mixed,Reinvestor -> Mixed
+TRENT,2020.0,2021,Mixed,Liquidating Assets,Mixed -> Liquidating Assets
+TRENT,2022.0,2023,Liquidating Assets,Reinvestor,Liquidating Assets -> Reinvestor
+TVSMOTOR,2014.0,2015,Reinvestor,Mixed,Reinvestor -> Mixed
+TVSMOTOR,2015.0,2016,Mixed,Reinvestor,Mixed -> Reinvestor
+TVSMOTOR,2017.0,2018,Reinvestor,Mixed,Reinvestor -> Mixed
+TVSMOTOR,2018.0,2019,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt
+TVSMOTOR,2019.0,2020,Growth Funded by Debt,Mixed,Growth Funded by Debt -> Mixed
+TVSMOTOR,2021.0,2022,Mixed,Growth Funded by Debt,Mixed -> Growth Funded by Debt

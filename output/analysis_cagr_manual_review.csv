@@ -1,0 +1,14 @@
+company_id,metric_type,period_years,analysis_value_pct,ratio_engine_value_pct,divergence_pct_points,status,review_required
+SBILIFE,compounded_sales_growth,5,24.0,18.034002454357513,5.965997545642487,MANUAL_REVIEW,YES
+SBILIFE,compounded_profit_growth,5,6.0,12.790223745197359,6.790223745197359,MANUAL_REVIEW,YES
+SBILIFE,compounded_sales_growth,3,17.0,9.12611314269931,7.87388685730069,MANUAL_REVIEW,YES
+TCS,compounded_sales_growth,3,14.0,19.926826807058262,5.926826807058262,MANUAL_REVIEW,YES
+TCS,compounded_profit_growth,3,12.0,20.024123427360262,8.024123427360262,MANUAL_REVIEW,YES
+WIPRO,compounded_sales_growth,10,8.0,,,NO_RATIO_DATA,YES
+WIPRO,compounded_profit_growth,10,3.0,,,NO_RATIO_DATA,YES
+WIPRO,compounded_sales_growth,5,9.0,,,NO_RATIO_DATA,YES
+WIPRO,compounded_profit_growth,5,4.0,,,NO_RATIO_DATA,YES
+WIPRO,compounded_sales_growth,3,13.0,,,NO_RATIO_DATA,YES
+WIPRO,compounded_profit_growth,3,0.0,,,NO_RATIO_DATA,YES
+HDFCBANK,compounded_sales_growth,3,30.0,20.76594733223789,9.23405266776211,MANUAL_REVIEW,YES
+INFY,compounded_sales_growth,3,5.0,15.664902194350061,10.664902194350061,MANUAL_REVIEW,YES
