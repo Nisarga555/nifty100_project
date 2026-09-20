@@ -6,7 +6,6 @@ from src.dashboard.utils.db import (
     get_documents,
 )
 
-
 st.set_page_config(
     page_title="Annual Reports | Nifty 100 Analytics",
     page_icon="📑",
@@ -15,9 +14,7 @@ st.set_page_config(
 
 
 st.title("📑 Annual Reports")
-st.caption(
-    "Find available company annual-report documents."
-)
+st.caption("Find available company annual-report documents.")
 
 
 # ---------------------------------------------------------------------
@@ -27,32 +24,17 @@ st.caption(
 companies = get_companies()
 
 if companies.empty:
-    st.error(
-        "Company data is unavailable."
-    )
+    st.error("Company data is unavailable.")
     st.stop()
 
 
 companies = companies.copy()
 
-companies["ticker"] = (
-    companies["id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-)
+companies["ticker"] = companies["id"].astype(str).str.strip().str.upper()
 
-companies["company_name"] = (
-    companies["company_name"]
-    .fillna("")
-    .astype(str)
-)
+companies["company_name"] = companies["company_name"].fillna("").astype(str)
 
-companies["label"] = (
-    companies["ticker"]
-    + " — "
-    + companies["company_name"]
-)
+companies["label"] = companies["ticker"] + " — " + companies["company_name"]
 
 
 search = st.text_input(
@@ -72,8 +54,7 @@ if search.strip():
             q,
             na=False,
         )
-        |
-        companies["company_name"]
+        | companies["company_name"]
         .str.lower()
         .str.contains(
             q,
@@ -87,9 +68,7 @@ else:
 
 
 if matches.empty:
-    st.warning(
-        "Ticker not found — please try another"
-    )
+    st.warning("Ticker not found — please try another")
     st.stop()
 
 
@@ -99,9 +78,7 @@ selected_label = st.selectbox(
 )
 
 
-ticker = selected_label.split(
-    " — "
-)[0].strip().upper()
+ticker = selected_label.split(" — ")[0].strip().upper()
 
 
 company_name = companies.loc[
@@ -110,9 +87,7 @@ company_name = companies.loc[
 ].iloc[0]
 
 
-st.subheader(
-    f"📚 Annual Reports — {company_name}"
-)
+st.subheader(f"📚 Annual Reports — {company_name}")
 
 
 # ---------------------------------------------------------------------
@@ -123,10 +98,7 @@ documents = get_documents(ticker)
 
 
 if documents.empty:
-    st.info(
-        "No annual report records are available "
-        "for this company."
-    )
+    st.info("No annual report records are available " "for this company.")
     st.stop()
 
 
@@ -173,11 +145,7 @@ if url_column is None:
 
     for column in documents.columns:
 
-        values = (
-            documents[column]
-            .dropna()
-            .astype(str)
-        )
+        values = documents[column].dropna().astype(str)
 
         if not values.empty:
 
@@ -200,17 +168,10 @@ display_rows = []
 
 for _, row in documents.iterrows():
 
-    year = (
-        row[year_column]
-        if year_column
-        else "Available"
-    )
+    year = row[year_column] if year_column else "Available"
 
     url = (
-        str(row[url_column]).strip()
-        if url_column
-        and pd.notna(row[url_column])
-        else ""
+        str(row[url_column]).strip() if url_column and pd.notna(row[url_column]) else ""
     )
 
     if url.lower() in [
@@ -232,15 +193,11 @@ for _, row in documents.iterrows():
     )
 
 
-reports = pd.DataFrame(
-    display_rows
-)
+reports = pd.DataFrame(display_rows)
 
 
 if reports.empty:
-    st.info(
-        "No annual report records are available."
-    )
+    st.info("No annual report records are available.")
     st.stop()
 
 
@@ -248,11 +205,7 @@ if reports.empty:
 if "Year" in reports.columns:
 
     reports["_sort_year"] = pd.to_numeric(
-        reports["Year"]
-        .astype(str)
-        .str.extract(
-            r"(\d{4})"
-        )[0],
+        reports["Year"].astype(str).str.extract(r"(\d{4})")[0],
         errors="coerce",
     )
 
@@ -273,28 +226,20 @@ for _, report in reports.iterrows():
     url = report["URL"]
     status = report["Status"]
 
-    left, middle, right = st.columns(
-        [2, 4, 2]
-    )
+    left, middle, right = st.columns([2, 4, 2])
 
     with left:
-        st.markdown(
-            f"### 📄 {year}"
-        )
+        st.markdown(f"### 📄 {year}")
 
     with middle:
 
         if status == "Report available":
 
-            st.markdown(
-                f"[🔗 Open BSE / PDF Report]({url})"
-            )
+            st.markdown(f"[🔗 Open BSE / PDF Report]({url})")
 
         else:
 
-            st.markdown(
-                "Report unavailable"
-            )
+            st.markdown("Report unavailable")
 
     with right:
 

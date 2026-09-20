@@ -4,7 +4,6 @@ import pandas as pd
 
 from src.etl.loader import load_all_sources
 
-
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -36,6 +35,7 @@ def add_failure(
 # DQ-01 — Primary Key Uniqueness
 # -------------------------------------------------------------------
 
+
 def validate_pk_uniqueness(datasets, failures):
     """
     DQ-01:
@@ -47,9 +47,7 @@ def validate_pk_uniqueness(datasets, failures):
         if "id" not in df.columns:
             continue
 
-        duplicates = df[
-            df["id"].duplicated(keep=False)
-        ]
+        duplicates = df[df["id"].duplicated(keep=False)]
 
         for _, row in duplicates.iterrows():
 
@@ -65,6 +63,7 @@ def validate_pk_uniqueness(datasets, failures):
 # -------------------------------------------------------------------
 # DQ-02 — Company + Year Uniqueness
 # -------------------------------------------------------------------
+
 
 def validate_company_year_uniqueness(datasets, failures):
     """
@@ -121,6 +120,7 @@ def validate_company_year_uniqueness(datasets, failures):
 # DQ-03 — Foreign Key Integrity
 # -------------------------------------------------------------------
 
+
 def validate_foreign_keys(datasets, failures):
     """
     DQ-03:
@@ -130,11 +130,7 @@ def validate_foreign_keys(datasets, failures):
     companies = datasets["companies"]
 
     valid_company_ids = set(
-        companies["id"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .str.upper()
+        companies["id"].dropna().astype(str).str.strip().str.upper()
     )
 
     for table_name, df in datasets.items():
@@ -142,19 +138,9 @@ def validate_foreign_keys(datasets, failures):
         if "company_id" not in df.columns:
             continue
 
-        company_ids = (
-            df["company_id"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-        )
+        company_ids = df["company_id"].astype(str).str.strip().str.upper()
 
-        invalid = df[
-            df["company_id"].notna()
-            & ~company_ids.isin(
-                valid_company_ids
-            )
-        ]
+        invalid = df[df["company_id"].notna() & ~company_ids.isin(valid_company_ids)]
 
         for _, row in invalid.iterrows():
 
@@ -173,6 +159,7 @@ def validate_foreign_keys(datasets, failures):
 # DQ-04 — Balance Sheet Balance
 # -------------------------------------------------------------------
 
+
 def validate_balance_sheet(datasets, failures):
     """
     DQ-04:
@@ -187,9 +174,7 @@ def validate_balance_sheet(datasets, failures):
     for _, row in df.iterrows():
 
         assets = row.get("total_assets")
-        liabilities = row.get(
-            "total_liabilities"
-        )
+        liabilities = row.get("total_liabilities")
 
         if pd.isna(assets):
             continue
@@ -200,10 +185,7 @@ def validate_balance_sheet(datasets, failures):
         if assets == 0:
             continue
 
-        difference = (
-            abs(assets - liabilities)
-            / abs(assets)
-        )
+        difference = abs(assets - liabilities) / abs(assets)
 
         if difference >= 0.01:
 
@@ -212,10 +194,7 @@ def validate_balance_sheet(datasets, failures):
                 "DQ-04",
                 "CRITICAL",
                 "balancesheet",
-                (
-                    "Assets/liabilities imbalance: "
-                    f"{difference:.2%}"
-                ),
+                ("Assets/liabilities imbalance: " f"{difference:.2%}"),
                 row.get("company_id"),
                 row.get("year"),
             )
@@ -224,6 +203,7 @@ def validate_balance_sheet(datasets, failures):
 # -------------------------------------------------------------------
 # DQ-05 — OPM Cross Check
 # -------------------------------------------------------------------
+
 
 def validate_opm(datasets, failures):
     """
@@ -262,20 +242,14 @@ def validate_opm(datasets, failures):
         "opm_percentage",
     }
 
-    if not required_columns.issubset(
-        df.columns
-    ):
+    if not required_columns.issubset(df.columns):
         return
 
     for _, row in df.iterrows():
 
         sales = row["sales"]
-        operating_profit = row[
-            "operating_profit"
-        ]
-        reported_opm = row[
-            "opm_percentage"
-        ]
+        operating_profit = row["operating_profit"]
+        reported_opm = row["opm_percentage"]
 
         if pd.isna(sales):
             continue
@@ -289,13 +263,9 @@ def validate_opm(datasets, failures):
         if pd.isna(reported_opm):
             continue
 
-        calculated_opm = (
-            operating_profit / sales
-        ) * 100
+        calculated_opm = (operating_profit / sales) * 100
 
-        difference = abs(
-            reported_opm - calculated_opm
-        )
+        difference = abs(reported_opm - calculated_opm)
 
         # -----------------------------------------------------------
         # PASS
@@ -341,9 +311,7 @@ def validate_opm(datasets, failures):
         )
 
         if abs(reported_opm) > 100:
-            message += (
-                " | reported OPM exceeds 100%"
-            )
+            message += " | reported OPM exceeds 100%"
 
         add_failure(
             failures,
@@ -359,6 +327,7 @@ def validate_opm(datasets, failures):
 # -------------------------------------------------------------------
 # DQ-06 — Positive Sales
 # -------------------------------------------------------------------
+
 
 def validate_positive_sales(datasets, failures):
     """
@@ -396,17 +365,13 @@ def validate_positive_sales(datasets, failures):
         "operating_profit",
     }
 
-    if not required_columns.issubset(
-        df.columns
-    ):
+    if not required_columns.issubset(df.columns):
         return
 
     for _, row in df.iterrows():
 
         sales = row["sales"]
-        operating_profit = row[
-            "operating_profit"
-        ]
+        operating_profit = row["operating_profit"]
 
         # -----------------------------------------------------------
         # Missing sales
@@ -435,13 +400,7 @@ def validate_positive_sales(datasets, failures):
         # data-quality failure.
         # -----------------------------------------------------------
 
-        if (
-            sales == 0
-            and not pd.isna(
-                operating_profit
-            )
-            and operating_profit == 0
-        ):
+        if sales == 0 and not pd.isna(operating_profit) and operating_profit == 0:
             continue
 
         # -----------------------------------------------------------
@@ -487,6 +446,7 @@ def validate_positive_sales(datasets, failures):
 # DQ-07 — Net Cash
 # -------------------------------------------------------------------
 
+
 def validate_net_cash(datasets, failures):
     """
     DQ-07:
@@ -509,9 +469,7 @@ def validate_net_cash(datasets, failures):
         "net_cash_flow",
     }
 
-    if not required_columns.issubset(
-        df.columns
-    ):
+    if not required_columns.issubset(df.columns):
         return
 
     for _, row in df.iterrows():
@@ -522,14 +480,9 @@ def validate_net_cash(datasets, failures):
             row["financing_activity"],
         ]
 
-        reported = row[
-            "net_cash_flow"
-        ]
+        reported = row["net_cash_flow"]
 
-        if any(
-            pd.isna(value)
-            for value in components
-        ):
+        if any(pd.isna(value) for value in components):
             continue
 
         if pd.isna(reported):
@@ -537,9 +490,7 @@ def validate_net_cash(datasets, failures):
 
         calculated = sum(components)
 
-        difference = abs(
-            calculated - reported
-        )
+        difference = abs(calculated - reported)
 
         if difference > 1:
 
@@ -563,6 +514,7 @@ def validate_net_cash(datasets, failures):
 # Validation Summary
 # -------------------------------------------------------------------
 
+
 def print_validation_summary(result):
     """
     Print a detailed validation summary.
@@ -576,130 +528,84 @@ def print_validation_summary(result):
     if result.empty:
 
         print()
-        print(
-            "All implemented DQ rules passed!"
-        )
+        print("All implemented DQ rules passed!")
 
         return
 
     print()
     print("Failures by rule:")
 
-    print(
-        result["rule_id"]
-        .value_counts()
-        .sort_index()
-    )
+    print(result["rule_id"].value_counts().sort_index())
 
     print()
     print("Failures by severity:")
 
-    print(
-        result["severity"]
-        .value_counts()
-    )
+    print(result["severity"].value_counts())
 
     # ---------------------------------------------------------------
     # DQ-05 summary
     # ---------------------------------------------------------------
 
-    dq05 = result[
-        result["rule_id"] == "DQ-05"
-    ]
+    dq05 = result[result["rule_id"] == "DQ-05"]
 
     if not dq05.empty:
 
         print()
-        print(
-            "DQ-05 OPM classification:"
-        )
+        print("DQ-05 OPM classification:")
 
-        critical = (
-            dq05["severity"]
-            .eq("CRITICAL")
-            .sum()
-        )
+        critical = dq05["severity"].eq("CRITICAL").sum()
 
-        warning = (
-            dq05["severity"]
-            .eq("WARNING")
-            .sum()
-        )
+        warning = dq05["severity"].eq("WARNING").sum()
 
         unusual = dq05[
-            dq05["message"]
-            .str.contains(
+            dq05["message"].str.contains(
                 "exceeds 100%",
                 na=False,
             )
         ]
 
-        print(
-            f"  Critical OPM issues : "
-            f"{critical}"
-        )
+        print(f"  Critical OPM issues : " f"{critical}")
 
-        print(
-            f"  Warning OPM issues  : "
-            f"{warning}"
-        )
+        print(f"  Warning OPM issues  : " f"{warning}")
 
-        print(
-            f"  Critical OPM >100%  : "
-            f"{len(unusual)}"
-        )
+        print(f"  Critical OPM >100%  : " f"{len(unusual)}")
 
     # ---------------------------------------------------------------
     # DQ-06 summary
     # ---------------------------------------------------------------
 
-    dq06 = result[
-        result["rule_id"] == "DQ-06"
-    ]
+    dq06 = result[result["rule_id"] == "DQ-06"]
 
     if not dq06.empty:
 
         print()
-        print(
-            "DQ-06 Sales classification:"
-        )
+        print("DQ-06 Sales classification:")
 
-        print(
-            f"  Sales issues        : "
-            f"{len(dq06)}"
-        )
+        print(f"  Sales issues        : " f"{len(dq06)}")
 
     # ---------------------------------------------------------------
     # DQ-07 summary
     # ---------------------------------------------------------------
 
-    dq07 = result[
-        result["rule_id"] == "DQ-07"
-    ]
+    dq07 = result[result["rule_id"] == "DQ-07"]
 
     if not dq07.empty:
 
         print()
-        print(
-            "DQ-07 Cash-flow classification:"
-        )
+        print("DQ-07 Cash-flow classification:")
 
-        print(
-            f"  Cash-flow issues    : "
-            f"{len(dq07)}"
-        )
+        print(f"  Cash-flow issues    : " f"{len(dq07)}")
 
 
 # -------------------------------------------------------------------
 # Main Validator
 # -------------------------------------------------------------------
 
+
 def run_validation():
 
     print("=" * 70)
-    print(
-        "NIFTY 100 - DATA QUALITY VALIDATION"
-    )
+    print("NIFTY 100 - DATA QUALITY VALIDATION")
     print("=" * 70)
 
     datasets = load_all_sources()
@@ -749,14 +655,9 @@ def run_validation():
     # Create result dataframe
     # ---------------------------------------------------------------
 
-    result = pd.DataFrame(
-        failures
-    )
+    result = pd.DataFrame(failures)
 
-    output_file = (
-        OUTPUT_DIR
-        / "validation_failures.csv"
-    )
+    output_file = OUTPUT_DIR / "validation_failures.csv"
 
     result.to_csv(
         output_file,
@@ -764,18 +665,11 @@ def run_validation():
     )
 
     print()
-    print(
-        f"Validation failures: "
-        f"{len(result)}"
-    )
+    print(f"Validation failures: " f"{len(result)}")
 
-    print(
-        f"Report: {output_file}"
-    )
+    print(f"Report: {output_file}")
 
-    print_validation_summary(
-        result
-    )
+    print_validation_summary(result)
 
 
 if __name__ == "__main__":

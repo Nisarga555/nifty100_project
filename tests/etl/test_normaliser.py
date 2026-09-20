@@ -1,18 +1,15 @@
-import pandas as pd
-
 from src.etl.normaliser import (
-    normalize_year,
-    normalize_ticker,
-    normalize_numeric,
-    normalize_date,
-    normalize_boolean,
     clean_column_name,
+    normalize_boolean,
+    normalize_numeric,
+    normalize_ticker,
+    normalize_year,
 )
-
 
 # ============================================================
 # YEAR / REPORTING PERIOD TESTS
 # ============================================================
+
 
 def test_normalize_year_integer():
     assert normalize_year(2024) == 2024
@@ -50,6 +47,7 @@ def test_normalize_year_none():
 # TICKER TESTS
 # ============================================================
 
+
 def test_normalize_ticker_lowercase():
     assert normalize_ticker("tcs") == "TCS"
 
@@ -69,6 +67,7 @@ def test_normalize_ticker_none():
 # ============================================================
 # NUMERIC TESTS
 # ============================================================
+
 
 def test_normalize_numeric_integer():
     assert normalize_numeric(100) == 100.0
@@ -102,6 +101,7 @@ def test_normalize_numeric_none():
 # BOOLEAN TESTS
 # ============================================================
 
+
 def test_normalize_boolean_true():
     assert normalize_boolean("True") is True
 
@@ -122,19 +122,14 @@ def test_normalize_boolean_no():
 # COLUMN NAME TESTS
 # ============================================================
 
+
 def test_clean_column_name():
-    assert clean_column_name(
-        "Operating Profit Margin %"
-    ) == "operating_profit_margin"
+    assert clean_column_name("Operating Profit Margin %") == "operating_profit_margin"
 
 
 def test_clean_column_name_spaces():
-    assert clean_column_name(
-        "Company Name"
-    ) == "company_name"
+    assert clean_column_name("Company Name") == "company_name"
 
 
 def test_clean_column_name_special_chars():
-    assert clean_column_name(
-        "EPS (%)"
-    ) == "eps"
+    assert clean_column_name("EPS (%)") == "eps"

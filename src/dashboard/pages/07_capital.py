@@ -1,12 +1,11 @@
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
 from src.dashboard.utils.db import (
     get_companies,
     get_ratios,
 )
-
 
 # ============================================================
 # PAGE CONFIG
@@ -24,14 +23,13 @@ st.set_page_config(
 # ============================================================
 
 st.title("💰 Capital Allocation")
-st.caption(
-    "Nifty 100 companies grouped by their latest capital allocation pattern."
-)
+st.caption("Nifty 100 companies grouped by their latest capital allocation pattern.")
 
 
 # ============================================================
 # LOAD DATA
 # ============================================================
+
 
 @st.cache_data(ttl=600)
 def load_capital_data():
@@ -42,22 +40,16 @@ def load_capital_data():
     # Load ratio history for every company
     for _, company in companies.iterrows():
 
-        company_id = str(
-            company["id"]
-        ).strip()
+        company_id = str(company["id"]).strip()
 
         try:
-            data = get_ratios(
-                company_id
-            )
+            data = get_ratios(company_id)
 
             if data is not None and not data.empty:
 
                 data = data.copy()
 
-                data["company_id"] = (
-                    company_id
-                )
+                data["company_id"] = company_id
 
                 ratios.append(data)
 
@@ -83,23 +75,11 @@ def load_capital_data():
         ]
     ].copy()
 
-    company_names = company_names.rename(
-        columns={
-            "id": "company_id"
-        }
-    )
+    company_names = company_names.rename(columns={"id": "company_id"})
 
-    company_names["company_id"] = (
-        company_names["company_id"]
-        .astype(str)
-        .str.strip()
-    )
+    company_names["company_id"] = company_names["company_id"].astype(str).str.strip()
 
-    ratios["company_id"] = (
-        ratios["company_id"]
-        .astype(str)
-        .str.strip()
-    )
+    ratios["company_id"] = ratios["company_id"].astype(str).str.strip()
 
     ratios = ratios.merge(
         company_names,
@@ -168,24 +148,18 @@ def load_capital_data():
         ],
     )
 
-    latest = (
-        ratios
-        .drop_duplicates(
-            "company_id",
-            keep="first",
-        )
-        .copy()
-    )
+    latest = ratios.drop_duplicates(
+        "company_id",
+        keep="first",
+    ).copy()
 
     # ========================================================
     # CAPITAL ALLOCATION CLASSIFICATION
     # ========================================================
 
-    latest["capital_allocation_pattern"] = (
-        latest.apply(
-            classify_capital_allocation,
-            axis=1,
-        )
+    latest["capital_allocation_pattern"] = latest.apply(
+        classify_capital_allocation,
+        axis=1,
     )
 
     return latest
@@ -194,6 +168,7 @@ def load_capital_data():
 # ============================================================
 # CAPITAL ALLOCATION CLASSIFIER
 # ============================================================
+
 
 def classify_capital_allocation(row):
     """
@@ -257,41 +232,19 @@ def classify_capital_allocation(row):
     # Helpful boolean indicators
     # --------------------------------------------------------
 
-    positive_fcf = (
-        pd.notna(fcf)
-        and fcf > 0
-    )
+    positive_fcf = pd.notna(fcf) and fcf > 0
 
-    negative_fcf = (
-        pd.notna(fcf)
-        and fcf < 0
-    )
+    negative_fcf = pd.notna(fcf) and fcf < 0
 
-    positive_cfo = (
-        pd.notna(cfo)
-        and cfo > 0
-    )
+    positive_cfo = pd.notna(cfo) and cfo > 0
 
-    high_capex = (
-        pd.notna(capex)
-        and pd.notna(cfo)
-        and capex > 0.5 * abs(cfo)
-    )
+    high_capex = pd.notna(capex) and pd.notna(cfo) and capex > 0.5 * abs(cfo)
 
-    high_dividend = (
-        pd.notna(dividend)
-        and dividend >= 50
-    )
+    high_dividend = pd.notna(dividend) and dividend >= 50
 
-    low_dividend = (
-        pd.notna(dividend)
-        and dividend < 20
-    )
+    low_dividend = pd.notna(dividend) and dividend < 20
 
-    has_debt = (
-        pd.notna(debt)
-        and debt > 0
-    )
+    has_debt = pd.notna(debt) and debt > 0
 
     # ========================================================
     # 8 PATTERNS
@@ -302,26 +255,16 @@ def classify_capital_allocation(row):
         positive_fcf
         and positive_cfo
         and not high_capex
-        and (
-            pd.isna(dividend)
-            or dividend < 50
-        )
+        and (pd.isna(dividend) or dividend < 50)
     ):
         return "Strong Cash Generator"
 
     # 2. Growth Reinvestment
-    if (
-        positive_cfo
-        and high_capex
-        and positive_fcf
-    ):
+    if positive_cfo and high_capex and positive_fcf:
         return "Growth Reinvestment"
 
     # 3. High Dividend Payer
-    if (
-        positive_fcf
-        and high_dividend
-    ):
+    if positive_fcf and high_dividend:
         return "High Dividend Payer"
 
     # 4. Conservative Capital Allocation
@@ -335,40 +278,19 @@ def classify_capital_allocation(row):
         return "Conservative Capital Allocation"
 
     # 5. Debt-Funded Expansion
-    if (
-        high_capex
-        and has_debt
-    ):
+    if high_capex and has_debt:
         return "Debt-Funded Expansion"
 
     # 6. Cash Burn / Investment Phase
-    if (
-        negative_fcf
-        and positive_cfo
-        and high_capex
-    ):
+    if negative_fcf and positive_cfo and high_capex:
         return "Cash Burn / Investment Phase"
 
     # 7. Weak Cash Conversion
-    if (
-        pd.notna(cfo)
-        and pd.notna(fcf)
-        and cfo > 0
-        and fcf < 0
-    ):
+    if pd.notna(cfo) and pd.notna(fcf) and cfo > 0 and fcf < 0:
         return "Weak Cash Conversion"
 
     # 8. Capital Stress
-    if (
-        (
-            negative_fcf
-            and negative_fcf
-        )
-        or (
-            pd.notna(cfo)
-            and cfo < 0
-        )
-    ):
+    if (negative_fcf and negative_fcf) or (pd.notna(cfo) and cfo < 0):
         return "Capital Stress"
 
     # Fallback
@@ -385,18 +307,14 @@ try:
 
 except Exception as e:
 
-    st.error(
-        f"Unable to load capital allocation data: {e}"
-    )
+    st.error(f"Unable to load capital allocation data: {e}")
 
     st.stop()
 
 
 if data.empty:
 
-    st.warning(
-        "Capital allocation data is currently unavailable."
-    )
+    st.warning("Capital allocation data is currently unavailable.")
 
     st.stop()
 
@@ -407,33 +325,13 @@ if data.empty:
 
 st.subheader("Capital Allocation Overview")
 
-total_companies = (
-    data["company_id"]
-    .nunique()
-)
+total_companies = data["company_id"].nunique()
 
-total_patterns = (
-    data[
-        "capital_allocation_pattern"
-    ]
-    .nunique()
-)
+total_patterns = data["capital_allocation_pattern"].nunique()
 
-largest_pattern = (
-    data[
-        "capital_allocation_pattern"
-    ]
-    .value_counts()
-    .idxmax()
-)
+largest_pattern = data["capital_allocation_pattern"].value_counts().idxmax()
 
-largest_pattern_count = (
-    data[
-        "capital_allocation_pattern"
-    ]
-    .value_counts()
-    .max()
-)
+largest_pattern_count = data["capital_allocation_pattern"].value_counts().max()
 
 
 col1, col2, col3, col4 = st.columns(4)
@@ -471,13 +369,7 @@ with col4:
 # PATTERN COUNTS
 # ============================================================
 
-pattern_counts = (
-    data[
-        "capital_allocation_pattern"
-    ]
-    .value_counts()
-    .reset_index()
-)
+pattern_counts = data["capital_allocation_pattern"].value_counts().reset_index()
 
 pattern_counts.columns = [
     "Pattern",
@@ -489,15 +381,11 @@ pattern_counts.columns = [
 # TREEMAP
 # ============================================================
 
-st.subheader(
-    "Capital Allocation Pattern Map"
-)
+st.subheader("Capital Allocation Pattern Map")
 
 fig = px.treemap(
     pattern_counts,
-    path=[
-        "Pattern"
-    ],
+    path=["Pattern"],
     values="Companies",
 )
 
@@ -520,18 +408,9 @@ st.plotly_chart(
 # PATTERN DETAILS
 # ============================================================
 
-st.subheader(
-    "Explore Companies by Pattern"
-)
+st.subheader("Explore Companies by Pattern")
 
-patterns = sorted(
-    data[
-        "capital_allocation_pattern"
-    ]
-    .dropna()
-    .unique()
-    .tolist()
-)
+patterns = sorted(data["capital_allocation_pattern"].dropna().unique().tolist())
 
 selected_pattern = st.selectbox(
     "Select a capital allocation pattern",
@@ -543,21 +422,12 @@ selected_pattern = st.selectbox(
 # FILTER COMPANY DATA
 # ============================================================
 
-selected_companies = data[
-    data[
-        "capital_allocation_pattern"
-    ]
-    == selected_pattern
-].copy()
+selected_companies = data[data["capital_allocation_pattern"] == selected_pattern].copy()
 
 
-st.write(
-    f"### {selected_pattern}"
-)
+st.write(f"### {selected_pattern}")
 
-st.write(
-    f"{len(selected_companies)} companies belong to this pattern."
-)
+st.write(f"{len(selected_companies)} companies belong to this pattern.")
 
 
 # ============================================================
@@ -577,15 +447,11 @@ display_columns = [
 
 
 available_columns = [
-    column
-    for column in display_columns
-    if column in selected_companies.columns
+    column for column in display_columns if column in selected_companies.columns
 ]
 
 
-company_table = selected_companies[
-    available_columns
-].copy()
+company_table = selected_companies[available_columns].copy()
 
 
 # ============================================================
@@ -603,9 +469,7 @@ rename_columns = {
     "total_debt_cr": "Total Debt (₹ Cr)",
 }
 
-company_table = company_table.rename(
-    columns=rename_columns
-)
+company_table = company_table.rename(columns=rename_columns)
 
 
 # ============================================================
@@ -623,9 +487,7 @@ st.dataframe(
 # DOWNLOAD
 # ============================================================
 
-csv_data = company_table.to_csv(
-    index=False
-)
+csv_data = company_table.to_csv(index=False)
 
 st.download_button(
     label="⬇️ Download Company List",

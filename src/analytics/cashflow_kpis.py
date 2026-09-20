@@ -10,14 +10,12 @@ Implements:
     - Capital Allocation Pattern Classification
 """
 
-from typing import Optional
-
-
 # =====================================================================
 # HELPERS
 # =====================================================================
 
-def _to_float(value) -> Optional[float]:
+
+def _to_float(value) -> float | None:
     """Safely convert a value to float."""
 
     if value is None:
@@ -33,10 +31,11 @@ def _to_float(value) -> Optional[float]:
 # FREE CASH FLOW
 # =====================================================================
 
+
 def free_cash_flow(
     operating_activity,
     investing_activity,
-) -> Optional[float]:
+) -> float | None:
     """
     Free Cash Flow = CFO + CFI
 
@@ -56,10 +55,11 @@ def free_cash_flow(
 # CFO / PAT
 # =====================================================================
 
+
 def cfo_pat_ratio(
     cash_from_operations,
     net_profit,
-) -> Optional[float]:
+) -> float | None:
     """
     CFO / PAT ratio.
 
@@ -82,9 +82,10 @@ def cfo_pat_ratio(
 # CFO QUALITY CLASSIFICATION
 # =====================================================================
 
+
 def classify_cfo_quality(
     cfo_pat_average,
-) -> Optional[str]:
+) -> str | None:
     """
     Classify average CFO/PAT ratio.
 
@@ -111,10 +112,11 @@ def classify_cfo_quality(
 # FIVE-YEAR CFO QUALITY
 # =====================================================================
 
+
 def calculate_cfo_quality_score(
     cfo_values,
     pat_values,
-) -> Optional[float]:
+) -> float | None:
     """
     Calculate the average CFO/PAT ratio over up to five years.
 
@@ -170,10 +172,11 @@ def calculate_cfo_quality(
 # CAPEX INTENSITY
 # =====================================================================
 
+
 def capex_intensity(
     investing_activity,
     sales,
-) -> Optional[float]:
+) -> float | None:
     """
     CapEx Intensity = abs(CFI) / sales * 100
 
@@ -197,7 +200,7 @@ def capex_intensity(
 
 def classify_capex_intensity(
     intensity,
-) -> Optional[str]:
+) -> str | None:
     """
     Classify CapEx intensity.
     """
@@ -220,10 +223,11 @@ def classify_capex_intensity(
 # FCF CONVERSION
 # =====================================================================
 
+
 def fcf_conversion_rate(
     free_cash_flow_value,
     operating_profit,
-) -> Optional[float]:
+) -> float | None:
     """
     FCF Conversion Rate = FCF / Operating Profit * 100
 
@@ -245,6 +249,7 @@ def fcf_conversion_rate(
 # =====================================================================
 # CAPITAL ALLOCATION PATTERNS
 # =====================================================================
+
 
 def _sign(value) -> str:
     """
@@ -307,9 +312,7 @@ def capital_allocation_pattern(
 
     high_quality = False
 
-    ratio = _to_float(
-        cfo_pat_ratio_value
-    )
+    ratio = _to_float(cfo_pat_ratio_value)
 
     if ratio is not None:
         high_quality = ratio > 1.0
@@ -351,6 +354,7 @@ def capital_allocation_pattern(
 # SIGN OUTPUT
 # =====================================================================
 
+
 def capital_allocation_record(
     company_id,
     year,
@@ -381,6 +385,7 @@ def capital_allocation_record(
 # =====================================================================
 # COMPLETE CASH-FLOW KPI CALCULATION
 # =====================================================================
+
 
 def calculate_cashflow_kpis(row) -> dict:
     """
@@ -413,23 +418,13 @@ def calculate_cashflow_kpis(row) -> dict:
 
     return {
         "free_cash_flow": fcf,
-
         "cfo_pat_ratio": cfo_pat,
-
         "capex_intensity_pct": capex,
-
-        "capex_intensity_label": classify_capex_intensity(
-            capex
-        ),
-
+        "capex_intensity_label": classify_capex_intensity(capex),
         "fcf_conversion_rate_pct": conversion,
-
         "cfo_sign": _sign(cfo),
-
         "cfi_sign": _sign(cfi),
-
         "cff_sign": _sign(cff),
-
         "capital_allocation_pattern": capital_allocation_pattern(
             cfo,
             cfi,

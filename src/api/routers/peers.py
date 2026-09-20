@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
-import sqlite3
-import pandas as pd
 import math
+import sqlite3
+from pathlib import Path
 
+import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(
     tags=["Peers"],
@@ -59,12 +59,7 @@ def dataframe_to_records(df):
     records = []
 
     for row in df.to_dict(orient="records"):
-        records.append(
-            {
-                str(key): clean_value(value)
-                for key, value in row.items()
-            }
-        )
+        records.append({str(key): clean_value(value) for key, value in row.items()})
 
     return records
 
@@ -96,9 +91,7 @@ def load_percentiles(company_ids):
 
     try:
 
-        placeholders = ",".join(
-            ["?"] * len(company_ids)
-        )
+        placeholders = ",".join(["?"] * len(company_ids))
 
         cursor = connection.cursor()
 
@@ -125,13 +118,7 @@ def load_percentiles(company_ids):
 
         rows = cursor.fetchall()
 
-        return [
-            {
-                key: clean_value(row[key])
-                for key in row.keys()
-            }
-            for row in rows
-        ]
+        return [{key: clean_value(row[key]) for key in row.keys()} for row in rows]
 
     except sqlite3.Error as exc:
 
@@ -149,6 +136,7 @@ def load_percentiles(company_ids):
 # PEER GROUP
 # ============================================================
 
+
 @router.get("/peers/{group_name}")
 def peer_group(group_name: str):
     """
@@ -165,11 +153,7 @@ def peer_group(group_name: str):
         "is_benchmark",
     ]
 
-    missing = [
-        column
-        for column in required_columns
-        if column not in df.columns
-    ]
+    missing = [column for column in required_columns if column not in df.columns]
 
     if missing:
 
@@ -179,10 +163,7 @@ def peer_group(group_name: str):
         )
 
     result = df[
-        df["peer_group_name"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
+        df["peer_group_name"].astype(str).str.strip().str.lower()
         == normalize(group_name)
     ].copy()
 
@@ -193,23 +174,14 @@ def peer_group(group_name: str):
             detail=f"Peer group not found: {group_name}",
         )
 
-    result["company_id"] = (
-        result["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
+    result["company_id"] = result["company_id"].astype(str).str.strip().str.upper()
 
     company_ids = result["company_id"].tolist()
 
-    percentiles = load_percentiles(
-        company_ids
-    )
+    percentiles = load_percentiles(company_ids)
 
     return {
-        "peer_group": str(
-            result.iloc[0]["peer_group_name"]
-        ),
+        "peer_group": str(result.iloc[0]["peer_group_name"]),
         "company_count": len(result),
         "companies": dataframe_to_records(result),
         "percentiles": percentiles,
@@ -219,6 +191,7 @@ def peer_group(group_name: str):
 # ============================================================
 # COMPANY PEER COMPARISON
 # ============================================================
+
 
 @router.get("/companies/{ticker}/peers/compare")
 def peer_comparison(ticker: str):
@@ -237,11 +210,7 @@ def peer_comparison(ticker: str):
         "is_benchmark",
     ]
 
-    missing = [
-        column
-        for column in required_columns
-        if column not in df.columns
-    ]
+    missing = [column for column in required_columns if column not in df.columns]
 
     if missing:
 
@@ -250,13 +219,7 @@ def peer_comparison(ticker: str):
             detail=f"Missing peer group columns: {missing}",
         )
 
-    company_match = df[
-        df["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-        == ticker
-    ]
+    company_match = df[df["company_id"].astype(str).str.strip().str.upper() == ticker]
 
     if company_match.empty:
 
@@ -265,30 +228,18 @@ def peer_comparison(ticker: str):
             detail=f"No peer group found for company: {ticker}",
         )
 
-    group_name = str(
-        company_match.iloc[0]["peer_group_name"]
-    )
+    group_name = str(company_match.iloc[0]["peer_group_name"])
 
     peer_df = df[
-        df["peer_group_name"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
+        df["peer_group_name"].astype(str).str.strip().str.lower()
         == normalize(group_name)
     ].copy()
 
-    peer_df["company_id"] = (
-        peer_df["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
+    peer_df["company_id"] = peer_df["company_id"].astype(str).str.strip().str.upper()
 
     company_ids = peer_df["company_id"].tolist()
 
-    percentiles = load_percentiles(
-        company_ids
-    )
+    percentiles = load_percentiles(company_ids)
 
     return {
         "ticker": ticker,

@@ -3,7 +3,6 @@ from datetime import datetime
 
 import pandas as pd
 
-
 # =====================================================================
 # TICKER ALIASES
 # =====================================================================
@@ -18,6 +17,7 @@ TICKER_ALIASES = {
 # =====================================================================
 # YEAR NORMALIZATION
 # =====================================================================
+
 
 def normalize_year(value):
     """
@@ -51,8 +51,7 @@ def normalize_year(value):
 
     # Month + four-digit year
     match = re.fullmatch(
-        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
-        r"[a-z]*[\s-]+(\d{4})",
+        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)" r"[a-z]*[\s-]+(\d{4})",
         value,
         flags=re.IGNORECASE,
     )
@@ -70,8 +69,7 @@ def normalize_year(value):
 
     # Month + two-digit year
     match = re.fullmatch(
-        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
-        r"[a-z]*[\s-]+(\d{2})",
+        r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)" r"[a-z]*[\s-]+(\d{2})",
         value,
         flags=re.IGNORECASE,
     )
@@ -80,11 +78,7 @@ def normalize_year(value):
         month = match.group(1).title()
         short_year = int(match.group(2))
 
-        year = (
-            1900 + short_year
-            if short_year >= 50
-            else 2000 + short_year
-        )
+        year = 1900 + short_year if short_year >= 50 else 2000 + short_year
 
         month_number = datetime.strptime(
             month,
@@ -99,6 +93,7 @@ def normalize_year(value):
 # =====================================================================
 # TICKER NORMALIZATION
 # =====================================================================
+
 
 def normalize_ticker(value):
     """
@@ -136,6 +131,7 @@ def normalize_ticker(value):
 # NUMERIC NORMALIZATION
 # =====================================================================
 
+
 def normalize_numeric(value):
     """
     Convert common Excel/string numeric formats into float.
@@ -168,10 +164,7 @@ def normalize_numeric(value):
         return None
 
     # Negative numbers written as (500)
-    negative = (
-        value.startswith("(")
-        and value.endswith(")")
-    )
+    negative = value.startswith("(") and value.endswith(")")
 
     # Remove formatting
     value = value.replace(",", "")
@@ -198,6 +191,7 @@ def normalize_numeric(value):
 # DATE NORMALIZATION
 # =====================================================================
 
+
 def normalize_date(value):
     """
     Convert a date value into YYYY-MM-DD.
@@ -218,6 +212,7 @@ def normalize_date(value):
 # =====================================================================
 # BOOLEAN NORMALIZATION
 # =====================================================================
+
 
 def normalize_boolean(value):
     """
@@ -255,6 +250,7 @@ def normalize_boolean(value):
 # COLUMN NAME CLEANING
 # =====================================================================
 
+
 def clean_column_name(column):
     """
     Convert column names into consistent snake_case.
@@ -280,6 +276,7 @@ def clean_column_name(column):
 # EXCEL HEADER PROMOTION
 # =====================================================================
 
+
 def promote_excel_header(df):
     """
     Some source Excel files contain a title row
@@ -293,10 +290,7 @@ def promote_excel_header(df):
 
     first_column = str(df.columns[0]).lower()
 
-    if (
-        "bluestock" in first_column
-        or "nifty 100" in first_column
-    ):
+    if "bluestock" in first_column or "nifty 100" in first_column:
         df = df.copy()
 
         df.columns = df.iloc[0]
@@ -309,6 +303,7 @@ def promote_excel_header(df):
 # =====================================================================
 # DATAFRAME NORMALIZATION
 # =====================================================================
+
 
 def normalize_dataframe(df):
     """
@@ -328,10 +323,7 @@ def normalize_dataframe(df):
     # Clean column names
     # ---------------------------------------------------------------
 
-    df.columns = [
-        clean_column_name(column)
-        for column in df.columns
-    ]
+    df.columns = [clean_column_name(column) for column in df.columns]
 
     # ---------------------------------------------------------------
     # Normalize company IDs
@@ -339,11 +331,7 @@ def normalize_dataframe(df):
 
     if "company_id" in df.columns:
 
-        df["company_id"] = df[
-            "company_id"
-        ].apply(
-            normalize_ticker
-        )
+        df["company_id"] = df["company_id"].apply(normalize_ticker)
 
     # ---------------------------------------------------------------
     # Normalize reporting period
@@ -351,11 +339,7 @@ def normalize_dataframe(df):
 
     if "year" in df.columns:
 
-        df["year"] = df[
-            "year"
-        ].apply(
-            normalize_year
-        )
+        df["year"] = df["year"].apply(normalize_year)
 
     # ---------------------------------------------------------------
     # Normalize dates
@@ -363,10 +347,6 @@ def normalize_dataframe(df):
 
     if "date" in df.columns:
 
-        df["date"] = df[
-            "date"
-        ].apply(
-            normalize_date
-        )
+        df["date"] = df["date"].apply(normalize_date)
 
     return df

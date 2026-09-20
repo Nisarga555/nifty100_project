@@ -1,14 +1,12 @@
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from src.dashboard.utils.db import (
+    extract_year,
     get_companies,
     get_ratios,
-    extract_year,
 )
-
 
 st.set_page_config(
     page_title="Trend Analysis | Nifty 100 Analytics",
@@ -18,9 +16,7 @@ st.set_page_config(
 
 
 st.title("📈 Trend Analysis")
-st.caption(
-    "Explore up to 10 years of financial and operating trends."
-)
+st.caption("Explore up to 10 years of financial and operating trends.")
 
 
 # ---------------------------------------------------------------------
@@ -36,24 +32,11 @@ if companies.empty:
 
 companies = companies.copy()
 
-companies["ticker"] = (
-    companies["id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-)
+companies["ticker"] = companies["id"].astype(str).str.strip().str.upper()
 
-companies["company_name"] = (
-    companies["company_name"]
-    .fillna("")
-    .astype(str)
-)
+companies["company_name"] = companies["company_name"].fillna("").astype(str)
 
-companies["label"] = (
-    companies["ticker"]
-    + " — "
-    + companies["company_name"]
-)
+companies["label"] = companies["ticker"] + " — " + companies["company_name"]
 
 
 search = st.text_input(
@@ -66,22 +49,15 @@ if search.strip():
     q = search.strip().lower()
 
     matches = companies[
-        companies["ticker"]
-        .str.lower()
-        .str.contains(q, na=False)
-        |
-        companies["company_name"]
-        .str.lower()
-        .str.contains(q, na=False)
+        companies["ticker"].str.lower().str.contains(q, na=False)
+        | companies["company_name"].str.lower().str.contains(q, na=False)
     ]
 else:
     matches = companies
 
 
 if matches.empty:
-    st.warning(
-        "Ticker not found — please try another"
-    )
+    st.warning("Ticker not found — please try another")
     st.stop()
 
 
@@ -100,27 +76,20 @@ ticker = selected_label.split(" — ")[0]
 ratios = get_ratios(ticker)
 
 if ratios.empty:
-    st.warning(
-        f"No financial history is available for {ticker}."
-    )
+    st.warning(f"No financial history is available for {ticker}.")
     st.stop()
 
 
 ratios = ratios.copy()
 
-ratios["_year"] = ratios["year"].apply(
-    extract_year
-)
+ratios["_year"] = ratios["year"].apply(extract_year)
 
-ratios = ratios.dropna(
-    subset=["_year"]
-)
+ratios = ratios.dropna(subset=["_year"])
 
 ratios["_year"] = ratios["_year"].astype(int)
 
 ratios = (
-    ratios
-    .sort_values("_year")
+    ratios.sort_values("_year")
     .drop_duplicates(
         "_year",
         keep="last",
@@ -148,16 +117,12 @@ METRICS = {
 
 
 available_metrics = [
-    name
-    for name, column in METRICS.items()
-    if column in ratios.columns
+    name for name, column in METRICS.items() if column in ratios.columns
 ]
 
 
 if not available_metrics:
-    st.warning(
-        "No trend metrics are available for this company."
-    )
+    st.warning("No trend metrics are available for this company.")
     st.stop()
 
 
@@ -174,9 +139,7 @@ selected_metrics = st.multiselect(
 
 
 if not selected_metrics:
-    st.info(
-        "Select at least one metric to display the trend."
-    )
+    st.info("Select at least one metric to display the trend.")
     st.stop()
 
 

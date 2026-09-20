@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
-import pandas as pd
 import math
+from pathlib import Path
 
+import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(
     prefix="/screener",
@@ -85,22 +85,14 @@ def screener(
 
     if preset and preset_column:
         df = df[
-            df[preset_column]
-            .astype(str)
-            .str.strip()
-            .str.lower()
+            df[preset_column].astype(str).str.strip().str.lower()
             == preset.strip().lower()
         ]
 
     records = []
 
     for row in df.head(limit).to_dict(orient="records"):
-        records.append(
-            {
-                str(key): clean_value(value)
-                for key, value in row.items()
-            }
-        )
+        records.append({str(key): clean_value(value) for key, value in row.items()})
 
     return {
         "count": len(records),

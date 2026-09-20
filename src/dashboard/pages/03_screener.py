@@ -1,17 +1,13 @@
-import io
-
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 from src.screener.engine import (
-    apply_preset,
     build_screener_dataset,
     load_config,
     load_ratio_data,
     load_supporting_data,
 )
-
 
 st.set_page_config(
     page_title="Screener | Nifty 100 Analytics",
@@ -30,6 +26,7 @@ st.caption(
 # ---------------------------------------------------------------------
 # Load engine data
 # ---------------------------------------------------------------------
+
 
 @st.cache_data(ttl=600)
 def load_screener_data():
@@ -60,6 +57,7 @@ if dataset.empty:
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
+
 
 def number(value):
     try:
@@ -92,9 +90,7 @@ def apply_custom_filters(data):
             mask = pd.Series(True, index=result.index)
 
         # Missing values fail a user-selected filter.
-        result = result.loc[
-            mask.fillna(False)
-        ]
+        result = result.loc[mask.fillna(False)]
 
     numeric_filter(
         "return_on_equity_pct",
@@ -113,11 +109,7 @@ def apply_custom_filters(data):
         )
 
         financials = (
-            result["broad_sector"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .eq("financials")
+            result["broad_sector"].astype(str).str.strip().str.lower().eq("financials")
             if "broad_sector" in result.columns
             else pd.Series(
                 False,
@@ -125,10 +117,7 @@ def apply_custom_filters(data):
             )
         )
 
-        de_mask = (
-            financials
-            | de.le(st.session_state.de_max).fillna(False)
-        )
+        de_mask = financials | de.le(st.session_state.de_max).fillna(False)
 
         result = result.loc[de_mask]
 
@@ -186,11 +175,7 @@ def apply_custom_filters(data):
 
         if "icr_label" in result.columns:
             debt_free = (
-                result["icr_label"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .eq("debt free")
+                result["icr_label"].astype(str).str.strip().str.lower().eq("debt free")
             )
         else:
             debt_free = pd.Series(
@@ -198,10 +183,7 @@ def apply_custom_filters(data):
                 index=result.index,
             )
 
-        icr_mask = (
-            debt_free
-            | icr.ge(st.session_state.icr_min).fillna(False)
-        )
+        icr_mask = debt_free | icr.ge(st.session_state.icr_min).fillna(False)
 
         result = result.loc[icr_mask]
 
@@ -314,9 +296,7 @@ st.sidebar.selectbox(
     "Preset",
     list(PRESETS.keys()),
     key="preset_name",
-    on_change=lambda: set_preset(
-        st.session_state.preset_name
-    ),
+    on_change=lambda: set_preset(st.session_state.preset_name),
 )
 
 
@@ -424,9 +404,7 @@ if "composite_quality_score" in filtered.columns:
 # Result count
 # ---------------------------------------------------------------------
 
-st.subheader(
-    f"{len(filtered)} companies match your filters"
-)
+st.subheader(f"{len(filtered)} companies match your filters")
 
 
 # ---------------------------------------------------------------------
@@ -451,11 +429,7 @@ display_columns = [
 ]
 
 
-display_columns = [
-    column
-    for column in display_columns
-    if column in filtered.columns
-]
+display_columns = [column for column in display_columns if column in filtered.columns]
 
 
 visible = filtered[display_columns].copy()
@@ -478,17 +452,11 @@ rename_columns = {
     "interest_coverage": "ICR",
 }
 
-visible = visible.rename(
-    columns=rename_columns
-)
+visible = visible.rename(columns=rename_columns)
 
-numeric_columns = visible.select_dtypes(
-    include="number"
-).columns
+numeric_columns = visible.select_dtypes(include="number").columns
 
-visible[numeric_columns] = visible[
-    numeric_columns
-].round(2)
+visible[numeric_columns] = visible[numeric_columns].round(2)
 
 
 st.dataframe(
@@ -502,9 +470,7 @@ st.dataframe(
 # CSV export
 # ---------------------------------------------------------------------
 
-csv_bytes = visible.to_csv(
-    index=False
-).encode("utf-8")
+csv_bytes = visible.to_csv(index=False).encode("utf-8")
 
 
 st.download_button(
@@ -520,8 +486,7 @@ st.download_button(
 # ---------------------------------------------------------------------
 
 with st.expander("📋 Preset filter definitions"):
-    st.markdown(
-        """
+    st.markdown("""
         **Quality Compounder**
         - ROE ≥ 12%
         - D/E ≤ 1
@@ -549,5 +514,4 @@ with st.expander("📋 Preset filter definitions"):
 
         **Turnaround Watch**
         - Revenue CAGR 3Y ≥ 10%
-        """
-    )
+        """)

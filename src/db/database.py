@@ -1,13 +1,11 @@
-
 """
 SQLite database utilities for the NIFTY 100 project.
 
 Sprint 2 - Day 12
 """
 
-from pathlib import Path
 import sqlite3
-
+from pathlib import Path
 
 DB_DIR = Path("db")
 DB_PATH = DB_DIR / "nifty100.sqlite3"
@@ -40,8 +38,7 @@ def create_financial_ratios_table(connection):
         - composite quality score
     """
 
-    connection.execute(
-        """
+    connection.execute("""
         CREATE TABLE IF NOT EXISTS financial_ratios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
 
@@ -105,8 +102,7 @@ def create_financial_ratios_table(connection):
 
             UNIQUE(company_id, year)
         )
-        """
-    )
+        """)
 
     connection.commit()
 
@@ -118,9 +114,7 @@ def clear_financial_ratios(connection):
     This makes the Day 12 population script repeatable.
     """
 
-    connection.execute(
-        "DELETE FROM financial_ratios"
-    )
+    connection.execute("DELETE FROM financial_ratios")
 
     connection.commit()
 
@@ -130,9 +124,7 @@ def get_financial_ratio_count(connection):
     Return number of rows in financial_ratios.
     """
 
-    cursor = connection.execute(
-        "SELECT COUNT(*) FROM financial_ratios"
-    )
+    cursor = connection.execute("SELECT COUNT(*) FROM financial_ratios")
 
     return cursor.fetchone()[0]
 
@@ -142,11 +134,6 @@ def get_financial_ratio_columns(connection):
     Return financial_ratios column names.
     """
 
-    cursor = connection.execute(
-        "PRAGMA table_info(financial_ratios)"
-    )
+    cursor = connection.execute("PRAGMA table_info(financial_ratios)")
 
-    return [
-        row[1]
-        for row in cursor.fetchall()
-    ]
+    return [row[1] for row in cursor.fetchall()]

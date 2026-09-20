@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
-
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 # =====================================================================
 # FLAGS
@@ -36,7 +36,8 @@ DEFAULT_WINDOWS = (3, 5, 10)
 # BASIC HELPERS
 # =====================================================================
 
-def _to_float(value: Any) -> Optional[float]:
+
+def _to_float(value: Any) -> float | None:
     """Safely convert value to float."""
 
     if value is None:
@@ -53,7 +54,7 @@ def _to_float(value: Any) -> Optional[float]:
     return result
 
 
-def parse_year(year: Any) -> Optional[int]:
+def parse_year(year: Any) -> int | None:
     """
     Extract a four-digit year.
 
@@ -91,11 +92,12 @@ def parse_year(year: Any) -> Optional[int]:
 # CAGR VALUE HELPER
 # =====================================================================
 
+
 def cagr_value(
     start_value: Any,
     end_value: Any,
     years: int,
-) -> Optional[float]:
+) -> float | None:
     """
     Calculate the mathematical CAGR value.
 
@@ -129,10 +131,11 @@ def cagr_value(
 # CAGR FLAG HELPER
 # =====================================================================
 
+
 def cagr_flag(
     start_value: Any,
     end_value: Any,
-    years: Optional[int] = None,
+    years: int | None = None,
 ) -> str:
     """
     Classify CAGR behaviour.
@@ -184,11 +187,12 @@ def cagr_flag(
 # FULL CAGR RESULT
 # =====================================================================
 
+
 def calculate_cagr(
     start_value: Any,
     end_value: Any,
     years: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Calculate CAGR and return both value and classification.
 
@@ -235,11 +239,12 @@ def calculate_cagr(
 # WINDOW CAGR
 # =====================================================================
 
+
 def calculate_window_cagr(
     values_by_year: Mapping[Any, Any],
     window: int,
-    end_year: Optional[Any] = None,
-) -> Dict[str, Any]:
+    end_year: Any | None = None,
+) -> dict[str, Any]:
     """
     Calculate CAGR for a specific historical window.
 
@@ -264,7 +269,7 @@ def calculate_window_cagr(
             "flag": INSUFFICIENT,
         }
 
-    cleaned: Dict[int, float] = {}
+    cleaned: dict[int, float] = {}
 
     for year, value in values_by_year.items():
 
@@ -334,11 +339,12 @@ def calculate_window_cagr(
 # MULTI-WINDOW CAGR
 # =====================================================================
 
+
 def calculate_multi_window_cagr(
     values_by_year: Mapping[Any, Any],
     windows: Sequence[int] = DEFAULT_WINDOWS,
-    end_year: Optional[Any] = None,
-) -> Dict[str, Any]:
+    end_year: Any | None = None,
+) -> dict[str, Any]:
     """
     Calculate multiple CAGR windows.
 
@@ -352,7 +358,7 @@ def calculate_multi_window_cagr(
         cagr_10yr_flag
     """
 
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
 
     for window in windows:
 
@@ -372,12 +378,13 @@ def calculate_multi_window_cagr(
 # HISTORY CONVERSION
 # =====================================================================
 
+
 def _history_to_year_dictionaries(
     history: Sequence[Any],
-) -> Tuple[
-    Dict[str, Any],
-    Dict[str, Any],
-    Dict[str, Any],
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
 ]:
     """
     Convert historical rows into Revenue / PAT / EPS dictionaries.
@@ -396,9 +403,9 @@ def _history_to_year_dictionaries(
         ("Sep 2020", 1000, 100, 10)
     """
 
-    revenue_by_year: Dict[str, Any] = {}
-    pat_by_year: Dict[str, Any] = {}
-    eps_by_year: Dict[str, Any] = {}
+    revenue_by_year: dict[str, Any] = {}
+    pat_by_year: dict[str, Any] = {}
+    eps_by_year: dict[str, Any] = {}
 
     for row in history:
 
@@ -414,10 +421,7 @@ def _history_to_year_dictionaries(
         if isinstance(row, Mapping):
 
             year = (
-                row.get("year")
-                or row.get("Year")
-                or row.get("date")
-                or row.get("Date")
+                row.get("year") or row.get("Year") or row.get("date") or row.get("Date")
             )
 
             if "sales" in row:
@@ -470,12 +474,13 @@ def _history_to_year_dictionaries(
 # GROWTH METRICS
 # =====================================================================
 
+
 def calculate_growth_metrics(
     revenue_by_year: Any,
     pat_by_year: Any = None,
     eps_by_year: Any = None,
-    end_year: Optional[Any] = None,
-) -> Dict[str, Any]:
+    end_year: Any | None = None,
+) -> dict[str, Any]:
     """
     Calculate Revenue / PAT / EPS CAGR.
 
@@ -500,9 +505,7 @@ def calculate_growth_metrics(
             revenue_history,
             pat_history,
             eps_history,
-        ) = _history_to_year_dictionaries(
-            revenue_by_year
-        )
+        ) = _history_to_year_dictionaries(revenue_by_year)
 
         revenue_by_year = revenue_history
 
@@ -555,7 +558,7 @@ def calculate_growth_metrics(
         end_year=end_year,
     )
 
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
 
     # ---------------------------------------------------------------
     # Revenue output
@@ -563,13 +566,11 @@ def calculate_growth_metrics(
 
     for window in DEFAULT_WINDOWS:
 
-        result[f"revenue_cagr_{window}yr"] = (
-            revenue_metrics[f"cagr_{window}yr"]
-        )
+        result[f"revenue_cagr_{window}yr"] = revenue_metrics[f"cagr_{window}yr"]
 
-        result[f"revenue_cagr_{window}yr_flag"] = (
-            revenue_metrics[f"cagr_{window}yr_flag"]
-        )
+        result[f"revenue_cagr_{window}yr_flag"] = revenue_metrics[
+            f"cagr_{window}yr_flag"
+        ]
 
     # ---------------------------------------------------------------
     # PAT output
@@ -577,13 +578,9 @@ def calculate_growth_metrics(
 
     for window in DEFAULT_WINDOWS:
 
-        result[f"pat_cagr_{window}yr"] = (
-            pat_metrics[f"cagr_{window}yr"]
-        )
+        result[f"pat_cagr_{window}yr"] = pat_metrics[f"cagr_{window}yr"]
 
-        result[f"pat_cagr_{window}yr_flag"] = (
-            pat_metrics[f"cagr_{window}yr_flag"]
-        )
+        result[f"pat_cagr_{window}yr_flag"] = pat_metrics[f"cagr_{window}yr_flag"]
 
     # ---------------------------------------------------------------
     # EPS output
@@ -591,13 +588,9 @@ def calculate_growth_metrics(
 
     for window in DEFAULT_WINDOWS:
 
-        result[f"eps_cagr_{window}yr"] = (
-            eps_metrics[f"cagr_{window}yr"]
-        )
+        result[f"eps_cagr_{window}yr"] = eps_metrics[f"cagr_{window}yr"]
 
-        result[f"eps_cagr_{window}yr_flag"] = (
-            eps_metrics[f"cagr_{window}yr_flag"]
-        )
+        result[f"eps_cagr_{window}yr_flag"] = eps_metrics[f"cagr_{window}yr_flag"]
 
     return result
 
@@ -606,15 +599,16 @@ def calculate_growth_metrics(
 # SAFE WRAPPER
 # =====================================================================
 
+
 def calculate_growth_safely(
     history: Sequence[Any],
-    end_year: Optional[Any] = None,
-) -> Dict[str, Any]:
+    end_year: Any | None = None,
+) -> dict[str, Any]:
     """
     Safe wrapper used by the population script.
     """
 
-    empty_result: Dict[str, Any] = {}
+    empty_result: dict[str, Any] = {}
 
     for metric in (
         "revenue",
@@ -623,9 +617,7 @@ def calculate_growth_safely(
     ):
         for window in DEFAULT_WINDOWS:
             empty_result[f"{metric}_cagr_{window}yr"] = None
-            empty_result[f"{metric}_cagr_{window}yr_flag"] = (
-                INSUFFICIENT
-            )
+            empty_result[f"{metric}_cagr_{window}yr_flag"] = INSUFFICIENT
 
     if not history:
         return empty_result
@@ -647,18 +639,18 @@ def calculate_growth_safely(
 # =====================================================================
 
 __all__ = [
-    "NORMAL",
-    "DECLINE_TO_LOSS",
-    "TURNAROUND",
     "BOTH_NEGATIVE",
-    "ZERO_BASE",
+    "DECLINE_TO_LOSS",
     "INSUFFICIENT",
-    "calculate_cagr",
-    "cagr_value",
+    "NORMAL",
+    "TURNAROUND",
+    "ZERO_BASE",
     "cagr_flag",
-    "calculate_window_cagr",
-    "calculate_multi_window_cagr",
+    "cagr_value",
+    "calculate_cagr",
     "calculate_growth_metrics",
     "calculate_growth_safely",
+    "calculate_multi_window_cagr",
+    "calculate_window_cagr",
     "parse_year",
 ]

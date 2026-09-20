@@ -11,7 +11,6 @@ from src.dashboard.utils.db import (
     get_ratios,
 )
 
-
 st.set_page_config(
     page_title="Peer Comparison | Nifty 100 Analytics",
     page_icon="👥",
@@ -47,16 +46,12 @@ selected_group = st.selectbox(
 # Peer companies
 # ---------------------------------------------------------------------
 
-peer_assignments = get_peers(
-    selected_group
-)
+peer_assignments = get_peers(selected_group)
 
 companies = get_companies()
 
 if peer_assignments.empty:
-    st.warning(
-        "No companies are assigned to this peer group."
-    )
+    st.warning("No companies are assigned to this peer group.")
     st.stop()
 
 
@@ -64,20 +59,12 @@ if peer_assignments.empty:
 peer_assignments = peer_assignments.copy()
 
 peer_assignments["company_id"] = (
-    peer_assignments["company_id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
+    peer_assignments["company_id"].astype(str).str.strip().str.upper()
 )
 
 companies = companies.copy()
 
-companies["company_id"] = (
-    companies["id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-)
+companies["company_id"] = companies["id"].astype(str).str.strip().str.upper()
 
 
 peer_assignments = peer_assignments.merge(
@@ -104,9 +91,7 @@ company_options = peer_assignments[
 ].copy()
 
 company_options["label"] = (
-    company_options["company_id"]
-    + " — "
-    + company_options["company_name"].fillna("")
+    company_options["company_id"] + " — " + company_options["company_name"].fillna("")
 )
 
 
@@ -116,23 +101,17 @@ selected_label = st.selectbox(
 )
 
 
-selected_ticker = selected_label.split(
-    " — "
-)[0].strip().upper()
+selected_ticker = selected_label.split(" — ")[0].strip().upper()
 
 
 # ---------------------------------------------------------------------
 # Percentile data
 # ---------------------------------------------------------------------
 
-percentiles = get_peer_percentiles(
-    peer_group_name=selected_group
-)
+percentiles = get_peer_percentiles(peer_group_name=selected_group)
 
 if percentiles.empty:
-    st.error(
-        "Peer percentile data is unavailable for this group."
-    )
+    st.error("Peer percentile data is unavailable for this group.")
     st.stop()
 
 
@@ -143,25 +122,18 @@ if percentiles.empty:
 ratios = get_ratios(selected_ticker)
 
 if ratios.empty:
-    st.warning(
-        "Financial ratio history is unavailable for "
-        f"{selected_ticker}."
-    )
+    st.warning("Financial ratio history is unavailable for " f"{selected_ticker}.")
     st.stop()
 
 
 ratios = ratios.copy()
 
 ratios["_year_numeric"] = pd.to_numeric(
-    ratios["year"].astype(str).str.extract(
-        r"(\d{4})"
-    )[0],
+    ratios["year"].astype(str).str.extract(r"(\d{4})")[0],
     errors="coerce",
 )
 
-ratios = ratios.sort_values(
-    "_year_numeric"
-)
+ratios = ratios.sort_values("_year_numeric")
 
 latest_ratio = ratios.iloc[-1]
 
@@ -184,10 +156,7 @@ radar_metrics = [
 
 # Peer percentile values
 selected_pct = percentiles[
-    percentiles["company_id"]
-    .astype(str)
-    .str.upper()
-    == selected_ticker
+    percentiles["company_id"].astype(str).str.upper() == selected_ticker
 ].copy()
 
 
@@ -214,13 +183,9 @@ for label, metric in radar_metrics:
         # Compare composite against peer group average.
         all_peer_ratios = []
 
-        for ticker in peer_assignments[
-            "company_id"
-        ].dropna().unique():
+        for ticker in peer_assignments["company_id"].dropna().unique():
 
-            company_ratio = get_ratios(
-                ticker
-            )
+            company_ratio = get_ratios(ticker)
 
             if company_ratio.empty:
                 continue
@@ -228,15 +193,11 @@ for label, metric in radar_metrics:
             company_ratio = company_ratio.copy()
 
             company_ratio["_year_numeric"] = pd.to_numeric(
-                company_ratio["year"]
-                .astype(str)
-                .str.extract(r"(\d{4})")[0],
+                company_ratio["year"].astype(str).str.extract(r"(\d{4})")[0],
                 errors="coerce",
             )
 
-            company_ratio = company_ratio.sort_values(
-                "_year_numeric"
-            )
+            company_ratio = company_ratio.sort_values("_year_numeric")
 
             val = pd.to_numeric(
                 company_ratio.iloc[-1].get(
@@ -249,28 +210,19 @@ for label, metric in radar_metrics:
             if pd.notna(val):
                 all_peer_ratios.append(val)
 
-        peer_avg = (
-            np.mean(all_peer_ratios)
-            if all_peer_ratios
-            else np.nan
-        )
+        peer_avg = np.mean(all_peer_ratios) if all_peer_ratios else np.nan
 
     else:
 
-        row = selected_pct[
-            selected_pct["metric"] == metric
-        ]
+        row = selected_pct[selected_pct["metric"] == metric]
 
         value = (
             float(row.iloc[0]["percentile_rank"])
-            if not row.empty
-            and pd.notna(row.iloc[0]["percentile_rank"])
+            if not row.empty and pd.notna(row.iloc[0]["percentile_rank"])
             else np.nan
         )
 
-        group_rows = percentiles[
-            percentiles["metric"] == metric
-        ]
+        group_rows = percentiles[percentiles["metric"] == metric]
 
         peer_avg = pd.to_numeric(
             group_rows["percentile_rank"],
@@ -285,15 +237,10 @@ for label, metric in radar_metrics:
 # Radar chart
 # ---------------------------------------------------------------------
 
-st.subheader(
-    f"📡 {selected_ticker} vs {selected_group} Average"
-)
+st.subheader(f"📡 {selected_ticker} vs {selected_group} Average")
 
 
-radar_labels = [
-    item[0]
-    for item in radar_metrics
-]
+radar_labels = [item[0] for item in radar_metrics]
 
 
 # Normalize composite to percentile-style scale for radar.
@@ -301,9 +248,7 @@ composite_index = 7
 
 if pd.notna(selected_values[composite_index]):
 
-    peer_composite = peer_average_values[
-        composite_index
-    ]
+    peer_composite = peer_average_values[composite_index]
 
     # Keep composite directly on 0-100 scale.
     selected_values[composite_index] = max(
@@ -327,17 +272,11 @@ if pd.notna(selected_values[composite_index]):
     )
 
 
-radar_company = selected_values + [
-    selected_values[0]
-]
+radar_company = selected_values + [selected_values[0]]
 
-radar_average = peer_average_values + [
-    peer_average_values[0]
-]
+radar_average = peer_average_values + [peer_average_values[0]]
 
-radar_axis = radar_labels + [
-    radar_labels[0]
-]
+radar_axis = radar_labels + [radar_labels[0]]
 
 
 fig = go.Figure()
@@ -399,18 +338,13 @@ st.caption(
 
 st.divider()
 
-st.subheader(
-    f"📋 Companies in {selected_group}"
-)
+st.subheader(f"📋 Companies in {selected_group}")
 
 
 group_table = percentiles.copy()
 
 group_table["company_id"] = (
-    group_table["company_id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
+    group_table["company_id"].astype(str).str.strip().str.upper()
 )
 
 
@@ -457,9 +391,7 @@ else:
     benchmark_ids = set()
 
 
-pivot["Benchmark"] = pivot[
-    "company_id"
-].isin(benchmark_ids)
+pivot["Benchmark"] = pivot["company_id"].isin(benchmark_ids)
 
 
 # Put benchmark first
@@ -483,9 +415,7 @@ metric_names = {
     "asset_turnover": "Asset Turnover %ile",
 }
 
-pivot = pivot.rename(
-    columns=metric_names
-)
+pivot = pivot.rename(columns=metric_names)
 
 
 ordered = [
@@ -499,33 +429,21 @@ for column in metric_names.values():
 
 ordered.append("Benchmark")
 
-ordered = [
-    column
-    for column in ordered
-    if column in pivot.columns
-]
+ordered = [column for column in ordered if column in pivot.columns]
 
 
 table = pivot[ordered].copy()
 
 
-for column in table.select_dtypes(
-    include="number"
-).columns:
+for column in table.select_dtypes(include="number").columns:
     table[column] = table[column].round(1)
 
 
 def highlight_benchmark(row):
     if row.get("Benchmark", False):
-        return [
-            "font-weight: bold"
-            for _ in row
-        ]
+        return ["font-weight: bold" for _ in row]
 
-    return [
-        ""
-        for _ in row
-    ]
+    return ["" for _ in row]
 
 
 st.dataframe(

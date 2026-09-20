@@ -1,17 +1,19 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
+import logging
 import sqlite3
 import time
-import logging
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routers.companies import router as companies_router
+from src.api.routers.documents import router as documents_router
+from src.api.routers.peers import router as peers_router
+from src.api.routers.portfolio import router as portfolio_router
 from src.api.routers.screener import router as screener_router
 from src.api.routers.sectors import router as sectors_router
-from src.api.routers.peers import router as peers_router
 from src.api.routers.valuation import router as valuation_router
-from src.api.routers.portfolio import router as portfolio_router
-from src.api.routers.documents import router as documents_router
+
 # ============================================================
 # CONFIGURATION
 # ============================================================
@@ -20,11 +22,7 @@ APP_VERSION = "1.0.0"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-DB_PATH = (
-    PROJECT_ROOT
-    / "db"
-    / "nifty100.sqlite3"
-)
+DB_PATH = PROJECT_ROOT / "db" / "nifty100.sqlite3"
 
 START_TIME = time.time()
 
@@ -48,8 +46,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="NIFTY 100 Analytics API",
     description=(
-        "Financial intelligence and analytics API "
-        "for NIFTY 100 companies."
+        "Financial intelligence and analytics API " "for NIFTY 100 companies."
     ),
     version=APP_VERSION,
     docs_url="/docs",
@@ -73,6 +70,7 @@ app.add_middleware(
 # ============================================================
 # REQUEST LOGGING
 # ============================================================
+
 
 @app.middleware("http")
 async def request_logging_middleware(request, call_next):
@@ -98,6 +96,7 @@ async def request_logging_middleware(request, call_next):
 # DATABASE
 # ============================================================
 
+
 def get_db_connection():
 
     connection = sqlite3.connect(DB_PATH)
@@ -117,32 +116,23 @@ def get_table_counts():
 
         cursor = connection.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT name
             FROM sqlite_master
             WHERE type='table'
             AND name NOT LIKE 'sqlite_%'
             ORDER BY name
-            """
-        )
+            """)
 
-        tables = [
-            row["name"]
-            for row in cursor.fetchall()
-        ]
+        tables = [row["name"] for row in cursor.fetchall()]
 
         for table in tables:
 
             try:
 
-                cursor.execute(
-                    f'SELECT COUNT(*) AS count FROM "{table}"'
-                )
+                cursor.execute(f'SELECT COUNT(*) AS count FROM "{table}"')
 
-                counts[table] = (
-                    cursor.fetchone()["count"]
-                )
+                counts[table] = cursor.fetchone()["count"]
 
             except sqlite3.Error:
 
@@ -158,6 +148,7 @@ def get_table_counts():
 # ============================================================
 # ROOT ENDPOINT
 # ============================================================
+
 
 @app.get("/")
 def root():
@@ -175,6 +166,7 @@ def root():
 # API V1 ROOT
 # ============================================================
 
+
 @app.get(
     "/api/v1",
     tags=["Health"],
@@ -191,6 +183,7 @@ def api_v1_root():
 # ============================================================
 # HEALTH CHECK
 # ============================================================
+
 
 @app.get(
     "/api/v1/health",
@@ -266,14 +259,13 @@ app.include_router(documents_router, prefix="/api/v1")
 # STARTUP
 # ============================================================
 
+
 @app.on_event("startup")
 async def startup_event():
 
     logger.info("=" * 60)
 
-    logger.info(
-        "NIFTY 100 Analytics API starting"
-    )
+    logger.info("NIFTY 100 Analytics API starting")
 
     logger.info(
         "Database: %s",

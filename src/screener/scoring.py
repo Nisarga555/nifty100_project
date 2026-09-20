@@ -29,7 +29,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-
 # ============================================================
 # METRIC CONFIGURATION
 # ============================================================
@@ -38,14 +37,11 @@ METRIC_WEIGHTS = {
     "return_on_equity_pct": 15.0,
     "roce_pct": 10.0,
     "net_profit_margin_pct": 10.0,
-
     "fcf_cagr_5yr": 15.0,
     "cfo_pat_ratio": 10.0,
     "fcf_positive_score": 5.0,
-
     "revenue_cagr_5yr": 10.0,
     "pat_cagr_5yr": 10.0,
-
     "de_score": 10.0,
     "icr_score": 5.0,
 }
@@ -68,6 +64,7 @@ HIGHER_IS_BETTER = {
 # ============================================================
 # NUMERIC HELPERS
 # ============================================================
+
 
 def numeric_series(
     dataframe: pd.DataFrame,
@@ -148,15 +145,9 @@ def normalize_series(
         return result
 
     if higher_is_better:
-        normalized = (
-            (winsorized - lower)
-            / (upper - lower)
-        ) * 100.0
+        normalized = ((winsorized - lower) / (upper - lower)) * 100.0
     else:
-        normalized = (
-            (upper - winsorized)
-            / (upper - lower)
-        ) * 100.0
+        normalized = ((upper - winsorized) / (upper - lower)) * 100.0
 
     return normalized.clip(
         lower=0,
@@ -167,6 +158,7 @@ def normalize_series(
 # ============================================================
 # SPECIAL METRIC CALCULATIONS
 # ============================================================
+
 
 def calculate_net_profit_margin(
     dataframe: pd.DataFrame,
@@ -199,11 +191,7 @@ def calculate_net_profit_margin(
 
     valid = sales.ne(0) & sales.notna()
 
-    result.loc[valid] = (
-        net_profit.loc[valid]
-        / sales.loc[valid]
-        * 100.0
-    )
+    result.loc[valid] = net_profit.loc[valid] / sales.loc[valid] * 100.0
 
     return result
 
@@ -239,10 +227,7 @@ def calculate_cfo_pat_ratio(
 
     valid = pat.ne(0) & pat.notna()
 
-    result.loc[valid] = (
-        cfo.loc[valid]
-        / pat.loc[valid]
-    )
+    result.loc[valid] = cfo.loc[valid] / pat.loc[valid]
 
     return result
 
@@ -322,19 +307,13 @@ def get_metric_series(
 ) -> pd.Series:
 
     if metric == "net_profit_margin_pct":
-        return calculate_net_profit_margin(
-            dataframe
-        )
+        return calculate_net_profit_margin(dataframe)
 
     if metric == "cfo_pat_ratio":
-        return calculate_cfo_pat_ratio(
-            dataframe
-        )
+        return calculate_cfo_pat_ratio(dataframe)
 
     if metric == "fcf_positive_score":
-        return calculate_fcf_positive_score(
-            dataframe
-        )
+        return calculate_fcf_positive_score(dataframe)
 
     if metric == "de_score":
         return numeric_series(
@@ -357,6 +336,7 @@ def get_metric_series(
 # ============================================================
 # SECTOR RELATIVE NORMALIZATION
 # ============================================================
+
 
 def sector_relative_normalize(
     dataframe: pd.DataFrame,
@@ -383,16 +363,10 @@ def sector_relative_normalize(
     if "broad_sector" not in dataframe.columns:
         return normalize_series(
             values,
-            higher_is_better=metric
-            in HIGHER_IS_BETTER,
+            higher_is_better=metric in HIGHER_IS_BETTER,
         )
 
-    sectors = (
-        dataframe["broad_sector"]
-        .fillna("Unknown")
-        .astype(str)
-        .str.strip()
-    )
+    sectors = dataframe["broad_sector"].fillna("Unknown").astype(str).str.strip()
 
     for sector_name in sectors.unique():
 
@@ -402,8 +376,7 @@ def sector_relative_normalize(
 
         normalized = normalize_series(
             sector_values,
-            higher_is_better=metric
-            in HIGHER_IS_BETTER,
+            higher_is_better=metric in HIGHER_IS_BETTER,
         )
 
         result.loc[mask] = normalized
@@ -414,6 +387,7 @@ def sector_relative_normalize(
 # ============================================================
 # COMPOSITE SCORE
 # ============================================================
+
 
 def calculate_composite_quality_score(
     dataframe: pd.DataFrame,
@@ -435,20 +409,13 @@ def calculate_composite_quality_score(
             metric,
         )
 
-        column_name = (
-            f"{metric}_score"
-        )
+        column_name = f"{metric}_score"
 
         result[column_name] = score
 
-        weighted = (
-            score
-            * (weight / 100.0)
-        )
+        weighted = score * (weight / 100.0)
 
-        weighted_scores.append(
-            weighted
-        )
+        weighted_scores.append(weighted)
 
     if weighted_scores:
 
@@ -457,24 +424,16 @@ def calculate_composite_quality_score(
             axis=1,
         )
 
-        result[
-            "composite_quality_score"
-        ] = score_frame.sum(
+        result["composite_quality_score"] = score_frame.sum(
             axis=1,
             min_count=1,
         )
 
     else:
 
-        result[
-            "composite_quality_score"
-        ] = np.nan
+        result["composite_quality_score"] = np.nan
 
-    result[
-        "composite_quality_score"
-    ] = result[
-        "composite_quality_score"
-    ].clip(
+    result["composite_quality_score"] = result["composite_quality_score"].clip(
         lower=0,
         upper=100,
     )
@@ -486,10 +445,9 @@ def calculate_composite_quality_score(
 # PUBLIC ALIAS
 # ============================================================
 
+
 def add_composite_quality_score(
     dataframe: pd.DataFrame,
 ) -> pd.DataFrame:
 
-    return calculate_composite_quality_score(
-        dataframe
-    )
+    return calculate_composite_quality_score(dataframe)

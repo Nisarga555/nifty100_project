@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(tags=["Valuation"])
 
@@ -17,19 +18,14 @@ def get_market_cap(ticker: str):
 
     if not MARKET_CAP_FILE.exists():
         raise HTTPException(
-            status_code=404,
-            detail=f"market_cap.xlsx not found at {MARKET_CAP_FILE}"
+            status_code=404, detail=f"market_cap.xlsx not found at {MARKET_CAP_FILE}"
         )
 
     try:
-        df = pd.read_excel(
-            MARKET_CAP_FILE,
-            header=0
-        )
+        df = pd.read_excel(MARKET_CAP_FILE, header=0)
     except Exception as exc:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to read market_cap.xlsx: {exc}"
+            status_code=500, detail=f"Failed to read market_cap.xlsx: {exc}"
         )
 
     required_columns = {
@@ -49,29 +45,21 @@ def get_market_cap(ticker: str):
     if missing:
         raise HTTPException(
             status_code=500,
-            detail=f"market_cap.xlsx missing columns: {sorted(missing)}"
+            detail=f"market_cap.xlsx missing columns: {sorted(missing)}",
         )
 
     company_df = df[
-        df["company_id"]
-        .astype(str)
-        .str.upper()
-        .str.strip()
-        == ticker
+        df["company_id"].astype(str).str.upper().str.strip() == ticker
     ].copy()
 
     if company_df.empty:
         raise HTTPException(
-            status_code=404,
-            detail=f"Company '{ticker}' not found in market cap data"
+            status_code=404, detail=f"Company '{ticker}' not found in market cap data"
         )
 
     company_df = company_df.sort_values("year")
 
-    company_df = company_df.where(
-        pd.notna(company_df),
-        None
-    )
+    company_df = company_df.where(pd.notna(company_df), None)
 
     return {
         "ticker": ticker,

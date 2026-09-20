@@ -1,11 +1,10 @@
-from pathlib import Path
+import re
 import sqlite3
 import sys
-import re
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 # ================================================================
 # PROJECT ROOT
@@ -23,9 +22,7 @@ if str(ROOT) not in sys.path:
 
 DB_PATH = ROOT / "db" / "nifty100.sqlite3"
 
-PEER_GROUPS_PATH = (
-    ROOT / "data" / "raw" / "peer_groups.xlsx"
-)
+PEER_GROUPS_PATH = ROOT / "data" / "raw" / "peer_groups.xlsx"
 
 
 # ================================================================
@@ -50,52 +47,36 @@ PEER_METRICS = {
 # LOAD PEER GROUPS
 # ================================================================
 
+
 def load_peer_groups(path=PEER_GROUPS_PATH):
 
     if not path.exists():
-        raise FileNotFoundError(
-            f"Peer groups file not found: {path}"
-        )
+        raise FileNotFoundError(f"Peer groups file not found: {path}")
 
     dataframe = pd.read_excel(path)
 
-    dataframe.columns = [
-        str(column).strip()
-        for column in dataframe.columns
-    ]
+    dataframe.columns = [str(column).strip() for column in dataframe.columns]
 
     required_columns = {
         "peer_group_name",
         "company_id",
     }
 
-    missing = (
-        required_columns
-        - set(dataframe.columns)
-    )
+    missing = required_columns - set(dataframe.columns)
 
     if missing:
         raise ValueError(
-            "peer_groups.xlsx is missing columns: "
-            + ", ".join(sorted(missing))
+            "peer_groups.xlsx is missing columns: " + ", ".join(sorted(missing))
         )
 
     dataframe["company_id"] = (
-        dataframe["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
+        dataframe["company_id"].astype(str).str.strip().str.upper()
     )
 
-    dataframe["peer_group_name"] = (
-        dataframe["peer_group_name"]
-        .astype(str)
-        .str.strip()
-    )
+    dataframe["peer_group_name"] = dataframe["peer_group_name"].astype(str).str.strip()
 
     dataframe = dataframe[
-        dataframe["company_id"].ne("")
-        & dataframe["peer_group_name"].ne("")
+        dataframe["company_id"].ne("") & dataframe["peer_group_name"].ne("")
     ].copy()
 
     dataframe = dataframe.drop_duplicates(
@@ -111,6 +92,7 @@ def load_peer_groups(path=PEER_GROUPS_PATH):
 # ================================================================
 # YEAR PARSER
 # ================================================================
+
 
 def parse_year(value):
 
@@ -132,12 +114,11 @@ def parse_year(value):
 # LOAD FINANCIAL RATIOS
 # ================================================================
 
+
 def load_financial_ratios():
 
     if not DB_PATH.exists():
-        raise FileNotFoundError(
-            f"SQLite database not found: {DB_PATH}"
-        )
+        raise FileNotFoundError(f"SQLite database not found: {DB_PATH}")
 
     connection = sqlite3.connect(DB_PATH)
 
@@ -153,28 +134,17 @@ def load_financial_ratios():
         connection.close()
 
     if dataframe.empty:
-        raise ValueError(
-            "financial_ratios table is empty."
-        )
+        raise ValueError("financial_ratios table is empty.")
 
     dataframe["company_id"] = (
-        dataframe["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
+        dataframe["company_id"].astype(str).str.strip().str.upper()
     )
 
-    dataframe["_parsed_year"] = (
-        dataframe["year"].apply(parse_year)
-    )
+    dataframe["_parsed_year"] = dataframe["year"].apply(parse_year)
 
-    dataframe = dataframe[
-        dataframe["_parsed_year"].notna()
-    ].copy()
+    dataframe = dataframe[dataframe["_parsed_year"].notna()].copy()
 
-    dataframe["_parsed_year"] = (
-        dataframe["_parsed_year"].astype(int)
-    )
+    dataframe["_parsed_year"] = dataframe["_parsed_year"].astype(int)
 
     return dataframe
 
@@ -182,6 +152,7 @@ def load_financial_ratios():
 # ================================================================
 # LATEST AVAILABLE NON-NULL METRIC
 # ================================================================
+
 
 def select_latest_metric_values(ratios):
     """
@@ -235,13 +206,9 @@ def select_latest_metric_values(ratios):
             if not valid_mask.any():
                 continue
 
-            first_valid_index = values[
-                valid_mask
-            ].index[0]
+            first_valid_index = values[valid_mask].index[0]
 
-            selected_value = values.loc[
-                first_valid_index
-            ]
+            selected_value = values.loc[first_valid_index]
 
             selected_year = company_rows.loc[
                 first_valid_index,
@@ -283,14 +250,13 @@ def select_latest_metric_values(ratios):
 # BUILD PEER DATASET
 # ================================================================
 
+
 def build_peer_dataset(
     ratios,
     peer_groups,
 ):
 
-    latest_metrics = select_latest_metric_values(
-        ratios
-    )
+    latest_metrics = select_latest_metric_values(ratios)
 
     merged = peer_groups.merge(
         latest_metrics,
@@ -304,6 +270,7 @@ def build_peer_dataset(
 # ================================================================
 # PERCENT RANK
 # ================================================================
+
 
 def calculate_percent_rank(series):
 
@@ -327,9 +294,7 @@ def calculate_percent_rank(series):
 
     if count == 1:
 
-        result.loc[
-            valid.index
-        ] = 100.0
+        result.loc[valid.index] = 100.0
 
         return result
 
@@ -338,13 +303,7 @@ def calculate_percent_rank(series):
         ascending=True,
     )
 
-    result.loc[
-        valid.index
-    ] = (
-        (ranks - 1)
-        / (count - 1)
-        * 100
-    )
+    result.loc[valid.index] = (ranks - 1) / (count - 1) * 100
 
     return result
 
@@ -353,11 +312,10 @@ def calculate_percent_rank(series):
 # D/E INVERSE PERCENTILE
 # ================================================================
 
+
 def calculate_de_percent_rank(series):
 
-    normal_rank = (
-        calculate_percent_rank(series)
-    )
+    normal_rank = calculate_percent_rank(series)
 
     result = 100.0 - normal_rank
 
@@ -367,6 +325,7 @@ def calculate_de_percent_rank(series):
 # ================================================================
 # CALCULATE ALL PEER PERCENTILES
 # ================================================================
+
 
 def calculate_peer_percentiles(
     peer_dataset,
@@ -384,11 +343,9 @@ def calculate_peer_percentiles(
         group,
     ) in grouped:
 
-        for metric_name in PEER_METRICS.keys():
+        for metric_name in PEER_METRICS:
 
-            metric_rows = group[
-                group["metric"] == metric_name
-            ].copy()
+            metric_rows = group[group["metric"] == metric_name].copy()
 
             if metric_rows.empty:
                 continue
@@ -405,56 +362,35 @@ def calculate_peer_percentiles(
 
             if metric_name == "de":
 
-                percentiles = (
-                    calculate_de_percent_rank(
-                        values
-                    )
-                )
+                percentiles = calculate_de_percent_rank(values)
 
             else:
 
-                percentiles = (
-                    calculate_percent_rank(
-                        values
-                    )
-                )
+                percentiles = calculate_percent_rank(values)
 
             for index in metric_rows.index:
 
                 value = values.loc[index]
 
-                percentile = (
-                    percentiles.loc[index]
-                )
+                percentile = percentiles.loc[index]
 
                 if pd.isna(value):
                     continue
 
                 records.append(
                     {
-                        "company_id":
-                            metric_rows.loc[
-                                index,
-                                "company_id",
-                            ],
-
-                        "peer_group_name":
-                            peer_group_name,
-
-                        "metric":
-                            metric_name,
-
-                        "value":
-                            float(value),
-
-                        "percentile_rank":
-                            float(percentile),
-
-                        "year":
-                            metric_rows.loc[
-                                index,
-                                "year",
-                            ],
+                        "company_id": metric_rows.loc[
+                            index,
+                            "company_id",
+                        ],
+                        "peer_group_name": peer_group_name,
+                        "metric": metric_name,
+                        "value": float(value),
+                        "percentile_rank": float(percentile),
+                        "year": metric_rows.loc[
+                            index,
+                            "year",
+                        ],
                     }
                 )
 
@@ -475,12 +411,12 @@ def calculate_peer_percentiles(
 # CREATE SQLITE TABLE
 # ================================================================
 
+
 def create_peer_percentiles_table(
     connection,
 ):
 
-    connection.execute(
-        """
+    connection.execute("""
         CREATE TABLE IF NOT EXISTS peer_percentiles (
             company_id TEXT NOT NULL,
             peer_group_name TEXT NOT NULL,
@@ -489,8 +425,7 @@ def create_peer_percentiles_table(
             percentile_rank REAL,
             year TEXT
         )
-        """
-    )
+        """)
 
     connection.commit()
 
@@ -499,23 +434,18 @@ def create_peer_percentiles_table(
 # SAVE PEER RESULTS
 # ================================================================
 
+
 def save_peer_percentiles(
     dataframe,
 ):
 
-    connection = sqlite3.connect(
-        DB_PATH
-    )
+    connection = sqlite3.connect(DB_PATH)
 
     try:
 
-        create_peer_percentiles_table(
-            connection
-        )
+        create_peer_percentiles_table(connection)
 
-        connection.execute(
-            "DELETE FROM peer_percentiles"
-        )
+        connection.execute("DELETE FROM peer_percentiles")
 
         dataframe.to_sql(
             "peer_percentiles",
@@ -535,36 +465,21 @@ def save_peer_percentiles(
 # VALIDATE RESULTS
 # ================================================================
 
+
 def validate_peer_results(
     peer_groups,
     percentiles,
 ):
 
-    print(
-        "\n[VALIDATION] Peer groups:"
-    )
+    print("\n[VALIDATION] Peer groups:")
 
-    group_count = (
-        peer_groups[
-            "peer_group_name"
-        ]
-        .nunique()
-    )
+    group_count = peer_groups["peer_group_name"].nunique()
 
-    print(
-        f"[CHECK] Unique peer groups: "
-        f"{group_count}"
-    )
+    print(f"[CHECK] Unique peer groups: " f"{group_count}")
 
-    print(
-        f"[CHECK] Assignments: "
-        f"{len(peer_groups)}"
-    )
+    print(f"[CHECK] Assignments: " f"{len(peer_groups)}")
 
-    print(
-        f"[CHECK] Percentile rows: "
-        f"{len(percentiles)}"
-    )
+    print(f"[CHECK] Percentile rows: " f"{len(percentiles)}")
 
     # ------------------------------------------------------------
     # Peer group count
@@ -572,10 +487,7 @@ def validate_peer_results(
 
     if group_count != 11:
 
-        raise RuntimeError(
-            f"Expected 11 peer groups, "
-            f"found {group_count}."
-        )
+        raise RuntimeError(f"Expected 11 peer groups, " f"found {group_count}.")
 
     # ------------------------------------------------------------
     # Percentile range
@@ -583,89 +495,50 @@ def validate_peer_results(
 
     if not percentiles.empty:
 
-        minimum = (
-            percentiles[
-                "percentile_rank"
-            ].min()
-        )
+        minimum = percentiles["percentile_rank"].min()
 
-        maximum = (
-            percentiles[
-                "percentile_rank"
-            ].max()
-        )
+        maximum = percentiles["percentile_rank"].max()
 
-        print(
-            f"[CHECK] Percentile range: "
-            f"{minimum:.2f} - {maximum:.2f}"
-        )
+        print(f"[CHECK] Percentile range: " f"{minimum:.2f} - {maximum:.2f}")
 
         if minimum < 0 or maximum > 100:
 
-            raise RuntimeError(
-                "Percentile rank outside 0-100."
-            )
+            raise RuntimeError("Percentile rank outside 0-100.")
 
-        print(
-            "[OK] Percentile ranks within 0-100"
-        )
+        print("[OK] Percentile ranks within 0-100")
 
     # ------------------------------------------------------------
     # Metric count
     # ------------------------------------------------------------
 
-    metric_names = set(
-        percentiles["metric"].unique()
-    )
+    metric_names = set(percentiles["metric"].unique())
 
-    expected_metrics = set(
-        PEER_METRICS.keys()
-    )
+    expected_metrics = set(PEER_METRICS.keys())
 
-    print(
-        f"[CHECK] Metrics represented: "
-        f"{len(metric_names)}"
-    )
+    print(f"[CHECK] Metrics represented: " f"{len(metric_names)}")
 
-    missing_metrics = (
-        expected_metrics
-        - metric_names
-    )
+    missing_metrics = expected_metrics - metric_names
 
     if missing_metrics:
 
         raise RuntimeError(
-            "Missing peer metrics: "
-            + ", ".join(
-                sorted(missing_metrics)
-            )
+            "Missing peer metrics: " + ", ".join(sorted(missing_metrics))
         )
 
-    print(
-        "[OK] All 10 peer metrics represented"
-    )
+    print("[OK] All 10 peer metrics represented")
 
     # ------------------------------------------------------------
     # Metric coverage PER PEER GROUP
     # ------------------------------------------------------------
 
-    print(
-        "\n[CHECK] Metric coverage per peer group:"
-    )
+    print("\n[CHECK] Metric coverage per peer group:")
 
-    expected_metric_count = len(
-        PEER_METRICS
-    )
+    expected_metric_count = len(PEER_METRICS)
 
     coverage = (
-        percentiles
-        .groupby(
-            "peer_group_name"
-        )["metric"]
+        percentiles.groupby("peer_group_name")["metric"]
         .nunique()
-        .sort_values(
-            ascending=False
-        )
+        .sort_values(ascending=False)
     )
 
     incomplete_groups = []
@@ -682,22 +555,15 @@ def validate_peer_results(
         )
 
         if metric_count != expected_metric_count:
-            incomplete_groups.append(
-                group_name
-            )
+            incomplete_groups.append(group_name)
 
     if incomplete_groups:
 
         raise RuntimeError(
-            "Incomplete metric coverage for: "
-            + ", ".join(
-                incomplete_groups
-            )
+            "Incomplete metric coverage for: " + ", ".join(incomplete_groups)
         )
 
-    print(
-        "[OK] Every peer group has all 10 metrics"
-    )
+    print("[OK] Every peer group has all 10 metrics")
 
     # ------------------------------------------------------------
     # D/E inverse ranking
@@ -705,87 +571,47 @@ def validate_peer_results(
 
     if "de" in metric_names:
 
-        de_rows = percentiles[
-            percentiles["metric"] == "de"
-        ]
+        de_rows = percentiles[percentiles["metric"] == "de"]
 
-        print(
-            f"\n[CHECK] D/E percentile rows: "
-            f"{len(de_rows)}"
-        )
+        print(f"\n[CHECK] D/E percentile rows: " f"{len(de_rows)}")
 
-        print(
-            "[OK] D/E inverse percentile "
-            "calculation applied"
-        )
+        print("[OK] D/E inverse percentile " "calculation applied")
 
     # ------------------------------------------------------------
     # Company coverage
     # ------------------------------------------------------------
 
-    assigned_companies = (
-        peer_groups[
-            "company_id"
-        ]
-        .nunique()
-    )
+    assigned_companies = peer_groups["company_id"].nunique()
 
-    percentile_companies = (
-        percentiles[
-            "company_id"
-        ]
-        .nunique()
-    )
+    percentile_companies = percentiles["company_id"].nunique()
 
-    print(
-        f"\n[CHECK] Peer-assigned companies: "
-        f"{assigned_companies}"
-    )
+    print(f"\n[CHECK] Peer-assigned companies: " f"{assigned_companies}")
 
-    print(
-        f"[CHECK] Companies represented in "
-        f"percentiles: {percentile_companies}"
-    )
+    print(f"[CHECK] Companies represented in " f"percentiles: {percentile_companies}")
 
     if percentile_companies != assigned_companies:
 
         missing_companies = sorted(
-            set(
-                peer_groups["company_id"]
-            )
-            -
-            set(
-                percentiles["company_id"]
-            )
+            set(peer_groups["company_id"]) - set(percentiles["company_id"])
         )
 
         raise RuntimeError(
             "Some peer-assigned companies have "
-            "no percentile records: "
-            + ", ".join(missing_companies)
+            "no percentile records: " + ", ".join(missing_companies)
         )
 
-    print(
-        "[OK] All peer-assigned companies represented"
-    )
+    print("[OK] All peer-assigned companies represented")
 
     # ------------------------------------------------------------
     # Peer group coverage
     # ------------------------------------------------------------
 
-    print(
-        "\n[CHECK] Peer group company coverage:"
-    )
+    print("\n[CHECK] Peer group company coverage:")
 
     coverage_companies = (
-        percentiles
-        .groupby(
-            "peer_group_name"
-        )["company_id"]
+        percentiles.groupby("peer_group_name")["company_id"]
         .nunique()
-        .sort_values(
-            ascending=False
-        )
+        .sort_values(ascending=False)
     )
 
     for (
@@ -793,27 +619,21 @@ def validate_peer_results(
         count,
     ) in coverage_companies.items():
 
-        print(
-            f"        {group_name:<30} "
-            f"{count:>3} companies"
-        )
+        print(f"        {group_name:<30} " f"{count:>3} companies")
 
 
 # ================================================================
 # MAIN
 # ================================================================
 
+
 def main():
 
     print("=" * 70)
 
-    print(
-        "NIFTY 100 - SPRINT 3 DAY 18"
-    )
+    print("NIFTY 100 - SPRINT 3 DAY 18")
 
-    print(
-        "PEER PERCENTILE ENGINE"
-    )
+    print("PEER PERCENTILE ENGINE")
 
     print("=" * 70)
 
@@ -821,91 +641,56 @@ def main():
     # STEP 1
     # ------------------------------------------------------------
 
-    print(
-        "\n[1] Loading peer groups..."
-    )
+    print("\n[1] Loading peer groups...")
 
     peer_groups = load_peer_groups()
 
-    print(
-        f"[OK] Peer group rows: "
-        f"{len(peer_groups)}"
-    )
+    print(f"[OK] Peer group rows: " f"{len(peer_groups)}")
 
-    print(
-        f"[OK] Peer groups: "
-        f"{peer_groups['peer_group_name'].nunique()}"
-    )
+    print(f"[OK] Peer groups: " f"{peer_groups['peer_group_name'].nunique()}")
 
-    print(
-        f"[OK] Companies assigned: "
-        f"{peer_groups['company_id'].nunique()}"
-    )
+    print(f"[OK] Companies assigned: " f"{peer_groups['company_id'].nunique()}")
 
     # ------------------------------------------------------------
     # STEP 2
     # ------------------------------------------------------------
 
-    print(
-        "\n[2] Loading financial ratios..."
-    )
+    print("\n[2] Loading financial ratios...")
 
     ratios = load_financial_ratios()
 
-    print(
-        f"[OK] financial_ratios rows: "
-        f"{len(ratios):,}"
-    )
+    print(f"[OK] financial_ratios rows: " f"{len(ratios):,}")
 
     # ------------------------------------------------------------
     # STEP 3
     # ------------------------------------------------------------
 
-    print(
-        "\n[3] Building peer dataset..."
-    )
+    print("\n[3] Building peer dataset...")
 
     peer_dataset = build_peer_dataset(
         ratios,
         peer_groups,
     )
 
-    print(
-        f"[OK] Peer dataset rows: "
-        f"{len(peer_dataset)}"
-    )
+    print(f"[OK] Peer dataset rows: " f"{len(peer_dataset)}")
 
-    print(
-        f"[OK] Metric rows: "
-        f"{len(peer_dataset):,}"
-    )
+    print(f"[OK] Metric rows: " f"{len(peer_dataset):,}")
 
     # ------------------------------------------------------------
     # STEP 4
     # ------------------------------------------------------------
 
-    print(
-        "\n[4] Calculating percentile rankings..."
-    )
+    print("\n[4] Calculating percentile rankings...")
 
-    percentiles = (
-        calculate_peer_percentiles(
-            peer_dataset
-        )
-    )
+    percentiles = calculate_peer_percentiles(peer_dataset)
 
-    print(
-        f"[OK] Percentile rows generated: "
-        f"{len(percentiles)}"
-    )
+    print(f"[OK] Percentile rows generated: " f"{len(percentiles)}")
 
     # ------------------------------------------------------------
     # STEP 5
     # ------------------------------------------------------------
 
-    print(
-        "\n[5] Validating results..."
-    )
+    print("\n[5] Validating results...")
 
     validate_peer_results(
         peer_groups,
@@ -916,18 +701,11 @@ def main():
     # STEP 6
     # ------------------------------------------------------------
 
-    print(
-        "\n[6] Saving peer_percentiles "
-        "to SQLite..."
-    )
+    print("\n[6] Saving peer_percentiles " "to SQLite...")
 
-    save_peer_percentiles(
-        percentiles
-    )
+    save_peer_percentiles(percentiles)
 
-    print(
-        "[OK] peer_percentiles table updated"
-    )
+    print("[OK] peer_percentiles table updated")
 
     # ------------------------------------------------------------
     # FINAL
@@ -935,9 +713,7 @@ def main():
 
     print("\n" + "=" * 70)
 
-    print(
-        "DAY 18 PEER ENGINE COMPLETE"
-    )
+    print("DAY 18 PEER ENGINE COMPLETE")
 
     print("=" * 70)
 

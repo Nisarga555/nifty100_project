@@ -25,39 +25,37 @@ QA companies:
     TATASTEEL
 """
 
-from pathlib import Path
 import math
 import re
+from pathlib import Path
 
 import pandas as pd
-
+from reportlab.graphics.charts.barcharts import (
+    VerticalBarChart,
+)
+from reportlab.graphics.shapes import (
+    Drawing,
+    Line,
+    Rect,
+    String,
+)
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import (
-    getSampleStyleSheet,
     ParagraphStyle,
+    getSampleStyleSheet,
 )
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     BaseDocTemplate,
     Frame,
+    PageBreak,
     PageTemplate,
     Paragraph,
     Spacer,
     Table,
     TableStyle,
-    PageBreak,
 )
-from reportlab.graphics.shapes import (
-    Drawing,
-    Rect,
-    String,
-    Line,
-)
-from reportlab.graphics.charts.barcharts import (
-    VerticalBarChart,
-)
-
 
 # =====================================================================
 # PATHS
@@ -84,17 +82,9 @@ PL_FILE = RAW / "profitandloss.xlsx"
 BS_FILE = RAW / "balancesheet.xlsx"
 CF_FILE = RAW / "cashflow.xlsx"
 
-PROS_CONS_FILE = (
-    ROOT
-    / "output"
-    / "pros_cons_generated.csv"
-)
+PROS_CONS_FILE = ROOT / "output" / "pros_cons_generated.csv"
 
-CASHFLOW_INTELLIGENCE_FILE = (
-    ROOT
-    / "output"
-    / "cashflow_intelligence.xlsx"
-)
+CASHFLOW_INTELLIGENCE_FILE = ROOT / "output" / "cashflow_intelligence.xlsx"
 
 
 # =====================================================================
@@ -117,6 +107,7 @@ WHITE = colors.white
 # =====================================================================
 # HELPERS
 # =====================================================================
+
 
 def safe_float(value):
     if value is None:
@@ -201,6 +192,7 @@ def normalize_year(value):
 # DATA LOADING
 # =====================================================================
 
+
 def load_data():
 
     companies = pd.read_excel(
@@ -228,13 +220,9 @@ def load_data():
         header=1,
     )
 
-    pros_cons = pd.read_csv(
-        PROS_CONS_FILE
-    )
+    pros_cons = pd.read_csv(PROS_CONS_FILE)
 
-    intelligence = pd.read_excel(
-        CASHFLOW_INTELLIGENCE_FILE
-    )
+    intelligence = pd.read_excel(CASHFLOW_INTELLIGENCE_FILE)
 
     # ---------------------------------------------------------------
     # Normalize IDs
@@ -252,18 +240,12 @@ def load_data():
 
         if "company_id" in df.columns:
 
-            df["company_id"] = (
-                df["company_id"]
-                .apply(normalize_company_id)
-            )
+            df["company_id"] = df["company_id"].apply(normalize_company_id)
 
     # Companies uses "id" rather than company_id.
     if "id" in companies.columns:
 
-        companies["id"] = (
-            companies["id"]
-            .apply(normalize_company_id)
-        )
+        companies["id"] = companies["id"].apply(normalize_company_id)
 
     # ---------------------------------------------------------------
     # Normalize years
@@ -275,20 +257,14 @@ def load_data():
         cf,
     ):
 
-        df["year_num"] = (
-            df["year"]
-            .apply(normalize_year)
-        )
+        df["year_num"] = df["year"].apply(normalize_year)
 
         df.dropna(
             subset=["year_num"],
             inplace=True,
         )
 
-        df["year_num"] = (
-            df["year_num"]
-            .astype(int)
-        )
+        df["year_num"] = df["year_num"].astype(int)
 
     # ---------------------------------------------------------------
     # Numeric columns
@@ -345,6 +321,7 @@ def load_data():
 # =====================================================================
 # STYLES
 # =====================================================================
+
 
 def build_styles():
 
@@ -467,6 +444,7 @@ def build_styles():
 # PAGE BACKGROUND
 # =====================================================================
 
+
 def draw_page_background(
     canvas,
     doc,
@@ -474,9 +452,7 @@ def draw_page_background(
 
     canvas.saveState()
 
-    canvas.setFillColor(
-        colors.HexColor("#F8FAFC")
-    )
+    canvas.setFillColor(colors.HexColor("#F8FAFC"))
 
     canvas.rect(
         0,
@@ -493,6 +469,7 @@ def draw_page_background(
 # =====================================================================
 # COMPANY HEADER
 # =====================================================================
+
 
 def company_header(
     company_name,
@@ -569,6 +546,7 @@ def company_header(
 # KPI TILES
 # =====================================================================
 
+
 def kpi_tiles(
     metrics,
     styles,
@@ -584,9 +562,7 @@ def kpi_tiles(
 
         row = []
 
-        for label, value in metrics[
-            i:i + 3
-        ]:
+        for label, value in metrics[i : i + 3]:
 
             cell = [
                 Paragraph(
@@ -660,6 +636,7 @@ def kpi_tiles(
 # REVENUE / PROFIT CHART
 # =====================================================================
 
+
 def revenue_profit_chart(
     pl,
 ):
@@ -688,15 +665,9 @@ def revenue_profit_chart(
     if data.empty:
         return drawing
 
-    sales = [
-        0 if pd.isna(x) else float(x)
-        for x in data["sales"]
-    ]
+    sales = [0 if pd.isna(x) else float(x) for x in data["sales"]]
 
-    profit = [
-        0 if pd.isna(x) else float(x)
-        for x in data["net_profit"]
-    ]
+    profit = [0 if pd.isna(x) else float(x) for x in data["net_profit"]]
 
     chart = VerticalBarChart()
 
@@ -710,10 +681,7 @@ def revenue_profit_chart(
         profit,
     ]
 
-    chart.categoryAxis.categoryNames = [
-        str(int(x))
-        for x in data["year_num"]
-    ]
+    chart.categoryAxis.categoryNames = [str(int(x)) for x in data["year_num"]]
 
     chart.categoryAxis.labels.fontSize = 5
     chart.categoryAxis.labels.angle = 45
@@ -767,6 +735,7 @@ def revenue_profit_chart(
 # =====================================================================
 # ROE / ROCE TREND
 # =====================================================================
+
 
 def roe_roce_chart(
     ratios,
@@ -838,24 +807,14 @@ def roe_roce_chart(
         if len(data) <= 1:
             return x0 + width / 2
 
-        return (
-            x0
-            + width
-            * index
-            / (len(data) - 1)
-        )
+        return x0 + width * index / (len(data) - 1)
 
     def py(value):
 
         if value is None:
             return None
 
-        return (
-            y0
-            + height
-            * (value - ymin)
-            / span
-        )
+        return y0 + height * (value - ymin) / span
 
     drawing.add(
         String(
@@ -871,24 +830,15 @@ def roe_roce_chart(
     previous_roe = None
     previous_roce = None
 
-    for index, row in data.reset_index(
-        drop=True
-    ).iterrows():
+    for index, row in data.reset_index(drop=True).iterrows():
 
         x = px(index)
 
-        roe = safe_float(
-            row["roe"]
-        )
+        roe = safe_float(row["roe"])
 
-        roce = safe_float(
-            row["roce"]
-        )
+        roce = safe_float(row["roce"])
 
-        if (
-            previous_roe is not None
-            and roe is not None
-        ):
+        if previous_roe is not None and roe is not None:
 
             drawing.add(
                 Line(
@@ -901,10 +851,7 @@ def roe_roce_chart(
                 )
             )
 
-        if (
-            previous_roce is not None
-            and roce is not None
-        ):
+        if previous_roce is not None and roce is not None:
 
             drawing.add(
                 Line(
@@ -961,6 +908,7 @@ def roe_roce_chart(
 # BALANCE SHEET TABLE
 # =====================================================================
 
+
 def balance_sheet_table(
     bs,
     styles,
@@ -1014,46 +962,20 @@ def balance_sheet_table(
 
     for _, row in data.iterrows():
 
-        equity = (
-            safe_float(
-                row["equity_capital"]
-            )
-            or 0
-        )
+        equity = safe_float(row["equity_capital"]) or 0
 
-        reserves = (
-            safe_float(
-                row["reserves"]
-            )
-            or 0
-        )
+        reserves = safe_float(row["reserves"]) or 0
 
-        borrowings = (
-            safe_float(
-                row["borrowings"]
-            )
-            or 0
-        )
+        borrowings = safe_float(row["borrowings"]) or 0
 
-        other = (
-            safe_float(
-                row["other_liabilities"]
-            )
-            or 0
-        )
+        other = safe_float(row["other_liabilities"]) or 0
 
         rows.append(
             [
                 str(int(row["year_num"])),
-                fmt_number(
-                    equity + reserves
-                ),
-                fmt_number(
-                    borrowings
-                ),
-                fmt_number(
-                    other
-                ),
+                fmt_number(equity + reserves),
+                fmt_number(borrowings),
+                fmt_number(other),
             ]
         )
 
@@ -1140,6 +1062,7 @@ def balance_sheet_table(
 # CASH FLOW WATERFALL
 # =====================================================================
 
+
 def cashflow_waterfall(
     latest_cf,
 ):
@@ -1155,51 +1078,28 @@ def cashflow_waterfall(
     values = [
         (
             "CFO",
-            safe_float(
-                latest_cf.get(
-                    "operating_activity"
-                )
-            ),
+            safe_float(latest_cf.get("operating_activity")),
         ),
         (
             "CFI",
-            safe_float(
-                latest_cf.get(
-                    "investing_activity"
-                )
-            ),
+            safe_float(latest_cf.get("investing_activity")),
         ),
         (
             "CFF",
-            safe_float(
-                latest_cf.get(
-                    "financing_activity"
-                )
-            ),
+            safe_float(latest_cf.get("financing_activity")),
         ),
         (
             "Net Cash",
-            safe_float(
-                latest_cf.get(
-                    "net_cash_flow"
-                )
-            ),
+            safe_float(latest_cf.get("net_cash_flow")),
         ),
     ]
 
-    valid = [
-        value
-        for _, value in values
-        if value is not None
-    ]
+    valid = [value for _, value in values if value is not None]
 
     if not valid:
         return drawing
 
-    maximum = max(
-        abs(value)
-        for value in valid
-    )
+    maximum = max(abs(value) for value in valid)
 
     if maximum == 0:
         maximum = 1
@@ -1228,31 +1128,16 @@ def cashflow_waterfall(
         if value is None:
             continue
 
-        x = (
-            18 * mm
-            + index
-            * (
-                bar_width
-                + gap
-            )
-        )
+        x = 18 * mm + index * (bar_width + gap)
 
-        height = (
-            abs(value)
-            / maximum
-            * chart_height
-        )
+        height = abs(value) / maximum * chart_height
 
         if value >= 0:
             y = base_y
         else:
             y = base_y - height
 
-        fill = (
-            GREEN
-            if value >= 0
-            else RED
-        )
+        fill = GREEN if value >= 0 else RED
 
         drawing.add(
             Rect(
@@ -1307,24 +1192,17 @@ def cashflow_waterfall(
 # PROS / CONS
 # =====================================================================
 
+
 def pros_cons_section(
     company_id,
     pros_cons,
     styles,
 ):
 
-    rows = pros_cons[
-        pros_cons["company_id"]
-        == company_id
-    ].copy()
+    rows = pros_cons[pros_cons["company_id"] == company_id].copy()
 
     pros = (
-        rows[
-            rows["type"]
-            .astype(str)
-            .str.lower()
-            == "pro"
-        ]
+        rows[rows["type"].astype(str).str.lower() == "pro"]
         .sort_values(
             "confidence_pct",
             ascending=False,
@@ -1333,12 +1211,7 @@ def pros_cons_section(
     )
 
     cons = (
-        rows[
-            rows["type"]
-            .astype(str)
-            .str.lower()
-            == "con"
-        ]
+        rows[rows["type"].astype(str).str.lower() == "con"]
         .sort_values(
             "confidence_pct",
             ascending=False,
@@ -1367,9 +1240,7 @@ def pros_cons_section(
         for _, row in pros.iterrows():
 
             confidence = fmt_number(
-                row.get(
-                    "confidence_pct"
-                ),
+                row.get("confidence_pct"),
                 0,
             )
 
@@ -1411,9 +1282,7 @@ def pros_cons_section(
         for _, row in cons.iterrows():
 
             confidence = fmt_number(
-                row.get(
-                    "confidence_pct"
-                ),
+                row.get("confidence_pct"),
                 0,
             )
 
@@ -1517,6 +1386,7 @@ def pros_cons_section(
 # HISTORICAL FINANCIAL SNAPSHOT
 # =====================================================================
 
+
 def historical_snapshot(
     company_pl,
     company_cf,
@@ -1537,8 +1407,7 @@ def historical_snapshot(
     )
 
     history = (
-        history
-        .drop_duplicates(
+        history.drop_duplicates(
             "year_num",
             keep="last",
         )
@@ -1573,21 +1442,9 @@ def historical_snapshot(
                 fmt_number(row.get("sales")),
                 fmt_number(row.get("net_profit")),
                 fmt_number(row.get("eps"), 2),
-                fmt_number(
-                    row.get(
-                        "operating_activity"
-                    )
-                ),
-                fmt_number(
-                    row.get(
-                        "investing_activity"
-                    )
-                ),
-                fmt_number(
-                    row.get(
-                        "financing_activity"
-                    )
-                ),
+                fmt_number(row.get("operating_activity")),
+                fmt_number(row.get("investing_activity")),
+                fmt_number(row.get("financing_activity")),
             ]
         )
 
@@ -1671,6 +1528,7 @@ def historical_snapshot(
 # TEARSHEET BUILDER
 # =====================================================================
 
+
 def build_tearsheet(
     company_id,
     data,
@@ -1690,10 +1548,7 @@ def build_tearsheet(
     # Company
     # ---------------------------------------------------------------
 
-    company_rows = companies[
-        companies["id"]
-        == company_id
-    ]
+    company_rows = companies[companies["id"] == company_id]
 
     if company_rows.empty:
         return None
@@ -1707,19 +1562,10 @@ def build_tearsheet(
         )
     )
 
-    sector_rows = sectors[
-        sectors["company_id"]
-        == company_id
-    ]
+    sector_rows = sectors[sectors["company_id"] == company_id]
 
     sector = (
-        str(
-            sector_rows.iloc[0][
-                "broad_sector"
-            ]
-        )
-        if not sector_rows.empty
-        else "Unknown"
+        str(sector_rows.iloc[0]["broad_sector"]) if not sector_rows.empty else "Unknown"
     )
 
     # ---------------------------------------------------------------
@@ -1727,10 +1573,7 @@ def build_tearsheet(
     # ---------------------------------------------------------------
 
     company_pl = (
-        pl[
-            pl["company_id"]
-            == company_id
-        ]
+        pl[pl["company_id"] == company_id]
         .drop_duplicates(
             "year_num",
             keep="last",
@@ -1739,10 +1582,7 @@ def build_tearsheet(
     )
 
     company_bs = (
-        bs[
-            bs["company_id"]
-            == company_id
-        ]
+        bs[bs["company_id"] == company_id]
         .drop_duplicates(
             "year_num",
             keep="last",
@@ -1751,10 +1591,7 @@ def build_tearsheet(
     )
 
     company_cf = (
-        cf[
-            cf["company_id"]
-            == company_id
-        ]
+        cf[cf["company_id"] == company_id]
         .drop_duplicates(
             "year_num",
             keep="last",
@@ -1771,9 +1608,7 @@ def build_tearsheet(
     ]:
 
         if not df.empty:
-            years.extend(
-                df["year_num"].tolist()
-            )
+            years.extend(df["year_num"].tolist())
 
     if not years:
         return None
@@ -1784,32 +1619,15 @@ def build_tearsheet(
     # Latest records
     # ---------------------------------------------------------------
 
-    pl_rows = company_pl[
-        company_pl["year_num"]
-        == latest_year
-    ]
+    pl_rows = company_pl[company_pl["year_num"] == latest_year]
 
-    bs_rows = company_bs[
-        company_bs["year_num"]
-        == latest_year
-    ]
+    bs_rows = company_bs[company_bs["year_num"] == latest_year]
 
-    cf_rows = company_cf[
-        company_cf["year_num"]
-        == latest_year
-    ]
+    cf_rows = company_cf[company_cf["year_num"] == latest_year]
 
-    pl_latest = (
-        pl_rows.iloc[-1]
-        if not pl_rows.empty
-        else None
-    )
+    pl_latest = pl_rows.iloc[-1] if not pl_rows.empty else None
 
-    cf_latest = (
-        cf_rows.iloc[-1]
-        if not cf_rows.empty
-        else None
-    )
+    cf_latest = cf_rows.iloc[-1] if not cf_rows.empty else None
 
     # ---------------------------------------------------------------
     # ROE / ROCE history
@@ -1819,37 +1637,22 @@ def build_tearsheet(
 
     for _, row in company_pl.iterrows():
 
-        year = int(
-            row["year_num"]
-        )
+        year = int(row["year_num"])
 
-        bs_rows_year = company_bs[
-            company_bs["year_num"]
-            == year
-        ]
+        bs_rows_year = company_bs[company_bs["year_num"] == year]
 
         if bs_rows_year.empty:
             continue
 
-        bs_row = (
-            bs_rows_year.iloc[-1]
-        )
+        bs_row = bs_rows_year.iloc[-1]
 
-        net_profit = safe_float(
-            row["net_profit"]
-        )
+        net_profit = safe_float(row["net_profit"])
 
-        equity = safe_float(
-            bs_row["equity_capital"]
-        )
+        equity = safe_float(bs_row["equity_capital"])
 
-        reserves = safe_float(
-            bs_row["reserves"]
-        )
+        reserves = safe_float(bs_row["reserves"])
 
-        borrowings = safe_float(
-            bs_row["borrowings"]
-        )
+        borrowings = safe_float(bs_row["borrowings"])
 
         roe = None
 
@@ -1860,39 +1663,21 @@ def build_tearsheet(
             and equity + reserves > 0
         ):
 
-            roe = (
-                net_profit
-                / (equity + reserves)
-                * 100
-            )
+            roe = net_profit / (equity + reserves) * 100
 
         roce = None
 
-        operating_profit = safe_float(
-            row["operating_profit"]
-        )
+        operating_profit = safe_float(row["operating_profit"])
 
         if (
             operating_profit is not None
             and equity is not None
             and reserves is not None
             and borrowings is not None
-            and (
-                equity
-                + reserves
-                + borrowings
-            ) > 0
+            and (equity + reserves + borrowings) > 0
         ):
 
-            roce = (
-                operating_profit
-                / (
-                    equity
-                    + reserves
-                    + borrowings
-                )
-                * 100
-            )
+            roce = operating_profit / (equity + reserves + borrowings) * 100
 
         ratio_records.append(
             {
@@ -1902,80 +1687,43 @@ def build_tearsheet(
             }
         )
 
-    ratios = pd.DataFrame(
-        ratio_records
-    )
+    ratios = pd.DataFrame(ratio_records)
 
     # ---------------------------------------------------------------
     # Latest KPI values
     # ---------------------------------------------------------------
 
-    latest_sales = (
-        pl_latest["sales"]
-        if pl_latest is not None
-        else None
-    )
+    latest_sales = pl_latest["sales"] if pl_latest is not None else None
 
-    latest_profit = (
-        pl_latest["net_profit"]
-        if pl_latest is not None
-        else None
-    )
+    latest_profit = pl_latest["net_profit"] if pl_latest is not None else None
 
-    latest_eps = (
-        pl_latest["eps"]
-        if pl_latest is not None
-        else None
-    )
+    latest_eps = pl_latest["eps"] if pl_latest is not None else None
 
     latest_roe = None
     latest_roce = None
 
     if not ratios.empty:
 
-        latest_ratio = ratios[
-            ratios["year_num"]
-            == latest_year
-        ]
+        latest_ratio = ratios[ratios["year_num"] == latest_year]
 
         if not latest_ratio.empty:
 
-            latest_roe = (
-                latest_ratio.iloc[-1][
-                    "roe"
-                ]
-            )
+            latest_roe = latest_ratio.iloc[-1]["roe"]
 
-            latest_roce = (
-                latest_ratio.iloc[-1][
-                    "roce"
-                ]
-            )
+            latest_roce = latest_ratio.iloc[-1]["roce"]
 
     if latest_roe is None:
 
-        latest_roe = safe_float(
-            company.get(
-                "roe_percentage"
-            )
-        )
+        latest_roe = safe_float(company.get("roe_percentage"))
 
     if latest_roce is None:
 
-        latest_roce = safe_float(
-            company.get(
-                "roce_percentage"
-            )
-        )
+        latest_roce = safe_float(company.get("roce_percentage"))
 
     metrics = [
         (
             "Revenue",
-            (
-                f"₹{fmt_number(latest_sales)} Cr"
-                if latest_sales is not None
-                else "N/A"
-            ),
+            (f"₹{fmt_number(latest_sales)} Cr" if latest_sales is not None else "N/A"),
         ),
         (
             "Net Profit",
@@ -1994,15 +1742,11 @@ def build_tearsheet(
         ),
         (
             "ROE",
-            fmt_pct(
-                latest_roe
-            ),
+            fmt_pct(latest_roe),
         ),
         (
             "ROCE",
-            fmt_pct(
-                latest_roce
-            ),
+            fmt_pct(latest_roce),
         ),
         (
             "Latest Year",
@@ -2014,10 +1758,7 @@ def build_tearsheet(
     # Document
     # ---------------------------------------------------------------
 
-    filename = (
-        OUTPUT
-        / f"{company_id}_tearsheet.pdf"
-    )
+    filename = OUTPUT / f"{company_id}_tearsheet.pdf"
 
     doc = BaseDocTemplate(
         str(filename),
@@ -2084,11 +1825,7 @@ def build_tearsheet(
         )
     )
 
-    story.append(
-        revenue_profit_chart(
-            company_pl
-        )
-    )
+    story.append(revenue_profit_chart(company_pl))
 
     story.append(
         Spacer(
@@ -2097,15 +1834,9 @@ def build_tearsheet(
         )
     )
 
-    story.append(
-        roe_roce_chart(
-            ratios
-        )
-    )
+    story.append(roe_roce_chart(ratios))
 
-    story.append(
-        PageBreak()
-    )
+    story.append(PageBreak())
 
     # ===============================================================
     # PAGE 2
@@ -2140,13 +1871,7 @@ def build_tearsheet(
     )
 
     story.append(
-        cashflow_waterfall(
-            (
-                cf_latest.to_dict()
-                if cf_latest is not None
-                else None
-            )
-        )
+        cashflow_waterfall(cf_latest.to_dict() if cf_latest is not None else None)
     )
 
     story.append(
@@ -2162,25 +1887,16 @@ def build_tearsheet(
 
     allocation = "N/A"
 
-    intelligence_rows = intelligence[
-        intelligence["company_id"]
-        == company_id
-    ]
+    intelligence_rows = intelligence[intelligence["company_id"] == company_id]
 
     if not intelligence_rows.empty:
 
-        value = intelligence_rows.iloc[0].get(
-            "capital_allocation_label"
-        )
+        value = intelligence_rows.iloc[0].get("capital_allocation_label")
 
-        if (
-            value is not None
-            and str(value)
-            not in [
-                "nan",
-                "None",
-            ]
-        ):
+        if value is not None and str(value) not in [
+            "nan",
+            "None",
+        ]:
 
             allocation = str(value)
 
@@ -2247,9 +1963,7 @@ def build_tearsheet(
         )
     )
 
-    story.append(
-        badge
-    )
+    story.append(badge)
 
     story.append(
         Spacer(
@@ -2300,9 +2014,7 @@ def build_tearsheet(
     # Build
     # ---------------------------------------------------------------
 
-    doc.build(
-        story
-    )
+    doc.build(story)
 
     return filename
 
@@ -2310,6 +2022,7 @@ def build_tearsheet(
 # =====================================================================
 # GENERATE SELECTED COMPANIES
 # =====================================================================
+
 
 def generate_for_companies(
     company_ids,
@@ -2322,9 +2035,7 @@ def generate_for_companies(
 
     for company_id in company_ids:
 
-        company_id = normalize_company_id(
-            company_id
-        )
+        company_id = normalize_company_id(company_id)
 
         try:
 
@@ -2344,9 +2055,7 @@ def generate_for_companies(
 
             else:
 
-                generated.append(
-                    result
-                )
+                generated.append(result)
 
         except Exception as exc:
 
@@ -2381,56 +2090,35 @@ if __name__ == "__main__":
     print("=" * 70)
     print()
 
-    generated, skipped = (
-        generate_for_companies(
-            test_companies
-        )
-    )
+    generated, skipped = generate_for_companies(test_companies)
 
     print()
-    print(
-        f"Generated: {len(generated)}"
-    )
+    print(f"Generated: {len(generated)}")
 
     for path in generated:
 
-        size_kb = (
-            path.stat().st_size
-            / 1024
-        )
+        size_kb = path.stat().st_size / 1024
 
-        print(
-            f"  {path.name}: "
-            f"{size_kb:.1f} KB"
-        )
+        print(f"  {path.name}: " f"{size_kb:.1f} KB")
 
     print()
 
     if skipped:
 
-        print(
-            "SKIPPED / FAILED:"
-        )
+        print("SKIPPED / FAILED:")
 
         for company_id, reason in skipped:
 
-            print(
-                f"  {company_id}: "
-                f"{reason}"
-            )
+            print(f"  {company_id}: " f"{reason}")
 
     print()
 
     if len(generated) != 5:
 
         raise AssertionError(
-            f"Expected 5 test tearsheets, "
-            f"generated {len(generated)}."
+            f"Expected 5 test tearsheets, " f"generated {len(generated)}."
         )
 
-    print(
-        "VALIDATION: "
-        "5-company PDF generation PASS"
-    )
+    print("VALIDATION: " "5-company PDF generation PASS")
 
     print()

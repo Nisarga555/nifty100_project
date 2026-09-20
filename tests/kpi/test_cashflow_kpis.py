@@ -1,23 +1,23 @@
 import pytest
 
 from src.analytics.cashflow_kpis import (
-    free_cash_flow,
-    cfo_pat_ratio,
-    classify_cfo_quality,
-    calculate_cfo_quality_score,
+    calculate_cashflow_kpis,
     calculate_cfo_quality,
+    calculate_cfo_quality_score,
     capex_intensity,
-    classify_capex_intensity,
-    fcf_conversion_rate,
     capital_allocation_pattern,
     capital_allocation_record,
-    calculate_cashflow_kpis,
+    cfo_pat_ratio,
+    classify_capex_intensity,
+    classify_cfo_quality,
+    fcf_conversion_rate,
+    free_cash_flow,
 )
-
 
 # =====================================================================
 # FREE CASH FLOW
 # =====================================================================
+
 
 def test_free_cash_flow():
     result = free_cash_flow(
@@ -41,6 +41,7 @@ def test_negative_free_cash_flow_allowed():
 # CFO / PAT
 # =====================================================================
 
+
 def test_cfo_pat_ratio():
     result = cfo_pat_ratio(
         cash_from_operations=300,
@@ -62,6 +63,7 @@ def test_cfo_pat_zero_returns_none():
 # =====================================================================
 # CFO QUALITY
 # =====================================================================
+
 
 def test_cfo_quality_high():
     result = classify_cfo_quality(1.2)
@@ -112,9 +114,7 @@ def test_cfo_quality_result():
         [100, 100, 100, 100, 100],
     )
 
-    assert result["cfo_quality_score"] == pytest.approx(
-        1.4
-    )
+    assert result["cfo_quality_score"] == pytest.approx(1.4)
 
     assert result["cfo_quality_label"] == "High Quality"
 
@@ -122,6 +122,7 @@ def test_cfo_quality_result():
 # =====================================================================
 # CAPEX INTENSITY
 # =====================================================================
+
 
 def test_capex_intensity():
     result = capex_intensity(
@@ -154,6 +155,7 @@ def test_capex_capital_intensive():
 # FCF CONVERSION
 # =====================================================================
 
+
 def test_fcf_conversion():
     result = fcf_conversion_rate(
         free_cash_flow_value=300,
@@ -175,6 +177,7 @@ def test_fcf_conversion_zero_operating_profit():
 # =====================================================================
 # CAPITAL ALLOCATION PATTERNS
 # =====================================================================
+
 
 def test_reinvestor_pattern():
     result = capital_allocation_pattern(
@@ -262,6 +265,7 @@ def test_mixed_pattern():
 # CAPITAL ALLOCATION RECORD
 # =====================================================================
 
+
 def test_capital_allocation_record():
     result = capital_allocation_record(
         company_id="ABB",
@@ -286,6 +290,7 @@ def test_capital_allocation_record():
 # COMPLETE KPI CALCULATION
 # =====================================================================
 
+
 def test_calculate_cashflow_kpis():
     row = {
         "operating_activity": 500,
@@ -298,30 +303,18 @@ def test_calculate_cashflow_kpis():
 
     result = calculate_cashflow_kpis(row)
 
-    assert result["free_cash_flow"] == pytest.approx(
-        300.0
-    )
+    assert result["free_cash_flow"] == pytest.approx(300.0)
 
-    assert result["cfo_pat_ratio"] == pytest.approx(
-        2.5
-    )
+    assert result["cfo_pat_ratio"] == pytest.approx(2.5)
 
-    assert result["capex_intensity_pct"] == pytest.approx(
-        20.0
-    )
+    assert result["capex_intensity_pct"] == pytest.approx(20.0)
 
-    assert result["capex_intensity_label"] == (
-        "Capital Intensive"
-    )
+    assert result["capex_intensity_label"] == ("Capital Intensive")
 
-    assert result["fcf_conversion_rate_pct"] == pytest.approx(
-        120.0
-    )
+    assert result["fcf_conversion_rate_pct"] == pytest.approx(120.0)
 
     assert result["cfo_sign"] == "+"
     assert result["cfi_sign"] == "-"
     assert result["cff_sign"] == "-"
 
-    assert result["capital_allocation_pattern"] == (
-        "Shareholder Returns"
-    )
+    assert result["capital_allocation_pattern"] == ("Shareholder Returns")

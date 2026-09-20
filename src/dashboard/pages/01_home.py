@@ -4,13 +4,12 @@ import plotly.express as px
 import streamlit as st
 
 from src.dashboard.utils.db import (
+    extract_year,
     get_companies,
     get_market_cap,
     get_ratios,
     get_sectors,
-    extract_year,
 )
-
 
 st.set_page_config(
     page_title="Nifty 100 Analytics",
@@ -22,6 +21,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
+
 
 def clean_numeric(series):
     return pd.to_numeric(series, errors="coerce")
@@ -105,10 +105,7 @@ def build_home_dataset(selected_year):
     if not sectors.empty:
         sectors = sectors.copy()
         sectors["company_id"] = (
-            sectors["company_id"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
+            sectors["company_id"].astype(str).str.strip().str.upper()
         )
 
         sectors = sectors.drop_duplicates(
@@ -139,10 +136,7 @@ def build_home_dataset(selected_year):
         latest_ratios = latest_ratios.copy()
 
         latest_ratios["company_id"] = (
-            latest_ratios["company_id"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
+            latest_ratios["company_id"].astype(str).str.strip().str.upper()
         )
 
         ratio_columns = [
@@ -154,9 +148,7 @@ def build_home_dataset(selected_year):
         ]
 
         ratio_columns = [
-            column
-            for column in ratio_columns
-            if column in latest_ratios.columns
+            column for column in ratio_columns if column in latest_ratios.columns
         ]
 
         master = master.merge(
@@ -171,12 +163,7 @@ def build_home_dataset(selected_year):
     if not market_cap.empty and "company_id" in market_cap.columns:
         mc = market_cap.copy()
 
-        mc["company_id"] = (
-            mc["company_id"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-        )
+        mc["company_id"] = mc["company_id"].astype(str).str.strip().str.upper()
 
         mc["_parsed_year"] = mc["year"].apply(extract_year)
 
@@ -201,9 +188,7 @@ def build_home_dataset(selected_year):
         ]
 
         valuation_columns = [
-            column
-            for column in valuation_columns
-            if column in mc.columns
+            column for column in valuation_columns if column in mc.columns
         ]
 
         master = master.merge(
@@ -220,17 +205,13 @@ def build_home_dataset(selected_year):
 # ---------------------------------------------------------------------
 
 st.title("🏠 Nifty 100 Analytics")
-st.caption(
-    "Financial Intelligence Dashboard • "
-    "92-company Nifty 100 universe"
-)
+st.caption("Financial Intelligence Dashboard • " "92-company Nifty 100 universe")
 
 companies = get_companies()
 
 if companies.empty:
     st.error(
-        "Company data could not be loaded. "
-        "Please check data/raw/companies.xlsx."
+        "Company data could not be loaded. " "Please check data/raw/companies.xlsx."
     )
     st.stop()
 
@@ -250,9 +231,7 @@ selected_year = st.sidebar.selectbox(
 data = build_home_dataset(selected_year)
 
 if data.empty:
-    st.warning(
-        f"No dashboard data is available up to {selected_year}."
-    )
+    st.warning(f"No dashboard data is available up to {selected_year}.")
     st.stop()
 
 
@@ -289,9 +268,7 @@ median_pe = pe.median()
 median_de = de.median()
 median_revenue_cagr = revenue_cagr.median()
 
-debt_free_count = int(
-    (de.fillna(np.nan) == 0).sum()
-)
+debt_free_count = int((de.fillna(np.nan) == 0).sum())
 
 
 # ---------------------------------------------------------------------
@@ -303,25 +280,19 @@ k1, k2, k3, k4, k5, k6 = st.columns(6)
 with k1:
     st.metric(
         "Average ROE",
-        f"{average_roe:.2f}%"
-        if pd.notna(average_roe)
-        else "N/A",
+        f"{average_roe:.2f}%" if pd.notna(average_roe) else "N/A",
     )
 
 with k2:
     st.metric(
         "Median P/E",
-        f"{median_pe:.2f}"
-        if pd.notna(median_pe)
-        else "N/A",
+        f"{median_pe:.2f}" if pd.notna(median_pe) else "N/A",
     )
 
 with k3:
     st.metric(
         "Median D/E",
-        f"{median_de:.2f}"
-        if pd.notna(median_de)
-        else "N/A",
+        f"{median_de:.2f}" if pd.notna(median_de) else "N/A",
     )
 
 with k4:
@@ -333,9 +304,7 @@ with k4:
 with k5:
     st.metric(
         "Median Revenue CAGR 5Y",
-        f"{median_revenue_cagr:.2f}%"
-        if pd.notna(median_revenue_cagr)
-        else "N/A",
+        f"{median_revenue_cagr:.2f}%" if pd.notna(median_revenue_cagr) else "N/A",
     )
 
 with k6:
@@ -360,10 +329,7 @@ with left:
 
     if "broad_sector" in data.columns:
         sector_counts = (
-            data["broad_sector"]
-            .fillna("Unknown")
-            .value_counts()
-            .reset_index()
+            data["broad_sector"].fillna("Unknown").value_counts().reset_index()
         )
 
         sector_counts.columns = [
@@ -404,9 +370,7 @@ with right:
     if "composite_quality_score" in data.columns:
         top5 = data.copy()
 
-        top5["composite_quality_score"] = clean_numeric(
-            top5["composite_quality_score"]
-        )
+        top5["composite_quality_score"] = clean_numeric(top5["composite_quality_score"])
 
         top5 = top5.sort_values(
             "composite_quality_score",
@@ -433,14 +397,10 @@ with right:
             "composite_quality_score": "Quality Score",
         }
 
-        table = table.rename(
-            columns=rename_map
-        )
+        table = table.rename(columns=rename_map)
 
         if "Quality Score" in table.columns:
-            table["Quality Score"] = table[
-                "Quality Score"
-            ].round(2)
+            table["Quality Score"] = table["Quality Score"].round(2)
 
         st.dataframe(
             table,

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
-import pandas as pd
 import math
+from pathlib import Path
 
+import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(
     prefix="/sectors",
@@ -54,11 +54,7 @@ def load_sectors():
         "sub_sector",
     ]
 
-    missing = [
-        column
-        for column in required_columns
-        if column not in df.columns
-    ]
+    missing = [column for column in required_columns if column not in df.columns]
 
     if missing:
         raise HTTPException(
@@ -73,12 +69,7 @@ def records_from_dataframe(df):
     records = []
 
     for row in df.to_dict(orient="records"):
-        records.append(
-            {
-                str(key): clean_value(value)
-                for key, value in row.items()
-            }
-        )
+        records.append({str(key): clean_value(value) for key, value in row.items()})
 
     return records
 
@@ -126,11 +117,7 @@ def sector_companies(sector: str):
     sector_normalized = sector.strip().lower()
 
     result = df[
-        df["broad_sector"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        == sector_normalized
+        df["broad_sector"].astype(str).str.strip().str.lower() == sector_normalized
     ].copy()
 
     if result.empty:
@@ -139,9 +126,7 @@ def sector_companies(sector: str):
             detail=f"Sector not found: {sector}",
         )
 
-    result = result.sort_values(
-        by=["sub_sector", "company_id"]
-    )
+    result = result.sort_values(by=["sub_sector", "company_id"])
 
     records = records_from_dataframe(result)
 

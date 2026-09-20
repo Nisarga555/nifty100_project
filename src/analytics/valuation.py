@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-import pandas as pd
-import numpy as np
 
+import numpy as np
+import pandas as pd
 
 # ============================================================
 # PROJECT PATHS
@@ -18,6 +18,7 @@ OUTPUT_DIR = PROJECT_ROOT / "output"
 # ============================================================
 # EXCEL READER
 # ============================================================
+
 
 def read_clean_excel(path: Path) -> pd.DataFrame:
     """
@@ -43,22 +44,13 @@ def read_clean_excel(path: Path) -> pd.DataFrame:
 
     for i in range(min(20, len(raw))):
 
-        values = (
-            raw.iloc[i]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .tolist()
-        )
+        values = raw.iloc[i].astype(str).str.strip().str.lower().tolist()
 
         # ----------------------------------------------------
         # Companies file
         # ----------------------------------------------------
 
-        if (
-            "id" in values
-            and "company_name" in values
-        ):
+        if "id" in values and "company_name" in values:
             header_index = i
             break
 
@@ -66,10 +58,7 @@ def read_clean_excel(path: Path) -> pd.DataFrame:
         # Company-year files
         # ----------------------------------------------------
 
-        if (
-            "company_id" in values
-            and "year" in values
-        ):
+        if "company_id" in values and "year" in values:
             header_index = i
             break
 
@@ -77,20 +66,14 @@ def read_clean_excel(path: Path) -> pd.DataFrame:
         # Sector file
         # ----------------------------------------------------
 
-        if (
-            "company_id" in values
-            and (
-                "broad_sector" in values
-                or "sub_sector" in values
-            )
+        if "company_id" in values and (
+            "broad_sector" in values or "sub_sector" in values
         ):
             header_index = i
             break
 
     if header_index is None:
-        raise ValueError(
-            f"Could not detect header row in {path.name}"
-        )
+        raise ValueError(f"Could not detect header row in {path.name}")
 
     df = pd.read_excel(
         path,
@@ -104,15 +87,10 @@ def read_clean_excel(path: Path) -> pd.DataFrame:
     ]
 
     # Remove completely empty rows
-    df = df.dropna(
-        how="all"
-    ).copy()
+    df = df.dropna(how="all").copy()
 
     # Clean column names
-    df.columns = [
-        str(col).strip()
-        for col in df.columns
-    ]
+    df.columns = [str(col).strip() for col in df.columns]
 
     return df
 
@@ -120,6 +98,7 @@ def read_clean_excel(path: Path) -> pd.DataFrame:
 # ============================================================
 # YEAR PARSER
 # ============================================================
+
 
 def parse_year(value):
     """
@@ -138,11 +117,7 @@ def parse_year(value):
 
     text = str(value)
 
-    match = pd.Series(
-        [text]
-    ).str.extract(
-        r"(\d{4})"
-    ).iloc[0, 0]
+    match = pd.Series([text]).str.extract(r"(\d{4})").iloc[0, 0]
 
     if pd.isna(match):
         return np.nan
@@ -153,6 +128,7 @@ def parse_year(value):
 # ============================================================
 # NUMERIC HELPER
 # ============================================================
+
 
 def safe_numeric(series):
     """
@@ -170,6 +146,7 @@ def safe_numeric(series):
 # FCF YIELD
 # ============================================================
 
+
 def calculate_fcf_yield(
     free_cash_flow,
     market_cap,
@@ -178,20 +155,13 @@ def calculate_fcf_yield(
     FCF Yield = FCF / Market Cap × 100
     """
 
-    fcf = safe_numeric(
-        free_cash_flow
-    )
+    fcf = safe_numeric(free_cash_flow)
 
-    market_cap = safe_numeric(
-        market_cap
-    )
+    market_cap = safe_numeric(market_cap)
 
     return np.where(
         market_cap > 0,
-        (
-            fcf
-            / market_cap
-        ) * 100,
+        (fcf / market_cap) * 100,
         np.nan,
     )
 
@@ -199,6 +169,7 @@ def calculate_fcf_yield(
 # ============================================================
 # VALUATION FLAG
 # ============================================================
+
 
 def valuation_flag(
     pe,
@@ -229,14 +200,10 @@ def valuation_flag(
     if sector_median_pe <= 0:
         return "Unavailable"
 
-    if pe > (
-        sector_median_pe * 1.5
-    ):
+    if pe > (sector_median_pe * 1.5):
         return "Caution"
 
-    if pe < (
-        sector_median_pe * 0.7
-    ):
+    if pe < (sector_median_pe * 0.7):
         return "Discount"
 
     return "Fair"
@@ -246,69 +213,40 @@ def valuation_flag(
 # BUILD VALUATION SUMMARY
 # ============================================================
 
+
 def build_valuation_summary():
 
     # ========================================================
     # LOAD SOURCE FILES
     # ========================================================
 
-    companies = read_clean_excel(
-        RAW_DIR / "companies.xlsx"
-    )
+    companies = read_clean_excel(RAW_DIR / "companies.xlsx")
 
-    sectors = read_clean_excel(
-        RAW_DIR / "sectors.xlsx"
-    )
+    sectors = read_clean_excel(RAW_DIR / "sectors.xlsx")
 
-    ratios = read_clean_excel(
-        RAW_DIR / "financial_ratios.xlsx"
-    )
+    ratios = read_clean_excel(RAW_DIR / "financial_ratios.xlsx")
 
-    market_cap = read_clean_excel(
-        RAW_DIR / "market_cap.xlsx"
-    )
+    market_cap = read_clean_excel(RAW_DIR / "market_cap.xlsx")
 
     # ========================================================
     # CLEAN COMPANY IDS
     # ========================================================
 
-    companies["id"] = (
-        companies["id"]
-        .astype(str)
-        .str.strip()
-    )
+    companies["id"] = companies["id"].astype(str).str.strip()
 
-    sectors["company_id"] = (
-        sectors["company_id"]
-        .astype(str)
-        .str.strip()
-    )
+    sectors["company_id"] = sectors["company_id"].astype(str).str.strip()
 
-    ratios["company_id"] = (
-        ratios["company_id"]
-        .astype(str)
-        .str.strip()
-    )
+    ratios["company_id"] = ratios["company_id"].astype(str).str.strip()
 
-    market_cap["company_id"] = (
-        market_cap["company_id"]
-        .astype(str)
-        .str.strip()
-    )
+    market_cap["company_id"] = market_cap["company_id"].astype(str).str.strip()
 
     # ========================================================
     # PARSE YEARS
     # ========================================================
 
-    ratios["year_num"] = (
-        ratios["year"]
-        .apply(parse_year)
-    )
+    ratios["year_num"] = ratios["year"].apply(parse_year)
 
-    market_cap["year_num"] = (
-        market_cap["year"]
-        .apply(parse_year)
-    )
+    market_cap["year_num"] = market_cap["year"].apply(parse_year)
 
     # ========================================================
     # NUMERIC CONVERSION
@@ -316,9 +254,7 @@ def build_valuation_summary():
 
     if "free_cash_flow_cr" in ratios.columns:
 
-        ratios["free_cash_flow_cr"] = safe_numeric(
-            ratios["free_cash_flow_cr"]
-        )
+        ratios["free_cash_flow_cr"] = safe_numeric(ratios["free_cash_flow_cr"])
 
     for column in [
         "market_cap_crore",
@@ -329,9 +265,7 @@ def build_valuation_summary():
 
         if column in market_cap.columns:
 
-            market_cap[column] = safe_numeric(
-                market_cap[column]
-            )
+            market_cap[column] = safe_numeric(market_cap[column])
 
     # ========================================================
     # LATEST MARKET CAP / VALUATION DATA
@@ -349,14 +283,10 @@ def build_valuation_summary():
         na_position="last",
     )
 
-    latest_market_cap = (
-        market_cap
-        .drop_duplicates(
-            "company_id",
-            keep="first",
-        )
-        .copy()
-    )
+    latest_market_cap = market_cap.drop_duplicates(
+        "company_id",
+        keep="first",
+    ).copy()
 
     # ========================================================
     # LATEST FCF
@@ -415,9 +345,7 @@ def build_valuation_summary():
         ]
     ].copy()
 
-    sector_data = sector_data.drop_duplicates(
-        "company_id"
-    )
+    sector_data = sector_data.drop_duplicates("company_id")
 
     sector_data = sector_data.rename(
         columns={
@@ -492,10 +420,7 @@ def build_valuation_summary():
 
     # Only positive P/E values are meaningful
     pe_history = pe_history[
-        pe_history["pe_ratio"].notna()
-        & (
-            pe_history["pe_ratio"] > 0
-        )
+        pe_history["pe_ratio"].notna() & (pe_history["pe_ratio"] > 0)
     ].copy()
 
     pe_history = pe_history.sort_values(
@@ -506,8 +431,7 @@ def build_valuation_summary():
     )
 
     five_year_pe = (
-        pe_history
-        .groupby("company_id")
+        pe_history.groupby("company_id")
         .tail(5)
         .groupby("company_id")["pe_ratio"]
         .median()
@@ -538,19 +462,13 @@ def build_valuation_summary():
     ].copy()
 
     sector_pe = sector_pe[
-        sector_pe["pe_ratio"].notna()
-        & (
-            sector_pe["pe_ratio"] > 0
-        )
+        sector_pe["pe_ratio"].notna() & (sector_pe["pe_ratio"] > 0)
     ].copy()
 
     sector_medians = (
-        sector_pe
-        .groupby("sector")["pe_ratio"]
+        sector_pe.groupby("sector")["pe_ratio"]
         .median()
-        .rename(
-            "sector_median_pe"
-        )
+        .rename("sector_median_pe")
         .reset_index()
     )
 
@@ -564,28 +482,11 @@ def build_valuation_summary():
     # P/E VS SECTOR MEDIAN
     # ========================================================
 
-    result[
-        "PE_vs_sector_median_pct"
-    ] = np.where(
+    result["PE_vs_sector_median_pct"] = np.where(
         result["pe_ratio"].notna()
-        & result[
-            "sector_median_pe"
-        ].notna()
-        & (
-            result[
-                "sector_median_pe"
-            ] > 0
-        ),
-        (
-            (
-                result["pe_ratio"]
-                /
-                result[
-                    "sector_median_pe"
-                ]
-            )
-            - 1
-        ) * 100,
+        & result["sector_median_pe"].notna()
+        & (result["sector_median_pe"] > 0),
+        ((result["pe_ratio"] / result["sector_median_pe"]) - 1) * 100,
         np.nan,
     )
 
@@ -596,9 +497,7 @@ def build_valuation_summary():
     result["flag"] = result.apply(
         lambda row: valuation_flag(
             row["pe_ratio"],
-            row[
-                "sector_median_pe"
-            ],
+            row["sector_median_pe"],
         ),
         axis=1,
     )
@@ -635,9 +534,7 @@ def build_valuation_summary():
     final = final.sort_values(
         "company_name",
         na_position="last",
-    ).reset_index(
-        drop=True
-    )
+    ).reset_index(drop=True)
 
     return final
 
@@ -645,6 +542,7 @@ def build_valuation_summary():
 # ============================================================
 # GENERATE OUTPUT FILES
 # ============================================================
+
 
 def generate_valuation_files():
 
@@ -661,32 +559,18 @@ def generate_valuation_files():
     # ========================================================
 
     if len(summary) != 92:
-        print(
-            "WARNING:"
-            f" Expected 92 companies but found "
-            f"{len(summary)}."
-        )
+        print("WARNING:" f" Expected 92 companies but found " f"{len(summary)}.")
 
-    duplicate_count = (
-        summary["company_id"]
-        .duplicated()
-        .sum()
-    )
+    duplicate_count = summary["company_id"].duplicated().sum()
 
     if duplicate_count > 0:
-        print(
-            "WARNING:"
-            f" Found {duplicate_count} duplicate company IDs."
-        )
+        print("WARNING:" f" Found {duplicate_count} duplicate company IDs.")
 
     # ========================================================
     # EXCEL OUTPUT
     # ========================================================
 
-    summary_path = (
-        OUTPUT_DIR
-        / "valuation_summary.xlsx"
-    )
+    summary_path = OUTPUT_DIR / "valuation_summary.xlsx"
 
     summary.to_excel(
         summary_path,
@@ -706,10 +590,7 @@ def generate_valuation_files():
         )
     ].copy()
 
-    flags_path = (
-        OUTPUT_DIR
-        / "valuation_flags.csv"
-    )
+    flags_path = OUTPUT_DIR / "valuation_flags.csv"
 
     flags.to_csv(
         flags_path,
@@ -742,51 +623,30 @@ if __name__ == "__main__":
     print("DAY 26 — VALUATION OUTPUT")
     print("=" * 70)
 
-    print(
-        f"Companies       : {len(summary)}"
-    )
+    print(f"Companies       : {len(summary)}")
 
-    print(
-        f"Duplicate IDs   : "
-        f"{summary['company_id'].duplicated().sum()}"
-    )
+    print(f"Duplicate IDs   : " f"{summary['company_id'].duplicated().sum()}")
 
-    print(
-        f"Caution         : "
-        f"{(
+    print(f"Caution         : " f"{(
             summary['flag'] == 'Caution'
-        ).sum()}"
-    )
+        ).sum()}")
 
-    print(
-        f"Discount        : "
-        f"{(
+    print(f"Discount        : " f"{(
             summary['flag'] == 'Discount'
-        ).sum()}"
-    )
+        ).sum()}")
 
-    print(
-        f"Fair            : "
-        f"{(
+    print(f"Fair            : " f"{(
             summary['flag'] == 'Fair'
-        ).sum()}"
-    )
+        ).sum()}")
 
-    print(
-        f"Unavailable     : "
-        f"{(
+    print(f"Unavailable     : " f"{(
             summary['flag'] == 'Unavailable'
-        ).sum()}"
-    )
+        ).sum()}")
 
     print()
 
-    print(
-        f"Excel created   : {summary_path}"
-    )
+    print(f"Excel created   : {summary_path}")
 
-    print(
-        f"CSV created     : {flags_path}"
-    )
+    print(f"CSV created     : {flags_path}")
 
     print("=" * 70)

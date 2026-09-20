@@ -1,19 +1,16 @@
-import re
-
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from src.dashboard.utils.db import (
+    extract_year,
     get_companies,
     get_pl,
     get_pros_cons,
     get_ratios,
     get_sectors,
-    extract_year,
 )
-
 
 st.set_page_config(
     page_title="Company Profile | Nifty 100 Analytics",
@@ -25,6 +22,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------
+
 
 def numeric(value):
     try:
@@ -50,9 +48,7 @@ def sort_by_year(dataframe):
     data = dataframe.copy()
 
     if "year" in data.columns:
-        data["_parsed_year"] = data["year"].apply(
-            extract_year
-        )
+        data["_parsed_year"] = data["year"].apply(extract_year)
 
         data = data.sort_values(
             "_parsed_year",
@@ -79,9 +75,7 @@ companies = get_companies()
 sectors = get_sectors()
 
 if companies.empty:
-    st.error(
-        "Company master data could not be loaded."
-    )
+    st.error("Company master data could not be loaded.")
     st.stop()
 
 
@@ -91,24 +85,11 @@ if companies.empty:
 
 company_lookup = companies.copy()
 
-company_lookup["ticker"] = (
-    company_lookup["id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-)
+company_lookup["ticker"] = company_lookup["id"].astype(str).str.strip().str.upper()
 
-company_names = (
-    company_lookup["company_name"]
-    .fillna("")
-    .astype(str)
-)
+company_names = company_lookup["company_name"].fillna("").astype(str)
 
-company_lookup["search_label"] = (
-    company_lookup["ticker"]
-    + " — "
-    + company_names
-)
+company_lookup["search_label"] = company_lookup["ticker"] + " — " + company_names
 
 
 # ---------------------------------------------------------------------
@@ -117,8 +98,7 @@ company_lookup["search_label"] = (
 
 st.title("👤 Company Profile")
 st.caption(
-    "Explore financial performance, profitability, "
-    "growth and business strengths."
+    "Explore financial performance, profitability, " "growth and business strengths."
 )
 
 
@@ -136,7 +116,9 @@ if search_text.strip():
     query = search_text.strip().lower()
 
     matches = company_lookup[
-        company_lookup["ticker"].str.lower().str.contains(
+        company_lookup["ticker"]
+        .str.lower()
+        .str.contains(
             query,
             na=False,
         )
@@ -154,9 +136,7 @@ else:
 
 
 if matches.empty:
-    st.warning(
-        "Ticker not found — please try another"
-    )
+    st.warning("Ticker not found — please try another")
     st.stop()
 
 
@@ -176,39 +156,26 @@ ticker = selected_label.split(" — ")[0].strip().upper()
 # Fetch company data
 # ---------------------------------------------------------------------
 
-company_rows = company_lookup[
-    company_lookup["ticker"] == ticker
-]
+company_rows = company_lookup[company_lookup["ticker"] == ticker]
 
 if company_rows.empty:
-    st.warning(
-        "Ticker not found — please try another"
-    )
+    st.warning("Ticker not found — please try another")
     st.stop()
 
 
 company = company_rows.iloc[0]
 
-ratios = sort_by_year(
-    get_ratios(ticker)
-)
+ratios = sort_by_year(get_ratios(ticker))
 
-pl = sort_by_year(
-    get_pl(ticker)
-)
+pl = sort_by_year(get_pl(ticker))
 
 pros_cons = get_pros_cons(ticker)
 
-sector_rows = sectors[
-    sectors["company_id"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-    == ticker
-].copy() if (
-    not sectors.empty
-    and "company_id" in sectors.columns
-) else pd.DataFrame()
+sector_rows = (
+    sectors[sectors["company_id"].astype(str).str.strip().str.upper() == ticker].copy()
+    if (not sectors.empty and "company_id" in sectors.columns)
+    else pd.DataFrame()
+)
 
 
 # ---------------------------------------------------------------------
@@ -217,15 +184,13 @@ sector_rows = sectors[
 
 sector = (
     sector_rows.iloc[0]["broad_sector"]
-    if not sector_rows.empty
-    and "broad_sector" in sector_rows.columns
+    if not sector_rows.empty and "broad_sector" in sector_rows.columns
     else "N/A"
 )
 
 sub_sector = (
     sector_rows.iloc[0]["sub_sector"]
-    if not sector_rows.empty
-    and "sub_sector" in sector_rows.columns
+    if not sector_rows.empty and "sub_sector" in sector_rows.columns
     else "N/A"
 )
 
@@ -234,9 +199,7 @@ sub_sector = (
 # Company card
 # ---------------------------------------------------------------------
 
-st.subheader(
-    f"{company.get('company_name', ticker)} ({ticker})"
-)
+st.subheader(f"{company.get('company_name', ticker)} ({ticker})")
 
 card1, card2, card3, card4 = st.columns(4)
 
@@ -257,9 +220,7 @@ with card4:
 
     if pd.notna(website) and str(website).strip():
         st.markdown("**Website**")
-        st.markdown(
-            f"[Visit company website]({website})"
-        )
+        st.markdown(f"[Visit company website]({website})")
     else:
         st.markdown("**Website**")
         st.write("N/A")
@@ -277,9 +238,7 @@ if pd.notna(about) and str(about).strip():
 # ---------------------------------------------------------------------
 
 latest_ratio = (
-    ratios.dropna(
-        subset=["_parsed_year"]
-    ).iloc[-1]
+    ratios.dropna(subset=["_parsed_year"]).iloc[-1]
     if not ratios.empty
     and "_parsed_year" in ratios.columns
     and ratios["_parsed_year"].notna().any()
@@ -289,29 +248,17 @@ latest_ratio = (
 
 if latest_ratio is not None:
 
-    roe = latest_ratio.get(
-        "return_on_equity_pct"
-    )
+    roe = latest_ratio.get("return_on_equity_pct")
 
-    roce = latest_ratio.get(
-        "return_on_capital_employed_pct"
-    )
+    roce = latest_ratio.get("return_on_capital_employed_pct")
 
-    npm = latest_ratio.get(
-        "net_profit_margin_pct"
-    )
+    npm = latest_ratio.get("net_profit_margin_pct")
 
-    de = latest_ratio.get(
-        "debt_to_equity"
-    )
+    de = latest_ratio.get("debt_to_equity")
 
-    revenue_cagr = latest_ratio.get(
-        "revenue_cagr_5yr"
-    )
+    revenue_cagr = latest_ratio.get("revenue_cagr_5yr")
 
-    fcf = latest_ratio.get(
-        "free_cash_flow_cr"
-    )
+    fcf = latest_ratio.get("free_cash_flow_cr")
 
 else:
     roe = roce = npm = de = revenue_cagr = fcf = np.nan
@@ -384,9 +331,7 @@ if not pl.empty:
 
         chart_data = pl.copy()
 
-        chart_data["Year"] = chart_data[
-            "year"
-        ].astype(str)
+        chart_data["Year"] = chart_data["year"].astype(str)
 
         if revenue_col:
             chart_data["Revenue"] = pd.to_numeric(
@@ -442,14 +387,10 @@ if not pl.empty:
         )
 
     else:
-        st.info(
-            "Revenue / Net Profit data unavailable."
-        )
+        st.info("Revenue / Net Profit data unavailable.")
 
 else:
-    st.info(
-        "Financial history is not available for this company."
-    )
+    st.info("Financial history is not available for this company.")
 
 
 # ---------------------------------------------------------------------
@@ -468,9 +409,7 @@ if not ratios.empty:
 
         chart = ratios.tail(10).copy()
 
-        chart["Year"] = chart[
-            "year"
-        ].astype(str)
+        chart["Year"] = chart["year"].astype(str)
 
         fig = go.Figure()
 
@@ -519,14 +458,10 @@ if not ratios.empty:
         )
 
     else:
-        st.info(
-            "ROE / ROCE history unavailable."
-        )
+        st.info("ROE / ROCE history unavailable.")
 
 else:
-    st.info(
-        "Ratio history is not available."
-    )
+    st.info("Ratio history is not available.")
 
 
 # ---------------------------------------------------------------------
@@ -588,10 +523,7 @@ if not pros_cons.empty:
             st.info("No cons available.")
 
 else:
-    st.info(
-        "Pros and cons information is not available "
-        "for this company."
-    )
+    st.info("Pros and cons information is not available " "for this company.")
 
 
 st.divider()

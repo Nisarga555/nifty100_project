@@ -20,13 +20,12 @@ import operator
 import re
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import pandas as pd
 import yaml
 
 from src.screener.scoring import calculate_composite_quality_score
-
 
 # ============================================================
 # PATHS
@@ -36,17 +35,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 DB_PATH = PROJECT_ROOT / "db" / "nifty100.sqlite3"
 
-CONFIG_PATH = (
-    PROJECT_ROOT
-    / "config"
-    / "screener_config.yaml"
-)
+CONFIG_PATH = PROJECT_ROOT / "config" / "screener_config.yaml"
 
-RAW_DIR = (
-    PROJECT_ROOT
-    / "data"
-    / "raw"
-)
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
 
 
 # ============================================================
@@ -66,6 +57,7 @@ OPERATORS = {
 # ============================================================
 # COLUMN CLEANING
 # ============================================================
+
 
 def clean_columns(
     dataframe: pd.DataFrame,
@@ -90,11 +82,7 @@ def clean_columns(
 
     for column in result.columns:
 
-        value = (
-            str(column)
-            .strip()
-            .lower()
-        )
+        value = str(column).strip().lower()
 
         value = re.sub(
             r"[^a-z0-9]+",
@@ -114,6 +102,7 @@ def clean_columns(
 # ============================================================
 # HEADER DETECTION
 # ============================================================
+
 
 def detect_header_row(
     filename: str,
@@ -135,9 +124,7 @@ def detect_header_row(
 
     if not path.exists():
 
-        raise FileNotFoundError(
-            f"Excel source not found: {path}"
-        )
+        raise FileNotFoundError(f"Excel source not found: {path}")
 
     preview = pd.read_excel(
         path,
@@ -164,17 +151,11 @@ def detect_header_row(
     best_row = 0
     best_score = -1
 
-    for row_index in range(
-        len(preview)
-    ):
+    for row_index in range(len(preview)):
 
         values = [
-            str(value)
-            .strip()
-            .lower()
-            for value in preview.iloc[
-                row_index
-            ].tolist()
+            str(value).strip().lower()
+            for value in preview.iloc[row_index].tolist()
             if not pd.isna(value)
         ]
 
@@ -208,6 +189,7 @@ def detect_header_row(
 # EXCEL LOADER
 # ============================================================
 
+
 def load_excel_source(
     filename: str,
 ) -> pd.DataFrame:
@@ -219,29 +201,19 @@ def load_excel_source(
 
     if not path.exists():
 
-        raise FileNotFoundError(
-            f"Required source file not found: {path}"
-        )
+        raise FileNotFoundError(f"Required source file not found: {path}")
 
-    header_row = detect_header_row(
-        filename
-    )
+    header_row = detect_header_row(filename)
 
     dataframe = pd.read_excel(
         path,
         header=header_row,
     )
 
-    dataframe = clean_columns(
-        dataframe
-    )
+    dataframe = clean_columns(dataframe)
 
     # Remove completely empty rows.
-    dataframe = dataframe.dropna(
-        how="all"
-    ).reset_index(
-        drop=True
-    )
+    dataframe = dataframe.dropna(how="all").reset_index(drop=True)
 
     return dataframe
 
@@ -249,6 +221,7 @@ def load_excel_source(
 # ============================================================
 # COMPANY ID NORMALIZATION
 # ============================================================
+
 
 def normalize_company_id_column(
     dataframe: pd.DataFrame,
@@ -265,24 +238,15 @@ def normalize_company_id_column(
         company_id
     """
 
-    result = clean_columns(
-        dataframe
-    )
+    result = clean_columns(dataframe)
 
     if "company_id" not in result.columns:
 
         if "id" in result.columns:
 
-            result = result.rename(
-                columns={
-                    "id": "company_id"
-                }
-            )
+            result = result.rename(columns={"id": "company_id"})
 
-    if (
-        "company_id"
-        not in result.columns
-    ):
+    if "company_id" not in result.columns:
 
         if required:
 
@@ -295,15 +259,7 @@ def normalize_company_id_column(
 
         return result
 
-    result[
-        "company_id"
-    ] = (
-        result[
-            "company_id"
-        ]
-        .astype(str)
-        .str.strip()
-    )
+    result["company_id"] = result["company_id"].astype(str).str.strip()
 
     return result
 
@@ -312,9 +268,10 @@ def normalize_company_id_column(
 # YEAR PARSER
 # ============================================================
 
+
 def year_number(
     value: Any,
-) -> Optional[int]:
+) -> int | None:
     """
     Extract four-digit year.
 
@@ -338,25 +295,21 @@ def year_number(
     if not match:
         return None
 
-    return int(
-        match.group(0)
-    )
+    return int(match.group(0))
 
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
 
+
 def load_config(
     config_path: Path = CONFIG_PATH,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
 
     if not config_path.exists():
 
-        raise FileNotFoundError(
-            f"Screener configuration not found: "
-            f"{config_path}"
-        )
+        raise FileNotFoundError(f"Screener configuration not found: " f"{config_path}")
 
     with open(
         config_path,
@@ -364,18 +317,14 @@ def load_config(
         encoding="utf-8",
     ) as file:
 
-        config = yaml.safe_load(
-            file
-        )
+        config = yaml.safe_load(file)
 
     if not isinstance(
         config,
         dict,
     ):
 
-        raise ValueError(
-            "Screener configuration must be a YAML mapping."
-        )
+        raise ValueError("Screener configuration must be a YAML mapping.")
 
     return config
 
@@ -384,20 +333,16 @@ def load_config(
 # SQLITE RATIO LOADER
 # ============================================================
 
+
 def load_ratio_data(
     db_path: Path = DB_PATH,
 ) -> pd.DataFrame:
 
     if not db_path.exists():
 
-        raise FileNotFoundError(
-            f"SQLite database not found: "
-            f"{db_path}"
-        )
+        raise FileNotFoundError(f"SQLite database not found: " f"{db_path}")
 
-    connection = sqlite3.connect(
-        db_path
-    )
+    connection = sqlite3.connect(db_path)
 
     try:
 
@@ -415,9 +360,7 @@ def load_ratio_data(
 
     if dataframe.empty:
 
-        raise ValueError(
-            "financial_ratios table is empty."
-        )
+        raise ValueError("financial_ratios table is empty.")
 
     return dataframe
 
@@ -426,7 +369,8 @@ def load_ratio_data(
 # SUPPORTING DATA
 # ============================================================
 
-def load_supporting_data() -> Dict[
+
+def load_supporting_data() -> dict[
     str,
     pd.DataFrame,
 ]:
@@ -447,15 +391,11 @@ def load_supporting_data() -> Dict[
 
     for name, filename in filenames.items():
 
-        dataframe = load_excel_source(
-            filename
-        )
+        dataframe = load_excel_source(filename)
 
-        sources[name] = (
-            normalize_company_id_column(
-                dataframe,
-                required=True,
-            )
+        sources[name] = normalize_company_id_column(
+            dataframe,
+            required=True,
         )
 
     return sources
@@ -464,6 +404,7 @@ def load_supporting_data() -> Dict[
 # ============================================================
 # LATEST ANNUAL RATIO ROWS
 # ============================================================
+
 
 def select_latest_annual_ratios(
     ratios: pd.DataFrame,
@@ -494,9 +435,7 @@ def select_latest_annual_ratios(
         if "id" in df.columns:
             df = df.rename(columns={"id": "company_id"})
         else:
-            raise KeyError(
-                "financial_ratios must contain company_id"
-            )
+            raise KeyError("financial_ratios must contain company_id")
 
     # ---------------------------------------------------------------
     # Extract numeric year.
@@ -574,6 +513,7 @@ def select_latest_annual_ratios(
 
     return latest
 
+
 def latest_source_row_per_company(
     dataframe: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -581,40 +521,19 @@ def latest_source_row_per_company(
     Select latest annual source row per company.
     """
 
-    result = (
-        normalize_company_id_column(
-            dataframe,
-            required=True,
-        )
-        .copy()
-    )
+    result = normalize_company_id_column(
+        dataframe,
+        required=True,
+    ).copy()
 
     if "year" not in result.columns:
 
-        return (
-            result
-            .drop_duplicates(
-                subset=[
-                    "company_id"
-                ]
-            )
-            .reset_index(
-                drop=True
-            )
-        )
+        return result.drop_duplicates(subset=["company_id"]).reset_index(drop=True)
 
-    result[
-        "_year_number"
-    ] = result[
-        "year"
-    ].apply(
-        year_number
-    )
+    result["_year_number"] = result["year"].apply(year_number)
 
     result = result[
-        ~result[
-            "year"
-        ]
+        ~result["year"]
         .astype(str)
         .str.contains(
             r"09",
@@ -631,8 +550,7 @@ def latest_source_row_per_company(
     )
 
     result = (
-        result
-        .groupby(
+        result.groupby(
             "company_id",
             as_index=False,
         )
@@ -641,20 +559,17 @@ def latest_source_row_per_company(
     )
 
     result = result.drop(
-        columns=[
-            "_year_number"
-        ],
+        columns=["_year_number"],
         errors="ignore",
     )
 
-    return result.reset_index(
-        drop=True
-    )
+    return result.reset_index(drop=True)
 
 
 # ============================================================
 # FCF AVAILABILITY HANDLING
 # ============================================================
+
 
 def attach_latest_available_fcf(
     latest_ratios: pd.DataFrame,
@@ -688,8 +603,7 @@ def attach_latest_available_fcf(
     )
 
     history = history[
-        history["_year_number"].notna()
-        & history["free_cash_flow_cr"].notna()
+        history["_year_number"].notna() & history["free_cash_flow_cr"].notna()
     ].copy()
 
     if history.empty:
@@ -703,10 +617,8 @@ def attach_latest_available_fcf(
     )
 
     latest_fcf = (
-        history
-        .groupby("company_id", as_index=False, sort=False)
-        .tail(1)
-        [["company_id", "free_cash_flow_cr", "_year_number"]]
+        history.groupby("company_id", as_index=False, sort=False)
+        .tail(1)[["company_id", "free_cash_flow_cr", "_year_number"]]
         .rename(
             columns={
                 "free_cash_flow_cr": "_latest_available_fcf_cr",
@@ -726,9 +638,7 @@ def attach_latest_available_fcf(
         errors="coerce",
     )
 
-    result["free_cash_flow_cr"] = current_fcf.fillna(
-        result["_latest_available_fcf_cr"]
-    )
+    result["free_cash_flow_cr"] = current_fcf.fillna(result["_latest_available_fcf_cr"])
 
     current_year = result["year"].apply(year_number)
 
@@ -750,9 +660,10 @@ def attach_latest_available_fcf(
 # BUILD SCREENER DATASET
 # ============================================================
 
+
 def build_screener_dataset(
     ratios: pd.DataFrame,
-    sources: Dict[
+    sources: dict[
         str,
         pd.DataFrame,
     ],
@@ -761,11 +672,7 @@ def build_screener_dataset(
     Build the latest annual screener dataset.
     """
 
-    ratio_latest = (
-        select_latest_annual_ratios(
-            ratios
-        )
-    )
+    ratio_latest = select_latest_annual_ratios(ratios)
 
     # If the latest ratio row has no FCF, use the most recent
     # historical FCF available for that company.
@@ -778,13 +685,9 @@ def build_screener_dataset(
     # COMPANIES
     # --------------------------------------------------------
 
-    companies = (
-        normalize_company_id_column(
-            sources[
-                "companies"
-            ],
-            required=True,
-        )
+    companies = normalize_company_id_column(
+        sources["companies"],
+        required=True,
     )
 
     company_columns = [
@@ -796,16 +699,7 @@ def build_screener_dataset(
         if column in companies.columns
     ]
 
-    company_data = (
-        companies[
-            company_columns
-        ]
-        .drop_duplicates(
-            subset=[
-                "company_id"
-            ]
-        )
-    )
+    company_data = companies[company_columns].drop_duplicates(subset=["company_id"])
 
     result = ratio_latest.merge(
         company_data,
@@ -817,13 +711,9 @@ def build_screener_dataset(
     # SECTORS
     # --------------------------------------------------------
 
-    sectors = (
-        normalize_company_id_column(
-            sources[
-                "sectors"
-            ],
-            required=True,
-        )
+    sectors = normalize_company_id_column(
+        sources["sectors"],
+        required=True,
     )
 
     sector_columns = [
@@ -836,16 +726,7 @@ def build_screener_dataset(
         if column in sectors.columns
     ]
 
-    sector_data = (
-        sectors[
-            sector_columns
-        ]
-        .drop_duplicates(
-            subset=[
-                "company_id"
-            ]
-        )
-    )
+    sector_data = sectors[sector_columns].drop_duplicates(subset=["company_id"])
 
     result = result.merge(
         sector_data,
@@ -857,20 +738,12 @@ def build_screener_dataset(
     # MARKET CAP
     # --------------------------------------------------------
 
-    market_cap = (
-        normalize_company_id_column(
-            sources[
-                "market_cap"
-            ],
-            required=True,
-        )
+    market_cap = normalize_company_id_column(
+        sources["market_cap"],
+        required=True,
     )
 
-    market_latest = (
-        latest_source_row_per_company(
-            market_cap
-        )
-    )
+    market_latest = latest_source_row_per_company(market_cap)
 
     market_columns = [
         column
@@ -889,13 +762,7 @@ def build_screener_dataset(
     if market_columns:
 
         result = result.merge(
-            market_latest[
-                market_columns
-            ].drop_duplicates(
-                subset=[
-                    "company_id"
-                ]
-            ),
+            market_latest[market_columns].drop_duplicates(subset=["company_id"]),
             on="company_id",
             how="left",
         )
@@ -904,20 +771,12 @@ def build_screener_dataset(
     # P&L
     # --------------------------------------------------------
 
-    profit_loss = (
-        normalize_company_id_column(
-            sources[
-                "profitandloss"
-            ],
-            required=True,
-        )
+    profit_loss = normalize_company_id_column(
+        sources["profitandloss"],
+        required=True,
     )
 
-    pl_latest = (
-        latest_source_row_per_company(
-            profit_loss
-        )
-    )
+    pl_latest = latest_source_row_per_company(profit_loss)
 
     pl_columns = [
         column
@@ -934,13 +793,7 @@ def build_screener_dataset(
     if pl_columns:
 
         result = result.merge(
-            pl_latest[
-                pl_columns
-            ].drop_duplicates(
-                subset=[
-                    "company_id"
-                ]
-            ),
+            pl_latest[pl_columns].drop_duplicates(subset=["company_id"]),
             on="company_id",
             how="left",
             suffixes=(
@@ -960,30 +813,18 @@ def build_screener_dataset(
         "dividend_payout",
     ]:
 
-        duplicate_column = (
-            f"{column}_pl"
-        )
+        duplicate_column = f"{column}_pl"
 
-        if (
-            column not in result.columns
-            and duplicate_column
-            in result.columns
-        ):
+        if column not in result.columns and duplicate_column in result.columns:
 
-            result[column] = result[
-                duplicate_column
-            ]
+            result[column] = result[duplicate_column]
 
         result = result.drop(
-            columns=[
-                duplicate_column
-            ],
+            columns=[duplicate_column],
             errors="ignore",
         )
 
-    result = calculate_composite_quality_score(
-        result
-    )
+    result = calculate_composite_quality_score(result)
 
     return result
 
@@ -992,42 +833,34 @@ def build_screener_dataset(
 # THRESHOLD FILTER
 # ============================================================
 
+
 def apply_threshold(
     series: pd.Series,
     operator_symbol: str,
     threshold: float,
 ) -> pd.Series:
 
-    if (
-        operator_symbol
-        not in OPERATORS
-    ):
+    if operator_symbol not in OPERATORS:
 
-        raise ValueError(
-            f"Unsupported operator: "
-            f"{operator_symbol}"
-        )
+        raise ValueError(f"Unsupported operator: " f"{operator_symbol}")
 
     numeric_series = pd.to_numeric(
         series,
         errors="coerce",
     )
 
-    mask = OPERATORS[
-        operator_symbol
-    ](
+    mask = OPERATORS[operator_symbol](
         numeric_series,
         threshold,
     )
 
-    return mask.fillna(
-        False
-    )
+    return mask.fillna(False)
 
 
 # ============================================================
 # D/E FILTER
 # ============================================================
+
 
 def apply_de_filter(
     dataframe: pd.DataFrame,
@@ -1038,37 +871,21 @@ def apply_de_filter(
     """
 
     de = pd.to_numeric(
-        dataframe[
-            "debt_to_equity"
-        ],
+        dataframe["debt_to_equity"],
         errors="coerce",
     )
 
-    sector = (
-        dataframe[
-            "broad_sector"
-        ]
-        .fillna("")
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+    sector = dataframe["broad_sector"].fillna("").astype(str).str.strip().str.lower()
 
-    financials = sector.eq(
-        "financials"
-    )
+    financials = sector.eq("financials")
 
-    return (
-        financials
-        | de.le(
-            threshold
-        ).fillna(False)
-    )
+    return financials | de.le(threshold).fillna(False)
 
 
 # ============================================================
 # EXACT D/E
 # ============================================================
+
 
 def apply_de_exact_filter(
     dataframe: pd.DataFrame,
@@ -1076,37 +893,21 @@ def apply_de_exact_filter(
 ) -> pd.Series:
 
     de = pd.to_numeric(
-        dataframe[
-            "debt_to_equity"
-        ],
+        dataframe["debt_to_equity"],
         errors="coerce",
     )
 
-    sector = (
-        dataframe[
-            "broad_sector"
-        ]
-        .fillna("")
-        .astype(str)
-        .str.strip()
-        .str.lower()
-    )
+    sector = dataframe["broad_sector"].fillna("").astype(str).str.strip().str.lower()
 
-    financials = sector.eq(
-        "financials"
-    )
+    financials = sector.eq("financials")
 
-    return (
-        financials
-        | de.eq(
-            target
-        ).fillna(False)
-    )
+    return financials | de.eq(target).fillna(False)
 
 
 # ============================================================
 # ICR FILTER
 # ============================================================
+
 
 def apply_icr_filter(
     dataframe: pd.DataFrame,
@@ -1117,25 +918,19 @@ def apply_icr_filter(
     """
 
     icr = pd.to_numeric(
-        dataframe[
-            "interest_coverage"
-        ],
+        dataframe["interest_coverage"],
         errors="coerce",
     )
 
     if "icr_label" in dataframe.columns:
 
         debt_free = (
-            dataframe[
-                "icr_label"
-            ]
+            dataframe["icr_label"]
             .fillna("")
             .astype(str)
             .str.strip()
             .str.lower()
-            .eq(
-                "debt free"
-            )
+            .eq("debt free")
         )
 
     else:
@@ -1145,37 +940,30 @@ def apply_icr_filter(
             index=dataframe.index,
         )
 
-    return (
-        debt_free
-        | icr.ge(
-            threshold
-        ).fillna(False)
-    )
+    return debt_free | icr.ge(threshold).fillna(False)
 
 
 # ============================================================
 # FCF POSITIVE
 # ============================================================
 
+
 def apply_fcf_positive_filter(
     dataframe: pd.DataFrame,
 ) -> pd.Series:
 
     fcf = pd.to_numeric(
-        dataframe[
-            "free_cash_flow_cr"
-        ],
+        dataframe["free_cash_flow_cr"],
         errors="coerce",
     )
 
-    return fcf.gt(
-        0
-    ).fillna(False)
+    return fcf.gt(0).fillna(False)
 
 
 # ============================================================
 # REVENUE CAGR 3Y
 # ============================================================
+
 
 def apply_revenue_cagr_3yr_filter(
     dataframe: pd.DataFrame,
@@ -1183,47 +971,31 @@ def apply_revenue_cagr_3yr_filter(
 ) -> pd.Series:
 
     cagr = pd.to_numeric(
-        dataframe[
-            "revenue_cagr_3yr"
-        ],
+        dataframe["revenue_cagr_3yr"],
         errors="coerce",
     )
 
-    return cagr.ge(
-        threshold
-    ).fillna(False)
+    return cagr.ge(threshold).fillna(False)
 
 
 # ============================================================
 # D/E DECLINING YOY
 # ============================================================
 
+
 def calculate_de_declining_flags(
     ratios: pd.DataFrame,
 ) -> pd.DataFrame:
 
-    dataframe = (
-        normalize_company_id_column(
-            ratios,
-            required=True,
-        )
-        .copy()
-    )
+    dataframe = normalize_company_id_column(
+        ratios,
+        required=True,
+    ).copy()
 
-    dataframe[
-        "_year_number"
-    ] = dataframe[
-        "year"
-    ].apply(
-        year_number
-    )
+    dataframe["_year_number"] = dataframe["year"].apply(year_number)
 
-    dataframe[
-        "debt_to_equity"
-    ] = pd.to_numeric(
-        dataframe[
-            "debt_to_equity"
-        ],
+    dataframe["debt_to_equity"] = pd.to_numeric(
+        dataframe["debt_to_equity"],
         errors="coerce",
     )
 
@@ -1234,95 +1006,55 @@ def calculate_de_declining_flags(
         ]
     )
 
-    dataframe[
-        "previous_de"
-    ] = (
-        dataframe
-        .groupby(
-            "company_id"
-        )[
-            "debt_to_equity"
-        ]
-        .shift(1)
+    dataframe["previous_de"] = dataframe.groupby("company_id")["debt_to_equity"].shift(
+        1
     )
 
-    dataframe[
-        "de_declining_yoy"
-    ] = (
-        dataframe[
-            "debt_to_equity"
-        ]
-        <
-        dataframe[
-            "previous_de"
-        ]
+    dataframe["de_declining_yoy"] = (
+        dataframe["debt_to_equity"] < dataframe["previous_de"]
     )
 
-    latest = (
-        dataframe
-        .groupby(
-            "company_id",
-            as_index=False,
-        )
-        .tail(1)
+    latest = dataframe.groupby(
+        "company_id",
+        as_index=False,
+    ).tail(1)[
         [
-            [
-                "company_id",
-                "de_declining_yoy",
-            ]
+            "company_id",
+            "de_declining_yoy",
         ]
-    )
+    ]
 
-    return latest.reset_index(
-        drop=True
-    )
+    return latest.reset_index(drop=True)
 
 
 # ============================================================
 # PRESET ENGINE
 # ============================================================
 
+
 def apply_preset(
     dataframe: pd.DataFrame,
     preset_name: str,
-    config: Optional[
-        Dict[str, Any]
-    ] = None,
-    original_ratios: Optional[
-        pd.DataFrame
-    ] = None,
+    config: dict[str, Any] | None = None,
+    original_ratios: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
 
     if config is None:
         config = load_config()
 
-    presets = config.get(
-        "presets",
-        {}
-    )
+    presets = config.get("presets", {})
 
     if preset_name not in presets:
 
-        raise KeyError(
-            f"Unknown screener preset: "
-            f"{preset_name}"
-        )
+        raise KeyError(f"Unknown screener preset: " f"{preset_name}")
 
-    preset = presets[
-        preset_name
-    ]
+    preset = presets[preset_name]
 
     result = dataframe.copy()
 
-    filters = preset.get(
-        "filters",
-        {}
-    )
+    filters = preset.get("filters", {})
 
-    definitions = config.get(
-        "filters",
-        {}
-    )
+    definitions = config.get("filters", {})
 
     # --------------------------------------------------------
     # STANDARD FILTERS
@@ -1338,10 +1070,7 @@ def apply_preset(
 
             continue
 
-        if (
-            filter_name
-            == "revenue_cagr_3yr_min"
-        ):
+        if filter_name == "revenue_cagr_3yr_min":
 
             result = result[
                 apply_revenue_cagr_3yr_filter(
@@ -1355,21 +1084,14 @@ def apply_preset(
         if filter_name not in definitions:
 
             raise KeyError(
-                f"Filter '{filter_name}' "
-                f"is not defined in configuration."
+                f"Filter '{filter_name}' " f"is not defined in configuration."
             )
 
-        definition = definitions[
-            filter_name
-        ]
+        definition = definitions[filter_name]
 
-        column = definition[
-            "column"
-        ]
+        column = definition["column"]
 
-        operator_symbol = definition[
-            "operator"
-        ]
+        operator_symbol = definition["operator"]
 
         if column not in result.columns:
 
@@ -1396,16 +1118,12 @@ def apply_preset(
         else:
 
             mask = apply_threshold(
-                result[
-                    column
-                ],
+                result[column],
                 operator_symbol,
                 float(threshold),
             )
 
-        result = result[
-            mask
-        ].copy()
+        result = result[mask].copy()
 
     # --------------------------------------------------------
     # EXACT D/E
@@ -1416,11 +1134,7 @@ def apply_preset(
         result = result[
             apply_de_exact_filter(
                 result,
-                float(
-                    filters[
-                        "de_exact"
-                    ]
-                ),
+                float(filters["de_exact"]),
             )
         ].copy()
 
@@ -1428,41 +1142,21 @@ def apply_preset(
     # FCF POSITIVE
     # --------------------------------------------------------
 
-    if (
-        filters.get(
-            "fcf_positive_latest"
-        )
-        is True
-    ):
+    if filters.get("fcf_positive_latest") is True:
 
-        result = result[
-            apply_fcf_positive_filter(
-                result
-            )
-        ].copy()
+        result = result[apply_fcf_positive_filter(result)].copy()
 
     # --------------------------------------------------------
     # D/E DECLINING
     # --------------------------------------------------------
 
-    if (
-        filters.get(
-            "de_declining_yoy"
-        )
-        is True
-    ):
+    if filters.get("de_declining_yoy") is True:
 
         if original_ratios is None:
 
-            original_ratios = (
-                load_ratio_data()
-            )
+            original_ratios = load_ratio_data()
 
-        flags = (
-            calculate_de_declining_flags(
-                original_ratios
-            )
-        )
+        flags = calculate_de_declining_flags(original_ratios)
 
         result = result.merge(
             flags,
@@ -1474,26 +1168,15 @@ def apply_preset(
             ),
         )
 
-        if (
-            "de_declining_yoy_de"
-            in result.columns
-        ):
+        if "de_declining_yoy_de" in result.columns:
 
-            flag_column = (
-                "de_declining_yoy_de"
-            )
+            flag_column = "de_declining_yoy_de"
 
         else:
 
-            flag_column = (
-                "de_declining_yoy"
-            )
+            flag_column = "de_declining_yoy"
 
-        result = result[
-            result[
-                flag_column
-            ].fillna(False)
-        ].copy()
+        result = result[result[flag_column].fillna(False)].copy()
 
         result = result.drop(
             columns=[
@@ -1531,42 +1214,29 @@ def apply_preset(
             na_position="last",
         )
 
-    return result.reset_index(
-        drop=True
-    )
+    return result.reset_index(drop=True)
 
 
 # ============================================================
 # CUSTOM FILTERS
 # ============================================================
 
+
 def apply_custom_filters(
     dataframe: pd.DataFrame,
-    filters: Dict[str, Any],
-    config: Optional[
-        Dict[str, Any]
-    ] = None,
+    filters: dict[str, Any],
+    config: dict[str, Any] | None = None,
 ) -> pd.DataFrame:
 
     if config is None:
         config = load_config()
 
     temporary_config = {
-
-        "filters": config.get(
-            "filters",
-            {}
-        ),
-
+        "filters": config.get("filters", {}),
         "presets": {
-
             "__custom__": {
-
                 "filters": filters,
-
-                "sort_by":
-                    "composite_quality_score",
-
+                "sort_by": "composite_quality_score",
                 "ascending": False,
             }
         },
@@ -1583,6 +1253,7 @@ def apply_custom_filters(
 # SUMMARY
 # ============================================================
 
+
 def screener_summary(
     result: pd.DataFrame,
     preset_name: str,
@@ -1592,8 +1263,7 @@ def screener_summary(
         "=" * 70,
         f"SCREENER: {preset_name}",
         "=" * 70,
-        f"Matching companies: "
-        f"{len(result)}",
+        f"Matching companies: " f"{len(result)}",
     ]
 
     if not result.empty:
@@ -1615,15 +1285,7 @@ def screener_summary(
 
         lines.append("")
 
-        lines.append(
-            result[
-                columns
-            ]
-            .head(10)
-            .to_string(
-                index=False
-            )
-        )
+        lines.append(result[columns].head(10).to_string(index=False))
 
     return "\n".join(lines)
 
@@ -1632,14 +1294,12 @@ def screener_summary(
 # MAIN
 # ============================================================
 
+
 def main() -> None:
 
     print("=" * 70)
 
-    print(
-        "NIFTY 100 - SPRINT 3 DAY 15 "
-        "SCREENER ENGINE"
-    )
+    print("NIFTY 100 - SPRINT 3 DAY 15 " "SCREENER ENGINE")
 
     print("=" * 70)
 
@@ -1647,111 +1307,74 @@ def main() -> None:
     # CONFIG
     # --------------------------------------------------------
 
-    print(
-        "\n[1] Loading configuration..."
-    )
+    print("\n[1] Loading configuration...")
 
     config = load_config()
 
-    print(
-        f"[OK] Configuration loaded: "
-        f"{CONFIG_PATH}"
-    )
+    print(f"[OK] Configuration loaded: " f"{CONFIG_PATH}")
 
     # --------------------------------------------------------
     # DATABASE
     # --------------------------------------------------------
 
-    print(
-        "\n[2] Loading financial ratio data..."
-    )
+    print("\n[2] Loading financial ratio data...")
 
     ratios = load_ratio_data()
 
-    print(
-        f"[OK] financial_ratios rows: "
-        f"{len(ratios):,}"
-    )
+    print(f"[OK] financial_ratios rows: " f"{len(ratios):,}")
 
     # --------------------------------------------------------
     # SOURCES
     # --------------------------------------------------------
 
-    print(
-        "\n[3] Loading supporting source data..."
-    )
+    print("\n[3] Loading supporting source data...")
 
     sources = load_supporting_data()
 
     for name, dataframe in sources.items():
 
-        print(
-            f"[OK] {name:<15} "
-            f"rows={len(dataframe):,}"
-        )
+        print(f"[OK] {name:<15} " f"rows={len(dataframe):,}")
 
     # --------------------------------------------------------
     # DATASET
     # --------------------------------------------------------
 
-    print(
-        "\n[4] Building screener dataset..."
-    )
+    print("\n[4] Building screener dataset...")
 
     dataset = build_screener_dataset(
         ratios,
         sources,
     )
 
-    print(
-        f"[OK] Screener dataset rows: "
-        f"{len(dataset):,}"
-    )
+    print(f"[OK] Screener dataset rows: " f"{len(dataset):,}")
 
-    print(
-        f"[OK] Unique companies: "
-        f"{dataset['company_id'].nunique():,}"
-    )
+    print(f"[OK] Unique companies: " f"{dataset['company_id'].nunique():,}")
 
     # --------------------------------------------------------
     # DATA QUALITY
     # --------------------------------------------------------
 
     missing_names = (
-        dataset[
-            "company_name"
-        ].isna().sum()
-        if "company_name"
-        in dataset.columns
+        dataset["company_name"].isna().sum()
+        if "company_name" in dataset.columns
         else len(dataset)
     )
 
     missing_sectors = (
-        dataset[
-            "broad_sector"
-        ].isna().sum()
-        if "broad_sector"
-        in dataset.columns
+        dataset["broad_sector"].isna().sum()
+        if "broad_sector" in dataset.columns
         else len(dataset)
     )
 
-    print(
-        f"[CHECK] Missing company names: "
-        f"{missing_names}"
-    )
+    print(f"[CHECK] Missing company names: " f"{missing_names}")
 
-    print(
-        f"[CHECK] Missing sectors: "
-        f"{missing_sectors}"
-    )
+    print(f"[CHECK] Missing sectors: " f"{missing_sectors}")
 
     # --------------------------------------------------------
     # QUALITY COMPOUNDER
     # --------------------------------------------------------
 
-    print(
-        "\n[5] Running Quality Compounder example..."
-    )
+    print("\n[5] Running Quality Compounder example...")
 
     quality = apply_preset(
         dataset,
@@ -1760,10 +1383,7 @@ def main() -> None:
         ratios,
     )
 
-    print(
-        f"[OK] Quality Compounder matches: "
-        f"{len(quality)}"
-    )
+    print(f"[OK] Quality Compounder matches: " f"{len(quality)}")
 
     if not quality.empty:
 
@@ -1782,25 +1402,15 @@ def main() -> None:
             if column in quality.columns
         ]
 
-        print("")
+        print()
 
-        print(
-            quality[
-                display_columns
-            ]
-            .head(10)
-            .to_string(
-                index=False
-            )
-        )
+        print(quality[display_columns].head(10).to_string(index=False))
 
     # --------------------------------------------------------
     # ALL PRESETS
     # --------------------------------------------------------
 
-    print(
-        "\n[6] Running all preset screeners..."
-    )
+    print("\n[6] Running all preset screeners...")
 
     for preset_name in config.get(
         "presets",
@@ -1816,32 +1426,17 @@ def main() -> None:
                 ratios,
             )
 
-            print(
-                f"[PRESET] "
-                f"{preset_name:<25} "
-                f"{len(result):>3} companies"
-            )
+            print(f"[PRESET] " f"{preset_name:<25} " f"{len(result):>3} companies")
 
         except Exception as error:
 
-            print(
-                f"[ERROR] "
-                f"{preset_name}: "
-                f"{error}"
-            )
+            print(f"[ERROR] " f"{preset_name}: " f"{error}")
 
-    print(
-        "\n"
-        + "=" * 70
-    )
+    print("\n" + "=" * 70)
 
-    print(
-        "DAY 15 SCREENER ENGINE COMPLETE"
-    )
+    print("DAY 15 SCREENER ENGINE COMPLETE")
 
-    print(
-        "=" * 70
-    )
+    print("=" * 70)
 
 
 # ============================================================

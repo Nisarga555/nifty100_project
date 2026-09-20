@@ -19,14 +19,12 @@ Day 09:
     - Asset Turnover
 """
 
-from typing import Optional
-
-
 # =====================================================================
 # COMMON HELPER
 # =====================================================================
 
-def _to_float(value) -> Optional[float]:
+
+def _to_float(value) -> float | None:
     """Safely convert a value to float."""
 
     if value is None:
@@ -44,10 +42,11 @@ def _to_float(value) -> Optional[float]:
 # DAY 08 — PROFITABILITY RATIOS
 # =====================================================================
 
+
 def percentage_difference(
-    reported: Optional[float],
-    calculated: Optional[float],
-) -> Optional[float]:
+    reported: float | None,
+    calculated: float | None,
+) -> float | None:
     """Return absolute difference between two percentage values."""
 
     reported = _to_float(reported)
@@ -62,7 +61,7 @@ def percentage_difference(
 def net_profit_margin(
     net_profit,
     sales,
-) -> Optional[float]:
+) -> float | None:
     """
     Net Profit Margin = net_profit / sales * 100
 
@@ -84,7 +83,7 @@ def net_profit_margin(
 def operating_profit_margin(
     operating_profit,
     sales,
-) -> Optional[float]:
+) -> float | None:
     """
     Operating Profit Margin =
         operating_profit / sales * 100
@@ -145,7 +144,7 @@ def return_on_equity(
     net_profit,
     equity_capital,
     reserves,
-) -> Optional[float]:
+) -> float | None:
     """
     ROE = net_profit /
           (equity_capital + reserves) * 100
@@ -157,11 +156,7 @@ def return_on_equity(
     equity_capital = _to_float(equity_capital)
     reserves = _to_float(reserves)
 
-    if (
-        net_profit is None
-        or equity_capital is None
-        or reserves is None
-    ):
+    if net_profit is None or equity_capital is None or reserves is None:
         return None
 
     equity = equity_capital + reserves
@@ -175,7 +170,7 @@ def return_on_equity(
 def calculate_ebit(
     operating_profit,
     other_income,
-) -> Optional[float]:
+) -> float | None:
     """
     EBIT proxy:
 
@@ -200,7 +195,7 @@ def return_on_capital_employed(
     equity_capital,
     reserves,
     borrowings,
-) -> Optional[float]:
+) -> float | None:
     """
     ROCE = EBIT /
            (equity + reserves + borrowings) * 100
@@ -215,19 +210,10 @@ def return_on_capital_employed(
     reserves = _to_float(reserves)
     borrowings = _to_float(borrowings)
 
-    if (
-        ebit is None
-        or equity_capital is None
-        or reserves is None
-        or borrowings is None
-    ):
+    if ebit is None or equity_capital is None or reserves is None or borrowings is None:
         return None
 
-    capital_employed = (
-        equity_capital
-        + reserves
-        + borrowings
-    )
+    capital_employed = equity_capital + reserves + borrowings
 
     if capital_employed <= 0:
         return None
@@ -239,7 +225,7 @@ def roce_sector_classification(
     broad_sector,
     roce,
     sector_benchmark=None,
-) -> Optional[str]:
+) -> str | None:
     """
     Financial-sector ROCE uses a sector-relative benchmark.
 
@@ -274,7 +260,7 @@ def roce_sector_classification(
 def return_on_assets(
     net_profit,
     total_assets,
-) -> Optional[float]:
+) -> float | None:
     """
     ROA = net_profit / total_assets * 100
 
@@ -297,11 +283,12 @@ def return_on_assets(
 # DAY 09 — LEVERAGE & EFFICIENCY
 # =====================================================================
 
+
 def debt_to_equity(
     borrowings,
     equity_capital,
     reserves,
-) -> Optional[float]:
+) -> float | None:
     """
     Debt-to-Equity = borrowings / equity
 
@@ -317,11 +304,7 @@ def debt_to_equity(
     equity_capital = _to_float(equity_capital)
     reserves = _to_float(reserves)
 
-    if (
-        borrowings is None
-        or equity_capital is None
-        or reserves is None
-    ):
+    if borrowings is None or equity_capital is None or reserves is None:
         return None
 
     # Explicit Sprint 2 requirement:
@@ -351,17 +334,12 @@ def high_leverage_flag(
     is normal for banks, NBFCs and insurers.
     """
 
-    debt_to_equity_value = _to_float(
-        debt_to_equity_value
-    )
+    debt_to_equity_value = _to_float(debt_to_equity_value)
 
     if debt_to_equity_value is None:
         return False
 
-    is_financials = (
-        str(broad_sector).strip().lower()
-        == "financials"
-    )
+    is_financials = str(broad_sector).strip().lower() == "financials"
 
     if is_financials:
         return False
@@ -373,7 +351,7 @@ def interest_coverage_ratio(
     operating_profit,
     other_income,
     interest,
-) -> Optional[float]:
+) -> float | None:
     """
     Interest Coverage Ratio =
 
@@ -403,7 +381,7 @@ def interest_coverage_ratio(
 
 def interest_coverage_label(
     interest_coverage,
-) -> Optional[str]:
+) -> str | None:
     """
     Convert ICR into the required display label.
 
@@ -427,9 +405,7 @@ def interest_coverage_warning(
     None / debt-free does not produce a warning.
     """
 
-    interest_coverage = _to_float(
-        interest_coverage
-    )
+    interest_coverage = _to_float(interest_coverage)
 
     if interest_coverage is None:
         return False
@@ -440,7 +416,7 @@ def interest_coverage_warning(
 def net_debt(
     borrowings,
     investments,
-) -> Optional[float]:
+) -> float | None:
     """
     Net Debt = borrowings - investments
 
@@ -459,7 +435,7 @@ def net_debt(
 def asset_turnover(
     sales,
     total_assets,
-) -> Optional[float]:
+) -> float | None:
     """
     Asset Turnover = sales / total_assets
 
@@ -481,6 +457,7 @@ def asset_turnover(
 # =====================================================================
 # COMPLETE DAY 08 + DAY 09 CALCULATION
 # =====================================================================
+
 
 def calculate_profitability_ratios(row) -> dict:
     """
@@ -512,18 +489,10 @@ def calculate_profitability_ratios(row) -> dict:
             row.get("net_profit"),
             row.get("sales"),
         ),
-        "operating_profit_margin_pct": opm_check[
-            "calculated_opm"
-        ],
-        "reported_opm_percentage": opm_check[
-            "reported_opm"
-        ],
-        "opm_difference_pct_points": opm_check[
-            "difference"
-        ],
-        "opm_mismatch_flag": opm_check[
-            "mismatch"
-        ],
+        "operating_profit_margin_pct": opm_check["calculated_opm"],
+        "reported_opm_percentage": opm_check["reported_opm"],
+        "opm_difference_pct_points": opm_check["difference"],
+        "opm_mismatch_flag": opm_check["mismatch"],
         "return_on_equity_pct": roe,
         "return_on_capital_employed_pct": roce,
         "return_on_assets_pct": return_on_assets(
@@ -552,27 +521,21 @@ def calculate_leverage_efficiency_ratios(row) -> dict:
 
     return {
         "debt_to_equity": de,
-
         "high_leverage_flag": high_leverage_flag(
             de,
             row.get("broad_sector"),
         ),
-
         "interest_coverage": icr,
-
         "icr_label": interest_coverage_label(
             icr,
         ),
-
         "icr_warning_flag": interest_coverage_warning(
             icr,
         ),
-
         "net_debt": net_debt(
             row.get("borrowings"),
             row.get("investments"),
         ),
-
         "asset_turnover": asset_turnover(
             row.get("sales"),
             row.get("total_assets"),
@@ -590,12 +553,8 @@ def calculate_all_day08_day09_ratios(row) -> dict:
 
     result = {}
 
-    result.update(
-        calculate_profitability_ratios(row)
-    )
+    result.update(calculate_profitability_ratios(row))
 
-    result.update(
-        calculate_leverage_efficiency_ratios(row)
-    )
+    result.update(calculate_leverage_efficiency_ratios(row))
 
     return result

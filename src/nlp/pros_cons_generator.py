@@ -1,8 +1,8 @@
-from pathlib import Path
 import sqlite3
-import pandas as pd
-import numpy as np
+from pathlib import Path
 
+import numpy as np
+import pandas as pd
 
 # ============================================================
 # FILES
@@ -59,6 +59,7 @@ CON_RULES = {
 # HELPERS
 # ============================================================
 
+
 def clean_columns(df):
     df = df.copy()
     df.columns = [str(c).strip() for c in df.columns]
@@ -69,12 +70,7 @@ def clean_ids(df):
     df = df.copy()
 
     if "company_id" in df.columns:
-        df["company_id"] = (
-            df["company_id"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-        )
+        df["company_id"] = df["company_id"].astype(str).str.strip().str.upper()
 
     return df
 
@@ -90,37 +86,21 @@ def add_year_number(df):
     df = df.copy()
 
     if "year" not in df.columns:
-        raise ValueError(
-            "Expected 'year' column was not found."
-        )
+        raise ValueError("Expected 'year' column was not found.")
 
-    df["year_num"] = (
-        df["year"]
-        .astype(str)
-        .str.extract(r"(\d{4})")[0]
-    )
+    df["year_num"] = df["year"].astype(str).str.extract(r"(\d{4})")[0]
 
-    df["year_num"] = pd.to_numeric(
-        df["year_num"],
-        errors="coerce"
-    )
+    df["year_num"] = pd.to_numeric(df["year_num"], errors="coerce")
 
-    return df.dropna(
-        subset=["year_num"]
-    )
+    return df.dropna(subset=["year_num"])
 
 
 def latest_rows(df):
     df = add_year_number(df)
 
     return (
-        df.sort_values(
-            ["company_id", "year_num"]
-        )
-        .groupby(
-            "company_id",
-            as_index=False
-        )
+        df.sort_values(["company_id", "year_num"])
+        .groupby("company_id", as_index=False)
         .tail(1)
         .copy()
     )
@@ -132,15 +112,12 @@ def consecutive_increase(values, periods):
     if len(values) < periods + 1:
         return False
 
-    recent = values[-(periods + 1):]
+    recent = values[-(periods + 1) :]
 
     if any(pd.isna(x) for x in recent):
         return False
 
-    return all(
-        recent[i] > recent[i - 1]
-        for i in range(1, len(recent))
-    )
+    return all(recent[i] > recent[i - 1] for i in range(1, len(recent)))
 
 
 def consecutive_decrease(values, periods):
@@ -149,15 +126,12 @@ def consecutive_decrease(values, periods):
     if len(values) < periods + 1:
         return False
 
-    recent = values[-(periods + 1):]
+    recent = values[-(periods + 1) :]
 
     if any(pd.isna(x) for x in recent):
         return False
 
-    return all(
-        recent[i] < recent[i - 1]
-        for i in range(1, len(recent))
-    )
+    return all(recent[i] < recent[i - 1] for i in range(1, len(recent)))
 
 
 def confidence_above_threshold(
@@ -176,15 +150,11 @@ def confidence_above_threshold(
 
     confidence = base + margin * scale
 
-    return int(
-        min(99, max(61, round(confidence)))
-    )
+    return int(min(99, max(61, round(confidence))))
 
 
 def binary_confidence(value):
-    return int(
-        min(99, max(61, value))
-    )
+    return int(min(99, max(61, value)))
 
 
 def is_financial_sector(sector):
@@ -200,68 +170,31 @@ def is_financial_sector(sector):
         "nbfc",
     ]
 
-    return any(
-        keyword in text
-        for keyword in keywords
-    )
+    return any(keyword in text for keyword in keywords)
 
 
 # ============================================================
 # LOAD DATA
 # ============================================================
 
+
 def load_data():
 
     print("Loading source data...")
 
-    pl = clean_ids(
-        clean_columns(
-            pd.read_excel(
-                PL_FILE,
-                header=1
-            )
-        )
-    )
+    pl = clean_ids(clean_columns(pd.read_excel(PL_FILE, header=1)))
 
-    bs = clean_ids(
-        clean_columns(
-            pd.read_excel(
-                BS_FILE,
-                header=1
-            )
-        )
-    )
+    bs = clean_ids(clean_columns(pd.read_excel(BS_FILE, header=1)))
 
-    cf = clean_ids(
-        clean_columns(
-            pd.read_excel(
-                CF_FILE,
-                header=1
-            )
-        )
-    )
+    cf = clean_ids(clean_columns(pd.read_excel(CF_FILE, header=1)))
 
-    sectors = clean_ids(
-        clean_columns(
-            pd.read_excel(
-                SECTOR_FILE,
-                header=0
-            )
-        )
-    )
+    sectors = clean_ids(clean_columns(pd.read_excel(SECTOR_FILE, header=0)))
 
     # --------------------------------------------------------
     # Market cap is NOT assumed to have a year column.
     # --------------------------------------------------------
 
-    market_cap = clean_ids(
-        clean_columns(
-            pd.read_excel(
-                MARKET_CAP_FILE,
-                header=0
-            )
-        )
-    )
+    market_cap = clean_ids(clean_columns(pd.read_excel(MARKET_CAP_FILE, header=0)))
 
     # Add years only to files that actually contain them.
     pl = add_year_number(pl)
@@ -270,10 +203,7 @@ def load_data():
 
     conn = sqlite3.connect(DB_FILE)
 
-    ratios = pd.read_sql_query(
-        "SELECT * FROM financial_ratios",
-        conn
-    )
+    ratios = pd.read_sql_query("SELECT * FROM financial_ratios", conn)
 
     conn.close()
 
@@ -294,6 +224,7 @@ def load_data():
 # GENERATOR
 # ============================================================
 
+
 def generate():
 
     (
@@ -306,30 +237,16 @@ def generate():
     ) = load_data()
 
     company_ids = sorted(
-        set(
-            ratios["company_id"]
-            .dropna()
-            .astype(str)
-            .str.strip()
-            .str.upper()
-        )
+        set(ratios["company_id"].dropna().astype(str).str.strip().str.upper())
     )
 
-    print(
-        f"Company universe: {len(company_ids)}"
-    )
+    print(f"Company universe: {len(company_ids)}")
 
-    latest_ratio = latest_rows(
-        ratios
-    ).set_index("company_id")
+    latest_ratio = latest_rows(ratios).set_index("company_id")
 
-    latest_pl = latest_rows(
-        pl
-    ).set_index("company_id")
+    latest_pl = latest_rows(pl).set_index("company_id")
 
-    latest_bs = latest_rows(
-        bs
-    ).set_index("company_id")
+    latest_bs = latest_rows(bs).set_index("company_id")
 
     # --------------------------------------------------------
     # Sector lookup
@@ -339,20 +256,11 @@ def generate():
 
     for _, row in sectors.iterrows():
 
-        company_id = str(
-            row["company_id"]
-        ).strip().upper()
+        company_id = str(row["company_id"]).strip().upper()
 
-        broad = row.get(
-            "broad_sector",
-            ""
-        )
+        broad = row.get("broad_sector", "")
 
-        sector_lookup[company_id] = (
-            ""
-            if pd.isna(broad)
-            else str(broad)
-        )
+        sector_lookup[company_id] = "" if pd.isna(broad) else str(broad)
 
     # --------------------------------------------------------
     # FCF history
@@ -360,164 +268,88 @@ def generate():
 
     cf = cf.copy()
 
-    cf["free_cash_flow"] = (
-        pd.to_numeric(
-            cf["operating_activity"],
-            errors="coerce"
-        )
-        +
-        pd.to_numeric(
-            cf["investing_activity"],
-            errors="coerce"
-        )
-    )
+    cf["free_cash_flow"] = pd.to_numeric(
+        cf["operating_activity"], errors="coerce"
+    ) + pd.to_numeric(cf["investing_activity"], errors="coerce")
 
-    cf = cf.sort_values(
-        ["company_id", "year_num"]
-    )
+    cf = cf.sort_values(["company_id", "year_num"])
 
     # --------------------------------------------------------
     # P&L history
     # --------------------------------------------------------
 
-    pl = pl.sort_values(
-        ["company_id", "year_num"]
-    )
+    pl = pl.sort_values(["company_id", "year_num"])
 
     # --------------------------------------------------------
     # Balance Sheet history
     # --------------------------------------------------------
 
-    bs = bs.sort_values(
-        ["company_id", "year_num"]
-    )
+    bs = bs.sort_values(["company_id", "year_num"])
 
     output = []
 
     for company_id in company_ids:
 
-        sector = sector_lookup.get(
-            company_id,
-            ""
+        sector = sector_lookup.get(company_id, "")
+
+        financial_company = is_financial_sector(sector)
+
+        company_ratio = ratios[ratios["company_id"] == company_id].sort_values(
+            "year_num"
         )
 
-        financial_company = is_financial_sector(
-            sector
-        )
+        company_pl = pl[pl["company_id"] == company_id].sort_values("year_num")
 
-        company_ratio = ratios[
-            ratios["company_id"]
-            == company_id
-        ].sort_values("year_num")
+        company_bs = bs[bs["company_id"] == company_id].sort_values("year_num")
 
-        company_pl = pl[
-            pl["company_id"]
-            == company_id
-        ].sort_values("year_num")
-
-        company_bs = bs[
-            bs["company_id"]
-            == company_id
-        ].sort_values("year_num")
-
-        company_cf = cf[
-            cf["company_id"]
-            == company_id
-        ].sort_values("year_num")
+        company_cf = cf[cf["company_id"] == company_id].sort_values("year_num")
 
         if company_id not in latest_ratio.index:
             continue
 
-        r = latest_ratio.loc[
-            company_id
-        ]
+        r = latest_ratio.loc[company_id]
 
-        roe = r.get(
-            "return_on_equity_pct",
-            np.nan
-        )
+        roe = r.get("return_on_equity_pct", np.nan)
 
-        roce = r.get(
-            "return_on_capital_employed_pct",
-            np.nan
-        )
+        roce = r.get("return_on_capital_employed_pct", np.nan)
 
-        de = r.get(
-            "debt_to_equity",
-            np.nan
-        )
+        de = r.get("debt_to_equity", np.nan)
 
-        icr = r.get(
-            "interest_coverage",
-            np.nan
-        )
+        icr = r.get("interest_coverage", np.nan)
 
-        revenue_cagr_5 = r.get(
-            "revenue_cagr_5yr",
-            np.nan
-        )
+        revenue_cagr_5 = r.get("revenue_cagr_5yr", np.nan)
 
-        pat_cagr_5 = r.get(
-            "pat_cagr_5yr",
-            np.nan
-        )
+        pat_cagr_5 = r.get("pat_cagr_5yr", np.nan)
 
-        eps_cagr_5 = r.get(
-            "eps_cagr_5yr",
-            np.nan
-        )
+        eps_cagr_5 = r.get("eps_cagr_5yr", np.nan)
 
-        opm = r.get(
-            "operating_profit_margin_pct",
-            np.nan
-        )
+        opm = r.get("operating_profit_margin_pct", np.nan)
 
-        dividend_payout = r.get(
-            "dividend_payout_ratio_pct",
-            np.nan
-        )
+        dividend_payout = r.get("dividend_payout_ratio_pct", np.nan)
 
         # ====================================================
         # FCF
         # ====================================================
 
         fcf_values = (
-            pd.to_numeric(
-                company_cf["free_cash_flow"],
-                errors="coerce"
-            )
+            pd.to_numeric(company_cf["free_cash_flow"], errors="coerce")
             .dropna()
             .tolist()
         )
 
-        latest_fcf = (
-            fcf_values[-1]
-            if fcf_values
-            else np.nan
-        )
+        latest_fcf = fcf_values[-1] if fcf_values else np.nan
 
         # ====================================================
         # PRO 1
         # ====================================================
 
         roe_history = (
-            pd.to_numeric(
-                company_ratio[
-                    "return_on_equity_pct"
-                ],
-                errors="coerce"
-            )
+            pd.to_numeric(company_ratio["return_on_equity_pct"], errors="coerce")
             .dropna()
             .tolist()
         )
 
-        if (
-            len(roe_history) >= 3
-            and all(
-                x > 20
-                for x in roe_history[-3:]
-            )
-        ):
+        if len(roe_history) >= 3 and all(x > 20 for x in roe_history[-3:]):
 
             output.append(
                 {
@@ -533,13 +365,7 @@ def generate():
         # PRO 2
         # ====================================================
 
-        if (
-            len(fcf_values) >= 5
-            and all(
-                x > 0
-                for x in fcf_values[-5:]
-            )
-        ):
+        if len(fcf_values) >= 5 and all(x > 0 for x in fcf_values[-5:]):
 
             output.append(
                 {
@@ -555,10 +381,7 @@ def generate():
         # PRO 3
         # ====================================================
 
-        if (
-            pd.notna(de)
-            and abs(float(de)) < 1e-9
-        ):
+        if pd.notna(de) and abs(float(de)) < 1e-9:
 
             output.append(
                 {
@@ -574,10 +397,7 @@ def generate():
         # PRO 4
         # ====================================================
 
-        confidence = confidence_above_threshold(
-            revenue_cagr_5,
-            15
-        )
+        confidence = confidence_above_threshold(revenue_cagr_5, 15)
 
         if confidence:
 
@@ -595,10 +415,7 @@ def generate():
         # PRO 5
         # ====================================================
 
-        confidence = confidence_above_threshold(
-            opm,
-            25
-        )
+        confidence = confidence_above_threshold(opm, 25)
 
         if confidence:
 
@@ -616,10 +433,7 @@ def generate():
         # PRO 6
         # ====================================================
 
-        confidence = confidence_above_threshold(
-            pat_cagr_5,
-            20
-        )
+        confidence = confidence_above_threshold(pat_cagr_5, 20)
 
         if confidence:
 
@@ -637,15 +451,9 @@ def generate():
         # PRO 7
         # ====================================================
 
-        debt_free = (
-            pd.notna(de)
-            and abs(float(de)) < 1e-9
-        )
+        debt_free = pd.notna(de) and abs(float(de)) < 1e-9
 
-        high_icr = (
-            pd.notna(icr)
-            and float(icr) > 10
-        )
+        high_icr = pd.notna(icr) and float(icr) > 10
 
         if debt_free or high_icr:
 
@@ -655,9 +463,7 @@ def generate():
                     "type": "pro",
                     "rule_id": "P07",
                     "text": PRO_RULES[7],
-                    "confidence_pct": binary_confidence(
-                        95 if debt_free else 85
-                    ),
+                    "confidence_pct": binary_confidence(95 if debt_free else 85),
                 }
             )
 
@@ -670,26 +476,16 @@ def generate():
 
         dividend_yield = np.nan
 
-        if (
-            "dividend_yield_pct"
-            in market_cap.columns
-        ):
+        if "dividend_yield_pct" in market_cap.columns:
 
-            company_market = market_cap[
-                market_cap["company_id"]
-                == company_id
-            ]
+            company_market = market_cap[market_cap["company_id"] == company_id]
 
             if not company_market.empty:
 
-                value = company_market[
-                    "dividend_yield_pct"
-                ].dropna()
+                value = company_market["dividend_yield_pct"].dropna()
 
                 if not value.empty:
-                    dividend_yield = float(
-                        value.iloc[-1]
-                    )
+                    dividend_yield = float(value.iloc[-1])
 
         if (
             pd.notna(dividend_yield)
@@ -712,10 +508,7 @@ def generate():
         # PRO 9
         # ====================================================
 
-        confidence = confidence_above_threshold(
-            eps_cagr_5,
-            15
-        )
+        confidence = confidence_above_threshold(eps_cagr_5, 15)
 
         if confidence:
 
@@ -733,10 +526,7 @@ def generate():
         # PRO 10
         # ====================================================
 
-        if consecutive_increase(
-            roe_history,
-            3
-        ):
+        if consecutive_increase(roe_history, 3):
 
             output.append(
                 {
@@ -755,8 +545,7 @@ def generate():
         if (
             pd.notna(pat_cagr_5)
             and pd.notna(revenue_cagr_5)
-            and float(pat_cagr_5)
-            > float(revenue_cagr_5)
+            and float(pat_cagr_5) > float(revenue_cagr_5)
         ):
 
             output.append(
@@ -776,19 +565,13 @@ def generate():
         if len(company_bs) >= 2:
 
             assets = (
-                pd.to_numeric(
-                    company_bs["total_assets"],
-                    errors="coerce"
-                )
+                pd.to_numeric(company_bs["total_assets"], errors="coerce")
                 .dropna()
                 .tolist()
             )
 
             debt = (
-                pd.to_numeric(
-                    company_bs["borrowings"],
-                    errors="coerce"
-                )
+                pd.to_numeric(company_bs["borrowings"], errors="coerce")
                 .dropna()
                 .tolist()
             )
@@ -814,20 +597,14 @@ def generate():
         # CON 1
         # ====================================================
 
-        if (
-            not financial_company
-            and pd.notna(de)
-            and float(de) > 2
-        ):
+        if not financial_company and pd.notna(de) and float(de) > 2:
 
             output.append(
                 {
                     "company_id": company_id,
                     "type": "con",
                     "rule_id": "C01",
-                    "text": CON_RULES[1].format(
-                        value=f"{float(de):.2f}"
-                    ),
+                    "text": CON_RULES[1].format(value=f"{float(de):.2f}"),
                     "confidence_pct": binary_confidence(85),
                 }
             )
@@ -836,13 +613,7 @@ def generate():
         # CON 2
         # ====================================================
 
-        if (
-            len(fcf_values) >= 3
-            and all(
-                x < 0
-                for x in fcf_values[-3:]
-            )
-        ):
+        if len(fcf_values) >= 3 and all(x < 0 for x in fcf_values[-3:]):
 
             output.append(
                 {
@@ -859,20 +630,12 @@ def generate():
         # ====================================================
 
         opm_history = (
-            pd.to_numeric(
-                company_ratio[
-                    "operating_profit_margin_pct"
-                ],
-                errors="coerce"
-            )
+            pd.to_numeric(company_ratio["operating_profit_margin_pct"], errors="coerce")
             .dropna()
             .tolist()
         )
 
-        if consecutive_decrease(
-            opm_history,
-            3
-        ):
+        if consecutive_decrease(opm_history, 3):
 
             output.append(
                 {
@@ -891,19 +654,10 @@ def generate():
         if company_id in latest_pl.index:
 
             net_profit = pd.to_numeric(
-                latest_pl.loc[
-                    company_id
-                ].get(
-                    "net_profit",
-                    np.nan
-                ),
-                errors="coerce"
+                latest_pl.loc[company_id].get("net_profit", np.nan), errors="coerce"
             )
 
-            if (
-                pd.notna(net_profit)
-                and net_profit < 0
-            ):
+            if pd.notna(net_profit) and net_profit < 0:
 
                 output.append(
                     {
@@ -920,18 +674,10 @@ def generate():
         # ====================================================
 
         revenue_history = (
-            pd.to_numeric(
-                company_pl["sales"],
-                errors="coerce"
-            )
-            .dropna()
-            .tolist()
+            pd.to_numeric(company_pl["sales"], errors="coerce").dropna().tolist()
         )
 
-        if consecutive_decrease(
-            revenue_history,
-            2
-        ):
+        if consecutive_decrease(revenue_history, 2):
 
             output.append(
                 {
@@ -947,10 +693,7 @@ def generate():
         # CON 6
         # ====================================================
 
-        if (
-            pd.notna(icr)
-            and float(icr) < 1.5
-        ):
+        if pd.notna(icr) and float(icr) < 1.5:
 
             output.append(
                 {
@@ -966,10 +709,7 @@ def generate():
         # CON 7
         # ====================================================
 
-        if (
-            pd.notna(dividend_payout)
-            and float(dividend_payout) > 100
-        ):
+        if pd.notna(dividend_payout) and float(dividend_payout) > 100:
 
             output.append(
                 {
@@ -986,18 +726,12 @@ def generate():
         # ====================================================
 
         de_history = (
-            pd.to_numeric(
-                company_ratio["debt_to_equity"],
-                errors="coerce"
-            )
+            pd.to_numeric(company_ratio["debt_to_equity"], errors="coerce")
             .dropna()
             .tolist()
         )
 
-        if consecutive_increase(
-            de_history,
-            3
-        ):
+        if consecutive_increase(de_history, 3):
 
             output.append(
                 {
@@ -1014,18 +748,10 @@ def generate():
         # ====================================================
 
         eps_history = (
-            pd.to_numeric(
-                company_pl["eps"],
-                errors="coerce"
-            )
-            .dropna()
-            .tolist()
+            pd.to_numeric(company_pl["eps"], errors="coerce").dropna().tolist()
         )
 
-        if consecutive_decrease(
-            eps_history,
-            3
-        ):
+        if consecutive_decrease(eps_history, 3):
 
             output.append(
                 {
@@ -1041,10 +767,7 @@ def generate():
         # CON 10
         # ====================================================
 
-        if (
-            pd.notna(roce)
-            and float(roce) < 10
-        ):
+        if pd.notna(roce) and float(roce) < 10:
 
             output.append(
                 {
@@ -1063,71 +786,34 @@ def generate():
         if company_id in latest_bs.index:
 
             borrowings = pd.to_numeric(
-                latest_bs.loc[
-                    company_id
-                ].get(
-                    "borrowings",
-                    np.nan
-                ),
-                errors="coerce"
+                latest_bs.loc[company_id].get("borrowings", np.nan), errors="coerce"
             )
 
             investments = pd.to_numeric(
-                latest_bs.loc[
-                    company_id
-                ].get(
-                    "investments",
-                    np.nan
-                ),
-                errors="coerce"
+                latest_bs.loc[company_id].get("investments", np.nan), errors="coerce"
             )
 
-            if (
-                pd.notna(borrowings)
-                and pd.notna(investments)
-            ):
+            if pd.notna(borrowings) and pd.notna(investments):
 
-                net_debt = (
-                    borrowings
-                    - investments
-                )
+                net_debt = borrowings - investments
 
                 if company_id in latest_pl.index:
 
                     operating_profit = pd.to_numeric(
-                        latest_pl.loc[
-                            company_id
-                        ].get(
-                            "operating_profit",
-                            np.nan
-                        ),
-                        errors="coerce"
+                        latest_pl.loc[company_id].get("operating_profit", np.nan),
+                        errors="coerce",
                     )
 
                     depreciation = pd.to_numeric(
-                        latest_pl.loc[
-                            company_id
-                        ].get(
-                            "depreciation",
-                            np.nan
-                        ),
-                        errors="coerce"
+                        latest_pl.loc[company_id].get("depreciation", np.nan),
+                        errors="coerce",
                     )
 
-                    if (
-                        pd.notna(operating_profit)
-                        and pd.notna(depreciation)
-                    ):
+                    if pd.notna(operating_profit) and pd.notna(depreciation):
 
-                        ebitda = (
-                            operating_profit
-                            + depreciation
-                        )
+                        ebitda = operating_profit + depreciation
 
-                        if (
-                            ebitda > 0
-                            and net_debt > 3 * ebitda
-                        ):
+                        if ebitda > 0 and net_debt > 3 * ebitda:
 
                             output.append(
                                 {
@@ -1143,10 +829,7 @@ def generate():
         # CON 12
         # ====================================================
 
-        if (
-            pd.notna(revenue_cagr_5)
-            and float(revenue_cagr_5) < 5
-        ):
+        if pd.notna(revenue_cagr_5) and float(revenue_cagr_5) < 5:
 
             output.append(
                 {
@@ -1174,9 +857,7 @@ def generate():
     )
 
     # Sprint requirement: confidence >60%
-    result = result[
-        result["confidence_pct"] > 60
-    ].copy()
+    result = result[result["confidence_pct"] > 60].copy()
 
     result = result.drop_duplicates(
         subset=[
@@ -1198,75 +879,39 @@ def generate():
     # COVERAGE
     # ========================================================
 
-    pro_companies = set(
-        result.loc[
-            result["type"] == "pro",
-            "company_id"
-        ]
-    )
+    pro_companies = set(result.loc[result["type"] == "pro", "company_id"])
 
-    con_companies = set(
-        result.loc[
-            result["type"] == "con",
-            "company_id"
-        ]
-    )
+    con_companies = set(result.loc[result["type"] == "con", "company_id"])
 
-    missing_pro = sorted(
-        set(company_ids) - pro_companies
-    )
+    missing_pro = sorted(set(company_ids) - pro_companies)
 
-    missing_con = sorted(
-        set(company_ids) - con_companies
-    )
+    missing_con = sorted(set(company_ids) - con_companies)
 
     # ========================================================
     # OUTPUT
     # ========================================================
 
-    OUTPUT_FILE.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    result.to_csv(
-        OUTPUT_FILE,
-        index=False
-    )
+    result.to_csv(OUTPUT_FILE, index=False)
 
     print()
     print("=" * 65)
     print("NLP PROS & CONS GENERATOR")
     print("=" * 65)
 
-    print(
-        f"Companies processed : {len(company_ids)}"
-    )
+    print(f"Companies processed : {len(company_ids)}")
 
-    print(
-        f"Total signals       : {len(result)}"
-    )
+    print(f"Total signals       : {len(result)}")
 
-    print(
-        f"Pro signals         : "
-        f"{len(result[result['type'] == 'pro'])}"
-    )
+    print(f"Pro signals         : " f"{len(result[result['type'] == 'pro'])}")
 
-    print(
-        f"Con signals         : "
-        f"{len(result[result['type'] == 'con'])}"
-    )
+    print(f"Con signals         : " f"{len(result[result['type'] == 'con'])}")
 
     print()
-    print(
-        f"Companies with Pro  : "
-        f"{len(pro_companies)}"
-    )
+    print(f"Companies with Pro  : " f"{len(pro_companies)}")
 
-    print(
-        f"Companies with Con  : "
-        f"{len(con_companies)}"
-    )
+    print(f"Companies with Con  : " f"{len(con_companies)}")
 
     print()
 
@@ -1274,42 +919,30 @@ def generate():
         print("COMPANIES MISSING PRO:")
         print(", ".join(missing_pro))
     else:
-        print(
-            "Every company has at least 1 Pro: YES"
-        )
+        print("Every company has at least 1 Pro: YES")
 
     if missing_con:
         print("COMPANIES MISSING CON:")
         print(", ".join(missing_con))
     else:
-        print(
-            "Every company has at least 1 Con: YES"
-        )
+        print("Every company has at least 1 Con: YES")
 
     print()
     print("Signals by rule:")
 
     if not result.empty:
-        print(
-            result["rule_id"]
-            .value_counts()
-            .sort_index()
-            .to_string()
-        )
+        print(result["rule_id"].value_counts().sort_index().to_string())
 
     print()
     print("Confidence range:")
 
     if not result.empty:
         print(
-            f"{result['confidence_pct'].min()} - "
-            f"{result['confidence_pct'].max()}"
+            f"{result['confidence_pct'].min()} - " f"{result['confidence_pct'].max()}"
         )
 
     print()
-    print(
-        f"Output: {OUTPUT_FILE}"
-    )
+    print(f"Output: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

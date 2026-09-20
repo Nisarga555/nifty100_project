@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 st.set_page_config(
     page_title="Nifty 100 Analytics",
     page_icon="📊",
@@ -14,15 +13,13 @@ def main():
     st.sidebar.markdown("---")
 
     st.sidebar.info(
-        "Financial Intelligence Dashboard\n\n"
-        "Sprint 4 — Dashboard + Valuation"
+        "Financial Intelligence Dashboard\n\n" "Sprint 4 — Dashboard + Valuation"
     )
 
     st.title("📊 Nifty 100 Analytics")
     st.subheader("Financial Intelligence Dashboard")
 
-    st.markdown(
-        """
+    st.markdown("""
         Welcome to the **Nifty 100 Financial Intelligence Platform**.
 
         Use the sidebar to explore:
@@ -35,8 +32,7 @@ def main():
         - 🏭 Sector Analysis
         - 💰 Capital Allocation
         - 📑 Annual Reports
-        """
-    )
+        """)
 
     st.success(
         "Dashboard scaffold is running successfully. "

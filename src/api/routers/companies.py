@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
-import pandas as pd
 import math
+from pathlib import Path
 
+import pandas as pd
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(
     prefix="/companies",
@@ -22,6 +22,7 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 # ============================================================
 # HELPERS
 # ============================================================
+
 
 def find_excel_file(filename: str) -> Path:
     """
@@ -85,10 +86,7 @@ def dataframe_to_records(df: pd.DataFrame):
     records = []
 
     for record in df.to_dict(orient="records"):
-        cleaned = {
-            str(key): clean_value(value)
-            for key, value in record.items()
-        }
+        cleaned = {str(key): clean_value(value) for key, value in record.items()}
 
         records.append(cleaned)
 
@@ -117,10 +115,7 @@ def get_company(ticker: str):
 
     ticker_normalized = normalize_ticker(ticker)
 
-    matches = df[
-        df["id"].astype(str).str.strip().str.upper()
-        == ticker_normalized
-    ]
+    matches = df[df["id"].astype(str).str.strip().str.upper() == ticker_normalized]
 
     if matches.empty:
         raise HTTPException(
@@ -146,17 +141,13 @@ def get_company_data(
     if "company_id" not in df.columns:
         raise HTTPException(
             status_code=500,
-            detail=(
-                f"{filename} does not contain required "
-                "'company_id' column"
-            ),
+            detail=(f"{filename} does not contain required " "'company_id' column"),
         )
 
     ticker_normalized = normalize_ticker(ticker)
 
     result = df[
-        df["company_id"].astype(str).str.strip().str.upper()
-        == ticker_normalized
+        df["company_id"].astype(str).str.strip().str.upper() == ticker_normalized
     ].copy()
 
     if result.empty:
@@ -174,6 +165,7 @@ def get_company_data(
 # ============================================================
 # GET ALL COMPANIES
 # ============================================================
+
 
 @router.get("")
 def list_companies():
@@ -195,6 +187,7 @@ def list_companies():
 # GET ONE COMPANY
 # ============================================================
 
+
 @router.get("/{ticker}")
 def company_detail(ticker: str):
     """
@@ -205,8 +198,7 @@ def company_detail(ticker: str):
 
     return {
         "data": {
-            str(key): clean_value(value)
-            for key, value in company.to_dict().items()
+            str(key): clean_value(value) for key, value in company.to_dict().items()
         }
     }
 
@@ -214,6 +206,7 @@ def company_detail(ticker: str):
 # ============================================================
 # PROFIT & LOSS
 # ============================================================
+
 
 @router.get("/{ticker}/pl")
 def company_profit_and_loss(ticker: str):
@@ -243,6 +236,7 @@ def company_profit_and_loss(ticker: str):
 # BALANCE SHEET
 # ============================================================
 
+
 @router.get("/{ticker}/bs")
 def company_balance_sheet(ticker: str):
     """
@@ -271,6 +265,7 @@ def company_balance_sheet(ticker: str):
 # CASH FLOW
 # ============================================================
 
+
 @router.get("/{ticker}/cashflow")
 def company_cashflow(ticker: str):
     """
@@ -298,6 +293,7 @@ def company_cashflow(ticker: str):
 # ============================================================
 # FINANCIAL RATIOS
 # ============================================================
+
 
 @router.get("/{ticker}/ratios")
 def company_ratios(ticker: str):
@@ -351,12 +347,7 @@ def company_ratios(ticker: str):
     records = []
 
     for row in rows:
-        records.append(
-            {
-                key: clean_value(row[key])
-                for key in row.keys()
-            }
-        )
+        records.append({key: clean_value(row[key]) for key in row.keys()})
 
     return {
         "ticker": normalize_ticker(ticker),
@@ -368,6 +359,7 @@ def company_ratios(ticker: str):
 # ============================================================
 # TEAR SHEET
 # ============================================================
+
 
 @router.get("/{ticker}/tearsheet")
 def company_tearsheet(ticker: str):
@@ -393,9 +385,7 @@ def company_tearsheet(ticker: str):
         if not directory.exists():
             continue
 
-        possible_files.extend(
-            directory.glob(f"*{ticker_normalized}*.pdf")
-        )
+        possible_files.extend(directory.glob(f"*{ticker_normalized}*.pdf"))
 
     if not possible_files:
 
@@ -403,8 +393,7 @@ def company_tearsheet(ticker: str):
             "ticker": ticker_normalized,
             "status": "not_found",
             "message": (
-                "Company tear sheet was not found "
-                "in the reports directory."
+                "Company tear sheet was not found " "in the reports directory."
             ),
         }
 

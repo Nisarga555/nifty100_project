@@ -1,29 +1,29 @@
 import pytest
 
 from src.analytics.ratios import (
-    net_profit_margin,
-    operating_profit_margin,
-    check_operating_profit_margin,
-    return_on_equity,
-    return_on_capital_employed,
-    return_on_assets,
-    roce_sector_classification,
+    asset_turnover,
+    calculate_all_day08_day09_ratios,
+    calculate_leverage_efficiency_ratios,
     calculate_profitability_ratios,
+    check_operating_profit_margin,
     debt_to_equity,
     high_leverage_flag,
-    interest_coverage_ratio,
     interest_coverage_label,
+    interest_coverage_ratio,
     interest_coverage_warning,
     net_debt,
-    asset_turnover,
-    calculate_leverage_efficiency_ratios,
-    calculate_all_day08_day09_ratios,
+    net_profit_margin,
+    operating_profit_margin,
+    return_on_assets,
+    return_on_capital_employed,
+    return_on_equity,
+    roce_sector_classification,
 )
-
 
 # =====================================================================
 # DAY 08 — NET PROFIT MARGIN
 # =====================================================================
+
 
 def test_net_profit_margin_normal():
     result = net_profit_margin(
@@ -46,6 +46,7 @@ def test_net_profit_margin_zero_sales():
 # =====================================================================
 # DAY 08 — OPERATING PROFIT MARGIN
 # =====================================================================
+
 
 def test_operating_profit_margin_normal():
     result = operating_profit_margin(
@@ -84,6 +85,7 @@ def test_opm_cross_check_mismatch():
 # DAY 08 — ROE
 # =====================================================================
 
+
 def test_roe_normal():
     result = return_on_equity(
         net_profit=200,
@@ -108,6 +110,7 @@ def test_roe_negative_equity_returns_none():
 # DAY 08 — ROCE
 # =====================================================================
 
+
 def test_roce_normal():
     result = return_on_capital_employed(
         operating_profit=200,
@@ -124,6 +127,7 @@ def test_roce_normal():
 # DAY 08 — ROA
 # =====================================================================
 
+
 def test_roa_zero_assets():
     result = return_on_assets(
         net_profit=100,
@@ -136,6 +140,7 @@ def test_roa_zero_assets():
 # =====================================================================
 # DAY 08 — FINANCIAL SECTOR ROCE
 # =====================================================================
+
 
 def test_financials_use_sector_benchmark():
     result = roce_sector_classification(
@@ -150,6 +155,7 @@ def test_financials_use_sector_benchmark():
 # =====================================================================
 # DAY 08 — INTEGRATION
 # =====================================================================
+
 
 def test_calculate_profitability_ratios():
     row = {
@@ -169,21 +175,13 @@ def test_calculate_profitability_ratios():
 
     assert result["net_profit_margin_pct"] == pytest.approx(20.0)
 
-    assert result["operating_profit_margin_pct"] == pytest.approx(
-        15.0
-    )
+    assert result["operating_profit_margin_pct"] == pytest.approx(15.0)
 
-    assert result["return_on_equity_pct"] == pytest.approx(
-        20.0
-    )
+    assert result["return_on_equity_pct"] == pytest.approx(20.0)
 
-    assert result["return_on_capital_employed_pct"] == pytest.approx(
-        11.3333333333
-    )
+    assert result["return_on_capital_employed_pct"] == pytest.approx(11.3333333333)
 
-    assert result["return_on_assets_pct"] == pytest.approx(
-        10.0
-    )
+    assert result["return_on_assets_pct"] == pytest.approx(10.0)
 
     assert result["opm_mismatch_flag"] is False
 
@@ -191,6 +189,7 @@ def test_calculate_profitability_ratios():
 # =====================================================================
 # DAY 09 — DEBT TO EQUITY
 # =====================================================================
+
 
 def test_debt_to_equity_normal():
     result = debt_to_equity(
@@ -227,6 +226,7 @@ def test_debt_to_equity_negative_equity_returns_none():
 # DAY 09 — HIGH LEVERAGE FLAG
 # =====================================================================
 
+
 def test_high_debt_to_equity_flag():
     result = high_leverage_flag(
         debt_to_equity_value=6.0,
@@ -248,6 +248,7 @@ def test_financials_high_debt_not_flagged():
 # =====================================================================
 # DAY 09 — INTEREST COVERAGE
 # =====================================================================
+
 
 def test_interest_coverage_normal():
     result = interest_coverage_ratio(
@@ -296,6 +297,7 @@ def test_icr_warning_above_threshold():
 # DAY 09 — NET DEBT
 # =====================================================================
 
+
 def test_net_debt():
     result = net_debt(
         borrowings=1000,
@@ -308,6 +310,7 @@ def test_net_debt():
 # =====================================================================
 # DAY 09 — ASSET TURNOVER
 # =====================================================================
+
 
 def test_asset_turnover_normal():
     result = asset_turnover(
@@ -330,6 +333,7 @@ def test_asset_turnover_zero_assets():
 # =====================================================================
 # DAY 09 — INTEGRATION
 # =====================================================================
+
 
 def test_calculate_leverage_efficiency_ratios():
     row = {
@@ -380,26 +384,14 @@ def test_calculate_all_day08_day09_ratios():
 
     result = calculate_all_day08_day09_ratios(row)
 
-    assert result["net_profit_margin_pct"] == pytest.approx(
-        20.0
-    )
+    assert result["net_profit_margin_pct"] == pytest.approx(20.0)
 
-    assert result["return_on_equity_pct"] == pytest.approx(
-        20.0
-    )
+    assert result["return_on_equity_pct"] == pytest.approx(20.0)
 
-    assert result["debt_to_equity"] == pytest.approx(
-        0.5
-    )
+    assert result["debt_to_equity"] == pytest.approx(0.5)
 
-    assert result["interest_coverage"] == pytest.approx(
-        2.0
-    )
+    assert result["interest_coverage"] == pytest.approx(2.0)
 
-    assert result["net_debt"] == pytest.approx(
-        400.0
-    )
+    assert result["net_debt"] == pytest.approx(400.0)
 
-    assert result["asset_turnover"] == pytest.approx(
-        0.5
-    )
+    assert result["asset_turnover"] == pytest.approx(0.5)

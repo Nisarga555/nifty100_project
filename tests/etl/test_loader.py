@@ -1,13 +1,9 @@
 import pytest
-import pandas as pd
 
 from src.etl.loader import (
     SOURCE_FILES,
     load_source,
-    load_all_sources,
-    read_excel_file,
 )
-from src.etl.normaliser import normalize_dataframe
 
 
 def test_source_file_count():

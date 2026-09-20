@@ -4,7 +4,6 @@ import pandas as pd
 
 from src.etl.normaliser import normalize_dataframe
 
-
 RAW_DIR = Path("data/raw")
 OUTPUT_DIR = Path("output")
 
@@ -42,9 +41,7 @@ def read_excel_file(file_path):
     """Read a source Excel file."""
 
     if not file_path.exists():
-        raise FileNotFoundError(
-            f"Source file not found: {file_path}"
-        )
+        raise FileNotFoundError(f"Source file not found: {file_path}")
 
     return pd.read_excel(file_path)
 
@@ -55,9 +52,7 @@ def load_source(source_name):
     """
 
     if source_name not in SOURCE_FILES:
-        raise ValueError(
-            f"Unknown source: {source_name}"
-        )
+        raise ValueError(f"Unknown source: {source_name}")
 
     file_path = RAW_DIR / SOURCE_FILES[source_name]
 
@@ -74,13 +69,7 @@ def normalize_company_id_set(companies_df):
     from the companies master table.
     """
 
-    return set(
-        companies_df["id"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
+    return set(companies_df["id"].dropna().astype(str).str.strip().str.upper())
 
 
 def reject_orphan_rows(
@@ -100,17 +89,9 @@ def reject_orphan_rows(
     if "company_id" not in df.columns:
         return df
 
-    company_ids = (
-        df["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
+    company_ids = df["company_id"].astype(str).str.strip().str.upper()
 
-    invalid_mask = (
-        df["company_id"].notna()
-        & ~company_ids.isin(valid_company_ids)
-    )
+    invalid_mask = df["company_id"].notna() & ~company_ids.isin(valid_company_ids)
 
     invalid_rows = df[invalid_mask].copy()
 
@@ -124,10 +105,7 @@ def reject_orphan_rows(
                 "table_name": table_name,
                 "company_id": row["company_id"],
                 "year": row.get("year"),
-                "reason": (
-                    "Unknown company_id - "
-                    "not present in companies.id"
-                ),
+                "reason": ("Unknown company_id - " "not present in companies.id"),
             }
         )
 
@@ -189,10 +167,7 @@ def deduplicate_period_rows(
                 "company_id": row["company_id"],
                 "year": row["year"],
                 "id": row.get("id"),
-                "reason": (
-                    "Duplicate company_id + year - "
-                    "kept last occurrence"
-                ),
+                "reason": ("Duplicate company_id + year - " "kept last occurrence"),
             }
         )
 
@@ -241,9 +216,7 @@ def load_all_sources():
 
     datasets["companies"] = companies
 
-    valid_company_ids = normalize_company_id_set(
-        companies
-    )
+    valid_company_ids = normalize_company_id_set(companies)
 
     audit_rows.append(
         {
@@ -291,9 +264,7 @@ def load_all_sources():
                 rejected_rows,
             )
 
-            orphan_count = (
-                before_orphan_rejection - len(df)
-            )
+            orphan_count = before_orphan_rejection - len(df)
 
             # -------------------------------------------------------
             # Deduplicate company_id + year
@@ -307,9 +278,7 @@ def load_all_sources():
                 deduplicated_rows,
             )
 
-            duplicate_count = (
-                before_deduplication - len(df)
-            )
+            duplicate_count = before_deduplication - len(df)
 
             # -------------------------------------------------------
             # Store cleaned dataset
@@ -326,8 +295,7 @@ def load_all_sources():
                     "loaded_rows": len(df),
                     "status": (
                         "OK"
-                        if orphan_count == 0
-                        and duplicate_count == 0
+                        if orphan_count == 0 and duplicate_count == 0
                         else "CLEANED"
                     ),
                 }
@@ -341,23 +309,15 @@ def load_all_sources():
 
             if orphan_count > 0:
 
-                print(
-                    f"     [REJECTED] "
-                    f"{orphan_count} orphan rows"
-                )
+                print(f"     [REJECTED] " f"{orphan_count} orphan rows")
 
             if duplicate_count > 0:
 
-                print(
-                    f"     [DEDUPLICATED] "
-                    f"{duplicate_count} duplicate rows"
-                )
+                print(f"     [DEDUPLICATED] " f"{duplicate_count} duplicate rows")
 
         except Exception as error:
 
-            print(
-                f"[ERROR] {source_name}: {error}"
-            )
+            print(f"[ERROR] {source_name}: {error}")
 
             audit_rows.append(
                 {
@@ -375,15 +335,11 @@ def load_all_sources():
     # Save orphan rejection report
     # ---------------------------------------------------------------
 
-    rejection_file = (
-        OUTPUT_DIR / "rejected_orphans.csv"
-    )
+    rejection_file = OUTPUT_DIR / "rejected_orphans.csv"
 
     if rejected_rows:
 
-        rejected_df = pd.DataFrame(
-            rejected_rows
-        )
+        rejected_df = pd.DataFrame(rejected_rows)
 
         rejected_df.to_csv(
             rejection_file,
@@ -409,15 +365,11 @@ def load_all_sources():
     # Save duplicate/deduplication report
     # ---------------------------------------------------------------
 
-    duplicate_file = (
-        OUTPUT_DIR / "deduplicated_rows.csv"
-    )
+    duplicate_file = OUTPUT_DIR / "deduplicated_rows.csv"
 
     if deduplicated_rows:
 
-        duplicate_df = pd.DataFrame(
-            deduplicated_rows
-        )
+        duplicate_df = pd.DataFrame(deduplicated_rows)
 
         duplicate_df.to_csv(
             duplicate_file,
@@ -444,13 +396,9 @@ def load_all_sources():
     # Save ETL load audit
     # ---------------------------------------------------------------
 
-    audit_file = (
-        OUTPUT_DIR / "load_audit.csv"
-    )
+    audit_file = OUTPUT_DIR / "load_audit.csv"
 
-    audit_df = pd.DataFrame(
-        audit_rows
-    )
+    audit_df = pd.DataFrame(audit_rows)
 
     audit_df.to_csv(
         audit_file,
@@ -467,35 +415,17 @@ def load_all_sources():
     print("ETL AUDIT")
     print("=" * 70)
 
-    print(
-        f"Valid companies: "
-        f"{len(valid_company_ids)}"
-    )
+    print(f"Valid companies: " f"{len(valid_company_ids)}")
 
-    print(
-        f"Rejected orphan rows: "
-        f"{len(rejected_rows)}"
-    )
+    print(f"Rejected orphan rows: " f"{len(rejected_rows)}")
 
-    print(
-        f"Duplicate rows removed: "
-        f"{len(deduplicated_rows)}"
-    )
+    print(f"Duplicate rows removed: " f"{len(deduplicated_rows)}")
 
-    print(
-        f"Audit report: "
-        f"{audit_file}"
-    )
+    print(f"Audit report: " f"{audit_file}")
 
-    print(
-        f"Orphan report: "
-        f"{rejection_file}"
-    )
+    print(f"Orphan report: " f"{rejection_file}")
 
-    print(
-        f"Deduplication report: "
-        f"{duplicate_file}"
-    )
+    print(f"Deduplication report: " f"{duplicate_file}")
 
     return datasets
 

@@ -1,24 +1,24 @@
 import pytest
 
 from src.analytics.cagr import (
-    NORMAL,
-    DECLINE_TO_LOSS,
-    TURNAROUND,
     BOTH_NEGATIVE,
-    ZERO_BASE,
+    DECLINE_TO_LOSS,
     INSUFFICIENT,
-    calculate_cagr,
-    cagr_value,
+    NORMAL,
+    TURNAROUND,
+    ZERO_BASE,
     cagr_flag,
-    calculate_window_cagr,
-    calculate_multi_window_cagr,
+    cagr_value,
+    calculate_cagr,
     calculate_growth_metrics,
+    calculate_multi_window_cagr,
+    calculate_window_cagr,
 )
-
 
 # =====================================================================
 # NORMAL CAGR
 # =====================================================================
+
 
 def test_normal_cagr():
     result = calculate_cagr(
@@ -35,6 +35,7 @@ def test_normal_cagr():
 # ZERO BASE
 # =====================================================================
 
+
 def test_zero_base():
     result = calculate_cagr(
         start_value=0,
@@ -49,6 +50,7 @@ def test_zero_base():
 # =====================================================================
 # POSITIVE TO NEGATIVE
 # =====================================================================
+
 
 def test_decline_to_loss():
     result = calculate_cagr(
@@ -65,6 +67,7 @@ def test_decline_to_loss():
 # NEGATIVE TO POSITIVE
 # =====================================================================
 
+
 def test_turnaround():
     result = calculate_cagr(
         start_value=-100,
@@ -80,6 +83,7 @@ def test_turnaround():
 # NEGATIVE TO NEGATIVE
 # =====================================================================
 
+
 def test_both_negative():
     result = calculate_cagr(
         start_value=-100,
@@ -94,6 +98,7 @@ def test_both_negative():
 # =====================================================================
 # INSUFFICIENT DATA
 # =====================================================================
+
 
 def test_insufficient_years():
     result = calculate_window_cagr(
@@ -113,6 +118,7 @@ def test_insufficient_years():
 # CAGR VALUE HELPER
 # =====================================================================
 
+
 def test_cagr_value():
     result = cagr_value(
         start_value=100,
@@ -127,6 +133,7 @@ def test_cagr_value():
 # CAGR FLAG HELPER
 # =====================================================================
 
+
 def test_cagr_flag():
     result = cagr_flag(
         start_value=100,
@@ -140,6 +147,7 @@ def test_cagr_flag():
 # =====================================================================
 # WINDOW CAGR
 # =====================================================================
+
 
 def test_window_cagr():
     result = calculate_window_cagr(
@@ -161,6 +169,7 @@ def test_window_cagr():
 # =====================================================================
 # MULTI-WINDOW CAGR
 # =====================================================================
+
 
 def test_multi_window_cagr():
     values = {
@@ -194,6 +203,7 @@ def test_multi_window_cagr():
 # =====================================================================
 # REVENUE / PAT / EPS GROWTH METRICS
 # =====================================================================
+
 
 def test_growth_metrics():
     revenue = {
@@ -229,9 +239,7 @@ def test_growth_metrics():
         eps_by_year=eps,
     )
 
-    assert result["revenue_cagr_5yr"] == pytest.approx(
-        10.0
-    )
+    assert result["revenue_cagr_5yr"] == pytest.approx(10.0)
 
     assert result["pat_cagr_5yr"] == pytest.approx(
         10.0,
@@ -251,6 +259,7 @@ def test_growth_metrics():
 # =====================================================================
 # NEGATIVE / TURNAROUND GROWTH DATA
 # =====================================================================
+
 
 def test_growth_metrics_edge_cases():
     revenue = {

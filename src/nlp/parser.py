@@ -1,7 +1,7 @@
-from pathlib import Path
 import re
-import pandas as pd
+from pathlib import Path
 
+import pandas as pd
 
 INPUT_FILE = Path("data/raw/analysis.xlsx")
 PARSED_OUTPUT = Path("output/analysis_parsed.csv")
@@ -22,9 +22,7 @@ TARGET_FIELDS = [
 # 3 Years: -1%
 #
 # Allows arbitrary spaces around "Years", colon and value.
-YEAR_PATTERN = re.compile(
-    r"(\d+)\s*Years?:?\s*([-+]?\d+(?:\.\d+)?)%"
-)
+YEAR_PATTERN = re.compile(r"(\d+)\s*Years?:?\s*([-+]?\d+(?:\.\d+)?)%")
 
 
 def parse_year_percentage(value):
@@ -61,9 +59,7 @@ def parse_analysis():
     """
 
     if not INPUT_FILE.exists():
-        raise FileNotFoundError(
-            f"Input file not found: {INPUT_FILE}"
-        )
+        raise FileNotFoundError(f"Input file not found: {INPUT_FILE}")
 
     # Row 0 is the title row, so actual headers are row 1.
     df = pd.read_excel(INPUT_FILE, header=1)
@@ -71,14 +67,11 @@ def parse_analysis():
     required_columns = ["company_id"] + TARGET_FIELDS
 
     missing_columns = [
-        column for column in required_columns
-        if column not in df.columns
+        column for column in required_columns if column not in df.columns
     ]
 
     if missing_columns:
-        raise ValueError(
-            f"Missing required columns: {missing_columns}"
-        )
+        raise ValueError(f"Missing required columns: {missing_columns}")
 
     parsed_rows = []
     failures = []

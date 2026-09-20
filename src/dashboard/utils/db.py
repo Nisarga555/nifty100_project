@@ -1,10 +1,9 @@
-from pathlib import Path
 import re
 import sqlite3
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-
 
 # =============================================================================
 # PROJECT PATHS
@@ -19,6 +18,7 @@ RAW_PATH = PROJECT_ROOT / "data" / "raw"
 # =============================================================================
 # EXCEL LOADER
 # =============================================================================
+
 
 def _read_clean_excel(filename: str) -> pd.DataFrame:
     """
@@ -51,19 +51,10 @@ def _read_clean_excel(filename: str) -> pd.DataFrame:
 
         for i in range(min(len(raw), 20)):
 
-            values = (
-                raw.iloc[i]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .tolist()
-            )
+            values = raw.iloc[i].astype(str).str.strip().str.lower().tolist()
 
             # Company master
-            if (
-                "id" in values
-                and "company_name" in values
-            ):
+            if "id" in values and "company_name" in values:
                 header_row = i
                 break
 
@@ -83,25 +74,17 @@ def _read_clean_excel(filename: str) -> pd.DataFrame:
 
         if header_row is None:
 
-            data = pd.read_excel(
-                path
-            )
+            data = pd.read_excel(path)
 
         else:
 
-            headers = raw.iloc[
-                header_row
-            ].tolist()
+            headers = raw.iloc[header_row].tolist()
 
-            data = raw.iloc[
-                header_row + 1:
-            ].copy()
+            data = raw.iloc[header_row + 1 :].copy()
 
             data.columns = headers
 
-            data = data.reset_index(
-                drop=True
-            )
+            data = data.reset_index(drop=True)
 
         # ---------------------------------------------------------------------
         # Remove unnamed columns.
@@ -109,22 +92,14 @@ def _read_clean_excel(filename: str) -> pd.DataFrame:
 
         data = data.loc[
             :,
-            ~data.columns
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .str.startswith("unnamed"),
+            ~data.columns.astype(str).str.strip().str.lower().str.startswith("unnamed"),
         ]
 
         # ---------------------------------------------------------------------
         # Remove completely empty rows.
         # ---------------------------------------------------------------------
 
-        data = data.dropna(
-            how="all"
-        ).reset_index(
-            drop=True
-        )
+        data = data.dropna(how="all").reset_index(drop=True)
 
         return data
 
@@ -136,6 +111,7 @@ def _read_clean_excel(filename: str) -> pd.DataFrame:
 # GENERIC HELPERS
 # =============================================================================
 
+
 def _filter_company(
     data: pd.DataFrame,
     ticker: str,
@@ -144,21 +120,12 @@ def _filter_company(
     Filter a dataframe using company_id.
     """
 
-    if (
-        data.empty
-        or "company_id" not in data.columns
-    ):
+    if data.empty or "company_id" not in data.columns:
         return pd.DataFrame()
 
     return data.loc[
-        data["company_id"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-        ==
-        str(ticker)
-        .strip()
-        .upper()
+        data["company_id"].astype(str).str.strip().str.upper()
+        == str(ticker).strip().upper()
     ].copy()
 
 
@@ -181,9 +148,7 @@ def _parse_year(value):
     )
 
     if match:
-        return int(
-            match.group(0)
-        )
+        return int(match.group(0))
 
     return None
 
@@ -192,20 +157,20 @@ def _parse_year(value):
 # COMPANY MASTER
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_companies() -> pd.DataFrame:
     """
     Load the 92-company master dataset.
     """
 
-    return _read_clean_excel(
-        "companies.xlsx"
-    )
+    return _read_clean_excel("companies.xlsx")
 
 
 # =============================================================================
 # FINANCIAL RATIOS
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_ratios(
@@ -236,9 +201,7 @@ def get_ratios(
             AND year = ?
         """
 
-        params.append(
-            str(year)
-        )
+        params.append(str(year))
 
     query += """
         ORDER BY year
@@ -246,9 +209,7 @@ def get_ratios(
 
     try:
 
-        with sqlite3.connect(
-            DB_PATH
-        ) as conn:
+        with sqlite3.connect(DB_PATH) as conn:
 
             return pd.read_sql_query(
                 query,
@@ -265,6 +226,7 @@ def get_ratios(
 # PROFIT & LOSS
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_pl(
     ticker: str,
@@ -274,9 +236,7 @@ def get_pl(
     """
 
     return _filter_company(
-        _read_clean_excel(
-            "profitandloss.xlsx"
-        ),
+        _read_clean_excel("profitandloss.xlsx"),
         ticker,
     )
 
@@ -284,6 +244,7 @@ def get_pl(
 # =============================================================================
 # BALANCE SHEET
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_bs(
@@ -294,9 +255,7 @@ def get_bs(
     """
 
     return _filter_company(
-        _read_clean_excel(
-            "balancesheet.xlsx"
-        ),
+        _read_clean_excel("balancesheet.xlsx"),
         ticker,
     )
 
@@ -304,6 +263,7 @@ def get_bs(
 # =============================================================================
 # CASH FLOW
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_cf(
@@ -314,9 +274,7 @@ def get_cf(
     """
 
     return _filter_company(
-        _read_clean_excel(
-            "cashflow.xlsx"
-        ),
+        _read_clean_excel("cashflow.xlsx"),
         ticker,
     )
 
@@ -325,20 +283,20 @@ def get_cf(
 # SECTORS
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_sectors() -> pd.DataFrame:
     """
     Load sector and sub-sector assignments.
     """
 
-    return _read_clean_excel(
-        "sectors.xlsx"
-    )
+    return _read_clean_excel("sectors.xlsx")
 
 
 # =============================================================================
 # PEER GROUPS
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_peers(
@@ -348,30 +306,20 @@ def get_peers(
     Load companies belonging to a peer group.
     """
 
-    data = _read_clean_excel(
-        "peer_groups.xlsx"
-    )
+    data = _read_clean_excel("peer_groups.xlsx")
 
-    if (
-        data.empty
-        or "peer_group_name"
-        not in data.columns
-    ):
+    if data.empty or "peer_group_name" not in data.columns:
         return pd.DataFrame()
 
     return data.loc[
-        data["peer_group_name"]
-        .astype(str)
-        .str.strip()
-        ==
-        str(group_name)
-        .strip()
+        data["peer_group_name"].astype(str).str.strip() == str(group_name).strip()
     ].copy()
 
 
 # =============================================================================
 # VALUATION
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_valuation(
@@ -384,20 +332,14 @@ def get_valuation(
     been generated yet.
     """
 
-    path = (
-        PROJECT_ROOT
-        / "output"
-        / "valuation_summary.xlsx"
-    )
+    path = PROJECT_ROOT / "output" / "valuation_summary.xlsx"
 
     if not path.exists():
         return pd.DataFrame()
 
     try:
 
-        data = pd.read_excel(
-            path
-        )
+        data = pd.read_excel(path)
 
         # Valuation workbook uses company_id.
         return _filter_company(
@@ -414,6 +356,7 @@ def get_valuation(
 # PROS & CONS
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_pros_cons(
     ticker: str,
@@ -423,9 +366,7 @@ def get_pros_cons(
     """
 
     return _filter_company(
-        _read_clean_excel(
-            "prosandcons.xlsx"
-        ),
+        _read_clean_excel("prosandcons.xlsx"),
         ticker,
     )
 
@@ -434,20 +375,20 @@ def get_pros_cons(
 # MARKET CAP
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_market_cap() -> pd.DataFrame:
     """
     Load market-cap source data.
     """
 
-    return _read_clean_excel(
-        "market_cap.xlsx"
-    )
+    return _read_clean_excel("market_cap.xlsx")
 
 
 # =============================================================================
 # ANNUAL REPORTS / DOCUMENTS
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_documents(
@@ -458,9 +399,7 @@ def get_documents(
     """
 
     return _filter_company(
-        _read_clean_excel(
-            "documents.xlsx"
-        ),
+        _read_clean_excel("documents.xlsx"),
         ticker,
     )
 
@@ -468,6 +407,7 @@ def get_documents(
 # =============================================================================
 # PEER PERCENTILES
 # =============================================================================
+
 
 @st.cache_data(ttl=600)
 def get_peer_percentiles(
@@ -506,9 +446,7 @@ def get_peer_percentiles(
             AND peer_group_name = ?
         """
 
-        params.append(
-            peer_group_name
-        )
+        params.append(peer_group_name)
 
     if ticker is not None:
 
@@ -516,9 +454,7 @@ def get_peer_percentiles(
             AND company_id = ?
         """
 
-        params.append(
-            ticker
-        )
+        params.append(ticker)
 
     query += """
         ORDER BY
@@ -529,9 +465,7 @@ def get_peer_percentiles(
 
     try:
 
-        with sqlite3.connect(
-            DB_PATH
-        ) as conn:
+        with sqlite3.connect(DB_PATH) as conn:
 
             return pd.read_sql_query(
                 query,
@@ -548,36 +482,27 @@ def get_peer_percentiles(
 # ALL PEER GROUP NAMES
 # =============================================================================
 
+
 @st.cache_data(ttl=600)
 def get_all_peer_groups() -> list[str]:
     """
     Return all unique peer-group names.
     """
 
-    data = _read_clean_excel(
-        "peer_groups.xlsx"
-    )
+    data = _read_clean_excel("peer_groups.xlsx")
 
-    if (
-        data.empty
-        or "peer_group_name"
-        not in data.columns
-    ):
+    if data.empty or "peer_group_name" not in data.columns:
         return []
 
     return sorted(
-        data["peer_group_name"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .unique()
-        .tolist()
+        data["peer_group_name"].dropna().astype(str).str.strip().unique().tolist()
     )
 
 
 # =============================================================================
 # UTILITY FUNCTIONS
 # =============================================================================
+
 
 def get_database_path() -> Path:
     """
